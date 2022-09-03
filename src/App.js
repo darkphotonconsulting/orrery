@@ -2,7 +2,7 @@
 import React from 'react'
 import {  Canvas } from '@react-three/fiber'
 
-import { OrbitControls, Stars } from '@react-three/drei';
+import { Environment, OrbitControls, Stars } from '@react-three/drei';
 
 import './styles.css'
 
@@ -33,17 +33,21 @@ export class App extends React.Component {
           }
         }
       >
-       <color attach="background" args={['#15151a']} />
-       <hemisphereLight intensity={0.2} color="#eaeaea" groundColor="blue" />
-       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-        <Sphere
-          baseColor={'hotpink'}
-          wireFrame={true}
-          useSpotLight={true}
-          useAmbientLight={true}
+      <React.Suspense>
+        <color attach="background" args={['#15151a']} />
+        <hemisphereLight intensity={0.2} color="#eaeaea" groundColor="blue" />
+        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+          <Sphere
+            baseColor={'hotpink'}
+            wireFrame={true}
+            useSpotLight={true}
+            useAmbientLight={true}
 
-        />
-        <OrbitControls/>
+          />
+          {/* <Environment preset="sunset" background /> */}
+          <OrbitControls/>
+      </React.Suspense>
+
 
         {/* <Sphere/> */}
       </Canvas>
