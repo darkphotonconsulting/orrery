@@ -1,5 +1,12 @@
-export function constantScaler(bodies = []) {
-  return []
+export function constantScaler(bodies = [], factor = 1) {
+  return bodies.map((body) => {
+    return {
+      ...body,
+      mass: {
+        massValue: body.mass.massValue * factor
+      }
+    }
+  })
 }
 
 export function linearScaler(bodies = []) {
