@@ -116,6 +116,22 @@ export class CelestialBodies {
 export class CelestialBody {
   constructor(params = {}) {
     Object.assign(this, { ...params })
+    Object.assign(this, {
+      objectMass: () => {
+        if (this.mass.massValue && this.mass.massExponent) {
+          return this.mass.massValue * Math.pow(10, this.mass.massExponent)
+        } else {
+          return 0
+        }
+      },
+      objectVolume:() => {
+        if (this.vol.volValue && this.vol.volValue) {
+          return this.vol.volValue * Math.pow(10, this.vol.volExponent)
+        } else {
+          return 0
+        }
+      }
+    })
   }
 
   moon() {
@@ -163,6 +179,14 @@ export class Star extends CelestialBody {
 export class Planet extends CelestialBody {
   constructor(params = {}) {
     super(params)
+  }
+
+  getMoonCount() {
+    return this?.moons?.length || 0
+  }
+
+  getMoons() {
+    return this?.moons || []
   }
 }
 
