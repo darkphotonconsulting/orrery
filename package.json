@@ -1,5 +1,5 @@
 {
-  "name": "@darkphotonculting/orrery",
+  "name": "@darkphotonconsulting/orrery",
   "version": "0.0.0-alpha.0",
   "description": "A JavaScript library for creating and manipulating celestial objects",
   "main": "index.js",
