@@ -1,4 +1,5 @@
 import https from 'https';
+// import { startTransition } from 'react';
 
 export class CelestialBodies {
   #apiBaseUrl = 'https://api.le-systeme-solaire.net/rest.php'
@@ -22,7 +23,30 @@ export class CelestialBodies {
             resolve(
               bodies
                 .map((body) => {
-                  return new CelestialBody(body)
+
+                  const celestial = new CelestialBody(body)
+                  if (celestial.star()) {
+                    return new Star(body)
+                  }
+                  else if (celestial.planet()) {
+                    return new Planet(body)
+                  }
+                  else if (celestial.dwarf()) {
+                    return new Dwarf(body)
+                  }
+                  else if (celestial.moon()) {
+                    return new Moon(body)
+                  }
+                  else if (celestial.comet()) {
+                    return new Comet(body)
+                  }
+                  else if (celestial.asteroid()) {
+                    return new Asteroid(body)
+                  }
+                  else {
+                    return new CelestialBody(body)
+                  }
+                  // return celestial
                 })
             )
           } else {
@@ -130,14 +154,38 @@ export class CelestialBody {
 
 }
 
-export class Star extends CelestialBody {}
+export class Star extends CelestialBody {
+  constructor(params = {}) {
+    super(params)
+  }
+}
 
-export class Planet extends CelestialBody {}
+export class Planet extends CelestialBody {
+  constructor(params = {}) {
+    super(params)
+  }
+}
 
-export class Moon extends CelestialBody {}
+export class Moon extends CelestialBody {
+  constructor(params = {}) {
+    super(params)
+  }
+}
 
-export class Dwarf extends CelestialBody {}
+export class Dwarf extends CelestialBody {
+  constructor(params = {}) {
+    super(params)
+  }
+}
 
-export class Comet extends CelestialBody{}
+export class Comet extends CelestialBody{
+  constructor(params = {}) {
+    super(params)
+  }
+}
 
-export class Asteroid extends CelestialBody {}
+export class Asteroid extends CelestialBody {
+  constructor(params = {}) {
+    super(params)
+  }
+}
