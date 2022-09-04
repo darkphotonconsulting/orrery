@@ -136,63 +136,105 @@ export class CelestialBodies {
 
 export class CelestialBody {
   constructor(params = {}) {
-    Object.assign(this, { ...params })
-    this.unknownValues = false
-    if (!this.mass) {
-      // console.warn(`auto-calculating mass for ${this.name}`)
-      this.mass = {
-        massValue: 1,
-        massExponent: 1
-      }
-      this.unknownValues = true
+
+    // we filter nested objects out, to be added later more efficiently
+    const { mass, vol } = params
+    const filteredParams = Object.fromEntries(
+      Object.entries(params).filter(([key, value]) => key !== 'mass' && key !== 'vol')
+    )
+
+    Object.assign(this, { ...filteredParams })
+
+    this.unknowns = []
+
+    // configure defaults for possible missing attributes
+    if (this.moons === null) {
+      this.moons = []
     }
-    if (!this.vol) {
-      // console.warn(`auto-calculating volume for ${this.name}`)
-      this.vol = {
-        volValue: 1,
-        volExponent: 1
-      }
-      this.unknownValues = true
+
+    if (this.meanRadius === 0) {
+      this.unknowns.push('meanRadius')
     }
-    // derive the semi-minor axis from semi-major axis & eccentricity if possible
+    if (this.equaRadius === 0) {
+      this.unknowns.push('equaRadius')
+    }
+    if (this.polarRadius === 0) {
+      this.unknowns.push('polarRadius')
+    }
+    if (this.sideralOrbit === 0) {
+      this.unknowns.push('sideralOrbit')
+    }
+    if (this.sideralRotation === 0) {
+      this.unknowns.push('sideralRotation')
+    }
+
+    // the radius of some celestial bodies is not known
+
+    // the mass of some celestial bodies is not known
+    if (!mass) {
+      this.massValue = 1
+      this.massExponent = 0
+      this.unknowns.push('mass')
+    } else {
+      this.massValue = mass.massValue
+      this.massExponent = mass.massExponent
+    }
+
+    // the volume of some celestial bodies is not known
+    if (!vol) {
+      this.volValue = 1
+      this.volExponent = 0
+      this.unknowns.push('volume')
+    } else {
+      this.volValue = vol.volValue
+      this.volExponent = vol.volExponent
+    }
+  }
+
+  get semiminorAxis() {
     if (this.semimajorAxis && this.eccentricity.constructor.name === 'Number') {
-      this.semiminorAxis = this.semimajorAxis * Math.sqrt(1 - Math.pow(this.eccentricity, 2))
+      return this.semimajorAxis * Math.sqrt(1 - Math.pow(this.eccentricity, 2))
     } else {
-      this.unknownValues = true
-      this.semiminorAxis = null
-    }
-
-    Object.assign(this, {
-      objectMass: () => {
-        if (this?.mass?.massValue && this?.mass?.massExponent) {
-          return this?.mass?.massValue * Math.pow(10, this?.mass?.massExponent)
-        } else {
-          return 0
-        }
-      },
-      objectVolume: () => {
-        if (this?.vol?.volValue && this?.vol?.volValue) {
-          return this?.vol?.volValue * Math.pow(10, this?.vol?.volExponent)
-        } else {
-          return 0
-        }
-      }
-    })
-  }
-
-  getMass() {
-    if (this.mass.massValue && this.mass.massExponent) {
-      return this.mass.massValue * Math.pow(10, this.mass.massExponent)
-    } else {
-      return 0
+      return null
     }
   }
 
-  getVolume() {
-    if (this.vol.volValue && this.vol.volExponent) {
-      return this.vol.volValue * Math.pow(10, this.vol.volExponent)
-    } else {
-      return 0
+  set semiminorAxis(value) {
+    this.semiminorAxis = value
+  }
+
+  get mass() {
+    // eslint-disable-next-line no-undef
+    return this.massValue * Math.pow(10, this.massExponent)
+  }
+
+  set mass(value) {
+
+    if (value && String(value).split('e').length === 2) { // scientific notation
+      const [mantissa, exponent] = String(value).split('e')
+      this.massValue = Number(mantissa)
+      this.massExponent = Number(exponent)
+    } else { // normal notation
+      const [mantissa, exponent] = String((Number(value)).toExponential()).split('e')
+      this.massValue = Number(mantissa)
+      this.massExponent = Number(exponent)
+    }
+  }
+
+  get volume() {
+    // eslint-disable-next-line no-undef
+    return this.volValue * Math.pow(10, this.volExponent)
+  }
+
+  set volume(value) {
+    if (value && String(value).split('e').length === 2) { // scientific notation
+      const [mantissa, exponent] = String(value).split('e')
+      this.volValue = Number(mantissa)
+      this.volExponent = Number(exponent)
+    } else { // normal notation
+      const [mantissa, exponent] = String((Number(value)).toExponential()).split('e')
+      this.volValue = Number(mantissa)
+      this.volExponent = Number(exponent)
     }
   }
 
@@ -248,9 +290,6 @@ export class CelestialBody {
     // eslint-disable-next-line array-callback-return
     return Object.fromEntries(Object.entries(this).map(([key, value]) => {
       return [key, value]
-      // if (typeof value !== 'function') {
-      //   return [key, value]
-      // }
     }))
   }
 
