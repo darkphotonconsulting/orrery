@@ -1,5 +1,5 @@
 import {
-  CelestialBodies,
+  // CelestialBodies,
   CelestialBody
 } from '../data/CelestialBodies.js'
 
@@ -31,11 +31,11 @@ export class CelestialBodyScaler {
             ...bodies.map((body) => body[key])
 
           )
-          console.log(key, 'min', domainMinimum)
+          // console.log(key, 'min', domainMinimum)
           const domainMaximum = Math.max(
             ...bodies.map((body) => body[key])
           )
-          console.log(key, 'max', domainMaximum)
+          // console.log(key, 'max', domainMaximum)
           const scaler = scaleLog()
             .base(base)
             .domain([domainMinimum, domainMaximum])
@@ -65,11 +65,11 @@ export class CelestialBodyScaler {
             ...bodies.map((body) => body[key])
 
           )
-          console.log(key, 'min', domainMinimum)
+          // console.log(key, 'min', domainMinimum)
           const domainMaximum = Math.max(
             ...bodies.map((body) => body[key])
           )
-          console.log(key, 'max', domainMaximum)
+          // console.log(key, 'max', domainMaximum)
           const scaler = scaleLinear()
             .domain([domainMinimum, domainMaximum])
             .range([rangeMinimum, rangeMaximum])
@@ -98,11 +98,11 @@ export class CelestialBodyScaler {
             ...bodies.map((body) => body[key])
 
           )
-          console.log(key, 'min', domainMinimum)
+          // console.log(key, 'min', domainMinimum)
           const domainMaximum = Math.max(
             ...bodies.map((body) => body[key])
           )
-          console.log(key, 'max', domainMaximum)
+          // console.log(key, 'max', domainMaximum)
           const scaler = scaleSqrt()
             .domain([domainMinimum, domainMaximum])
             .range([rangeMinimum, rangeMaximum])
@@ -126,7 +126,7 @@ export class CelestialBodyScaler {
       const scaledBody = Object.fromEntries(
         Object.entries(body.toJson())
           .map(([key, value]) => {
-            console.log(key, value)
+            // console.log(key, value)
             if (value && !this.#staticProperties.includes(key) && value.constructor.name === 'Number') {
               return [key, value * scale]
             }
@@ -145,7 +145,7 @@ export class CelestialBodyScaler {
       const scaledBody = Object.fromEntries(
         Object.entries(body.toJson())
           .map(([key, value]) => {
-            console.log(key, value)
+            // console.log(key, value)
             if (value && !this.#staticProperties.includes(key) && value.constructor.name === 'Number') {
               return [key, script(value)]
             }
