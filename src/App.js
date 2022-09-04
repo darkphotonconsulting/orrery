@@ -2,7 +2,15 @@
 import React from 'react'
 import {  Canvas } from '@react-three/fiber'
 
-import { Environment, OrbitControls, Stars } from '@react-three/drei';
+import {
+  OrthographicCamera,
+  BakeShadows,
+  ContactShadows,
+  Environment,
+  OrbitControls,
+  Effects,
+  Stars
+} from '@react-three/drei';
 
 import './styles.css'
 
@@ -34,7 +42,11 @@ export class App extends React.Component {
         }
       >
       <React.Suspense>
+        {/* <Effects disableGamma>
+          <unrealBloomPass threshold={1} strength={1.0} radius={1} />
+        </Effects> */}
         <color attach="background" args={['#15151a']} />
+        <fog attach="fog" args={['#202030', 10, 25]} />
         <hemisphereLight intensity={0.2} color="#eaeaea" groundColor="blue" />
         <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
           <Sphere
