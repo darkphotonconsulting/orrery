@@ -1,65 +1,74 @@
-import https from 'https';
-// import { startTransition } from 'react';
+// import https from 'https';
+
 
 export class CelestialBodies {
   #apiBaseUrl = 'https://api.le-systeme-solaire.net/rest.php'
 
-  constructor() {
+  constructor({ bodies = []}) {
+    Object.assign(this, {bodies: [...bodies]})
     this.apiBaseUrl = this.#apiBaseUrl
   }
 
   async list() {
-    const url = this.apiBaseUrl + '/bodies'
+    // const url = this.apiBaseUrl + '/bodies'
 
-    return new Promise((resolve, reject) => {
-      https.get(url, (res) => {
-        let data = '';
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-        res.on('end', () => {
-          const { bodies } = JSON.parse(data)
-          if (bodies) {
+    // return new Promise((resolve, reject) => {
+    //   https.get(url, (res) => {
+    //     let data = '';
+    //     res.on('data', (chunk) => {
+    //       data += chunk;
+    //     });
+    //     res.on('end', () => {
+    //       const { bodies } = JSON.parse(data)
+    //       if (bodies) {
 
-            resolve(
-              bodies
-                .map((body) => {
+    //         resolve(
+    //           bodies
+    //             .map((body) => {
 
-                  const celestial = new CelestialBody(body)
-                  if (celestial.star()) {
-                    return new Star(body)
-                  }
-                  else if (celestial.planet()) {
-                    return new Planet(body)
-                  }
-                  else if (celestial.dwarf()) {
-                    return new Dwarf(body)
-                  }
-                  else if (celestial.moon()) {
-                    return new Moon(body)
-                  }
-                  else if (celestial.comet()) {
-                    return new Comet(body)
-                  }
-                  else if (celestial.asteroid()) {
-                    return new Asteroid(body)
-                  }
-                  else {
-                    return new CelestialBody(body)
-                  }
-                  // return celestial
-                })
-            )
-          } else {
-            reject(new Error('No data'))
-          }
-          // resolve(bodies);
-        });
-        res.on('error', (err) => {
-          reject(err)
-        })
-      })
-    })
+    //               const celestial = new CelestialBody(body)
+    //               if (celestial.star()) {
+    //                 return new Star(body)
+    //               }
+    //               else if (celestial.planet()) {
+    //                 return new Planet(body)
+    //               }
+    //               else if (celestial.dwarf()) {
+    //                 return new Dwarf(body)
+    //               }
+    //               else if (celestial.moon()) {
+    //                 return new Moon(body)
+    //               }
+    //               else if (celestial.comet()) {
+    //                 return new Comet(body)
+    //               }
+    //               else if (celestial.asteroid()) {
+    //                 return new Asteroid(body)
+    //               }
+    //               else {
+    //                 return new CelestialBody(body)
+    //               }
+    //               // return celestial
+    //             })
+    //         )
+    //       } else {
+    //         reject(new Error('No data'))
+    //       }
+    //       // resolve(bodies);
+    //     });
+    //     res.on('error', (err) => {
+    //       reject(err)
+    //     })
+    //   })
+    // })
+    const bodies = []
+
+    for (const body of this.bodies) {
+      const celestial = new CelestialBody(body)
+      bodies.push(await celestial.coerce())
+    }
+    return bodies
+
   }
 
   async stars() {
