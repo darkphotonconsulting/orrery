@@ -1,6 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
-
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 module.exports = {
   entry: "./src/index.js",
   mode: "development",
@@ -18,7 +18,18 @@ module.exports = {
       }
     ]
   },
-  resolve: { extensions: ["*", ".js", ".jsx"] },
+  resolve: {
+    extensions: ["*", ".js", ".jsx"],
+    fallback: {
+      "crypto": require.resolve("crypto-browserify"),
+      "stream": require.resolve("stream-browserify"),
+      "assert": require.resolve("assert"),
+      "http": require.resolve("stream-http"),
+      "https": require.resolve("https-browserify"),
+      "os": require.resolve("os-browserify"),
+      "url": require.resolve("url")
+    }
+  },
   output: {
     path: path.resolve(__dirname, "dist/"),
     publicPath: "/dist/",
@@ -30,5 +41,14 @@ module.exports = {
     // publicPath: "http://localhost:3000/dist/",
     // hotOnly: true
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()]
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new NodePolyfillPlugin(),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+        process: 'process/browser',
+    })
+  ]
 };
