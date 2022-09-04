@@ -10,6 +10,7 @@ export class CelestialBodies {
 
   async list() {
     const url = this.apiBaseUrl + '/bodies'
+
     return new Promise((resolve, reject) => {
       https.get(url, (res) => {
         let data = '';
@@ -111,27 +112,88 @@ export class CelestialBodies {
         return body.asteroid()
       })
   }
+
+  async min(type=null, attribute) {
+    const bodies = type ?
+      (await this.list())
+        .filter((body) => body.bodyType === type)
+      : await this.list()
+    return Math.min(
+      ...bodies.map((body) => body[attribute])
+    )
+    // if (type) {
+
+    //   const filtered = bodies
+    //     .filter((body) => {
+    //       return body.bodyType === type
+    //     })
+    // }
+  }
+  async max(type=null, attribute) {
+
+  }
 }
 
 export class CelestialBody {
   constructor(params = {}) {
     Object.assign(this, { ...params })
+    this.unknownValues = false
+    if (!this.mass) {
+      // console.warn(`auto-calculating mass for ${this.name}`)
+      this.mass = {
+        massValue: 1,
+        massExponent: 1
+      }
+      this.unknownValues = true
+    }
+    if (!this.vol) {
+      // console.warn(`auto-calculating volume for ${this.name}`)
+      this.vol = {
+        volValue: 1,
+        volExponent: 1
+      }
+      this.unknownValues = true
+    }
+    // derive the semi-minor axis from semi-major axis & eccentricity if possible
+    if (this.semimajorAxis && this.eccentricity.constructor.name === 'Number') {
+      this.semiminorAxis = this.semimajorAxis * Math.sqrt(1 - Math.pow(this.eccentricity, 2))
+    } else {
+      this.unknownValues = true
+      this.semiminorAxis = null
+    }
+
     Object.assign(this, {
       objectMass: () => {
-        if (this.mass.massValue && this.mass.massExponent) {
-          return this.mass.massValue * Math.pow(10, this.mass.massExponent)
+        if (this?.mass?.massValue && this?.mass?.massExponent) {
+          return this?.mass?.massValue * Math.pow(10, this?.mass?.massExponent)
         } else {
           return 0
         }
       },
-      objectVolume:() => {
-        if (this.vol.volValue && this.vol.volValue) {
-          return this.vol.volValue * Math.pow(10, this.vol.volExponent)
+      objectVolume: () => {
+        if (this?.vol?.volValue && this?.vol?.volValue) {
+          return this?.vol?.volValue * Math.pow(10, this?.vol?.volExponent)
         } else {
           return 0
         }
       }
     })
+  }
+
+  getMass() {
+    if (this.mass.massValue && this.mass.massExponent) {
+      return this.mass.massValue * Math.pow(10, this.mass.massExponent)
+    } else {
+      return 0
+    }
+  }
+
+  getVolume() {
+    if (this.vol.volValue && this.vol.volExponent) {
+      return this.vol.volValue * Math.pow(10, this.vol.volExponent)
+    } else {
+      return 0
+    }
   }
 
   moon() {
@@ -158,12 +220,37 @@ export class CelestialBody {
     return this.bodyType === 'Asteroid'
   }
 
+  coerce() {
+    if (this.star()) {
+      return new Star(this.toJson())
+    }
+    else if (this.planet()) {
+      return new Planet(this.toJson())
+    }
+    else if (this.dwarf()) {
+      return new Dwarf(this.toJson())
+    }
+    else if (this.moon()) {
+      return new Moon(this.toJson())
+    }
+    else if (this.comet()) {
+      return new Comet(this.toJson())
+    }
+    else if (this.asteroid()) {
+      return new Asteroid(this.toJson())
+    }
+    else {
+      return this
+    }
+  }
+
   toJson() {
     // eslint-disable-next-line array-callback-return
     return Object.fromEntries(Object.entries(this).map(([key, value]) => {
-      if (typeof value !== 'function') {
-        return [key, value]
-      }
+      return [key, value]
+      // if (typeof value !== 'function') {
+      //   return [key, value]
+      // }
     }))
   }
 
@@ -181,12 +268,13 @@ export class Planet extends CelestialBody {
     super(params)
   }
 
-  getMoonCount() {
-    return this?.moons?.length || 0
-  }
-
-  getMoons() {
-    return this?.moons || []
+  async getMoons() {
+    const celestials = new CelestialBodies()
+    const moons =  await celestials.moons()
+    const satellites = this.moons.map((satellite) => {
+      return moons.find((moon) => moon.name === satellite.moon)
+    })
+    return satellites
   }
 }
 
@@ -200,6 +288,15 @@ export class Dwarf extends CelestialBody {
   constructor(params = {}) {
     super(params)
   }
+
+  async getMoons() {
+    const celestials = new CelestialBodies()
+    const moons =  await celestials.moons()
+    const satellites = this.moons.map((satellite) => {
+      return moons.find((moon) => moon.name === satellite.moon)
+    })
+    return satellites
+  }
 }
 
 export class Comet extends CelestialBody{
@@ -211,5 +308,14 @@ export class Comet extends CelestialBody{
 export class Asteroid extends CelestialBody {
   constructor(params = {}) {
     super(params)
+  }
+
+  async getMoons() {
+    const celestials = new CelestialBodies()
+    const moons =  await celestials.moons()
+    const satellites = this.moons.map((satellite) => {
+      return moons.find((moon) => moon.name === satellite.moon)
+    })
+    return satellites
   }
 }
