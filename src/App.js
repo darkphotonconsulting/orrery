@@ -4,20 +4,11 @@ import { Canvas } from '@react-three/fiber';
 import { CelestialBodies } from './lib/data/CelestialBodies.js';
 import { CelestialBodyScaler } from './lib/tools/Scalers.js';
 import {
-  // OrthographicCamera,
-  // PerspectiveCamera,
-  // BakeShadows,
-  // ContactShadows,
-  // Environment,
   OrbitControls,
-  // Effects,
   Stars,
-  // Text,
 } from '@react-three/drei';
 import {
   Physics,
-  // usePlane,
-  // useBox
 } from "@react-three/cannon";
 import * as THREE from 'three';
 
@@ -325,5 +316,3 @@ export class App extends React.Component {
     );
   }
 }
-
-// createRoot(document.getElementById('root')).render(<App/>)
