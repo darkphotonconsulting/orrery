@@ -6,7 +6,8 @@ import {
 import {
   scaleLinear,
   scaleLog,
-  scaleSqrt
+  scaleSqrt,
+  scaleSymlog,
 } from 'd3-scale'
 
 export class CelestialBodyScaler {
@@ -38,9 +39,66 @@ export class CelestialBodyScaler {
           // console.log(key, 'max', domainMaximum)
           const scaler = scaleLog()
             .base(base)
-            .domain([domainMinimum, domainMaximum])
+            .domain([domainMinimum + 0.1, domainMaximum])
+          const scaledValue = scaler(value)
+          scaledBody[key] = scaledValue
+          console.log({
+            targetId: body.id,
+            targetType: body.bodyType,
+            eventName: 'scaling',
+            scaleLogic: 'log',
+            scaleKey: key,
+            domainMinimum,
+            domainMaximum,
+            oldValue: value,
+            newValue: scaledValue
+          })
+        } else {
+          scaledBody[key] = value
+        }
+      }
+      scaledBodies.push(scaledBody)
+    }
+    return scaledBodies
+      .map((body) => {
+        const celestial = new CelestialBody(body)
+        return celestial.coerce()
+      })
+  }
 
-          scaledBody[key] = scaler(value)
+  #bisymmetricTransformation({ bodies = [], rangeMinimum = 1, rangeMaximum = 100, constant = 0.1 }) {
+    const scaledBodies = []
+    for (const body of bodies) {
+      const scaledBody = {}
+      for (const [key, value] of Object.entries(body)) {
+        if (value && !this.#staticProperties.includes(key) && value.constructor.name === 'Number') {
+          // construct a domain for the linear scaler
+          const domainMinimum = Math.min(
+            ...bodies.map((body) => body[key])
+
+          )
+          // console.log(key, 'min', domainMinimum)
+          const domainMaximum = Math.max(
+            ...bodies.map((body) => body[key])
+          )
+          // console.log(key, 'max', domainMaximum)
+          const scaler = scaleSymlog()
+            .domain([domainMinimum + 0.1, domainMaximum])
+            .range([rangeMinimum, rangeMaximum])
+            .constant(constant)
+          const scaledValue = scaler(value)
+          scaledBody[key] = scaledValue
+          console.log({
+            targetId: body.id,
+            targetType: body.bodyType,
+            eventName: 'scaling',
+            scaleLogic: 'bisymmetric',
+            scaleKey: key,
+            domainMinimum,
+            domainMaximum,
+            oldValue: value,
+            newValue: scaledValue
+          })
         } else {
           scaledBody[key] = value
         }
@@ -73,7 +131,16 @@ export class CelestialBodyScaler {
           const scaler = scaleLinear()
             .domain([domainMinimum, domainMaximum])
             .range([rangeMinimum, rangeMaximum])
-          scaledBody[key] = scaler(value)
+          const scaledValue = scaler(value)
+          scaledBody[key] = scaledValue
+          console.log({
+            target: body.id,
+            event: 'scaling',
+            type: 'linear',
+            key,
+            old: value,
+            new: scaledValue
+          })
         } else {
           scaledBody[key] = value
         }
@@ -106,7 +173,10 @@ export class CelestialBodyScaler {
           const scaler = scaleSqrt()
             .domain([domainMinimum, domainMaximum])
             .range([rangeMinimum, rangeMaximum])
-          scaledBody[key] = scaler(value)
+          const scaledValue = scaler(value)
+
+          scaledBody[key] = scaledValue
+
         } else {
           scaledBody[key] = value
         }
@@ -170,6 +240,10 @@ export class CelestialBodyScaler {
 
   logTransformation({ bodies = [], base = 2}) {
     return this.#logTransformation({ bodies, base })
+  }
+
+  bisymmetricTransformation({ bodies = [], rangeMinimum = 1, rangeMaximum = 100, constant = 0.1 }) {
+    return this.#bisymmetricTransformation({ bodies, rangeMinimum, rangeMaximum, constant })
   }
 
   sqrtTransformation({ bodies = [], rangeMinimum = 0, rangeMaximum = 100 }) {

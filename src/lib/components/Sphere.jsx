@@ -13,6 +13,7 @@ export class Sphere extends React.Component {
   render() {
     return (
       <mesh
+        scale={1}
         position={[
           this.props.meshPositionX || 0,
           this.props.meshPositionY || 0,
@@ -83,6 +84,7 @@ export class Star extends Sphere {
   render() {
     return (
       <mesh
+        scale={1}
         position={[
           this.props.meshPositionX || 0,
           this.props.meshPositionY || 0,
@@ -153,6 +155,7 @@ export class Planet extends Sphere {
   render() {
     return (
       <mesh
+        scale={1}
         position={[
           this.props.meshPositionX || 0,
           this.props.meshPositionY || 0,

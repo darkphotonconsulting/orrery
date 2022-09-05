@@ -139,7 +139,6 @@ export class CelestialBodies {
 export class CelestialBody {
   constructor(params = {}) {
     // we filter nested objects out, to be added later more efficiently
-    console.log('params', params)
     this.massValue = 100
     this.massExponent = 0
     this.volValue = 100
@@ -165,12 +164,6 @@ export class CelestialBody {
       }
       this[key] = value
     }
-    // const filteredParams = Object.fromEntries(
-    //   Object.entries(params).filter(([key, value]) => key !== 'mass' && key !== 'vol')
-    // )
-    // // console.log('filteredParams:', filteredParams)
-
-    // Object.assign(this, filteredParams)
 
     this.unknowns = []
 
@@ -195,25 +188,6 @@ export class CelestialBody {
       this.unknowns.push('sideralRotation')
     }
 
-    // the radius of some celestial bodies is not known
-
-    // the mass of some celestial bodies is not known
-
-    console.log(Object.keys(params))
-    // this.massValue = (!params?.mass === null && !params?.mass === undefined) ? params.mass.massValue : 1
-    // this.massExponent = (!params?.mass === null && !params?.mass === undefined) ? params.mass.massExponent : 0
-    // if (this.massValue === 1 && this.massExponent === 0) {
-    //   this.unknowns.push('mass')
-    // }
-
-
-    // // the volume of some celestial bodies is not known
-    // this.volValue = (!params.vol === null && !params.vol === undefined) ? params.vol.volValue : 1
-    // this.volExponent = (!params.vol === null && !params.vol === undefined) ? params.vol.volExponent : 0
-    // if (this.volValue === 1 && this.volExponent === 0) {
-    //   this.unknowns.push('volume')
-    // }
-
   }
 
   get semiminorAxis() {
@@ -230,7 +204,7 @@ export class CelestialBody {
 
   get objectMass() {
     // eslint-disable-next-line no-undef
-    return this.massValue || 10 * Math.pow(10, this.massExponent || 0)
+    return this.massValue * Math.pow(10, this.massExponent )
   }
 
   set objectMass(value) {
@@ -250,12 +224,12 @@ export class CelestialBody {
     }
   }
 
-  get volume() {
+  get objectVolume() {
     // eslint-disable-next-line no-undef
     return this.volValue * Math.pow(10, this.volExponent)
   }
 
-  set volume(value) {
+  set objectVolume(value) {
     if (value && String(value).split('e').length === 2) { // scientific notation
       const [mantissa, exponent] = String(value).split('e')
       this.volValue = Number(mantissa)
