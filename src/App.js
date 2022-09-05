@@ -1,10 +1,11 @@
-
-import React from 'react'
-import {  Canvas } from '@react-three/fiber'
-import { CelestialBodies } from './lib/data/CelestialBodies.js'
-import { CelestialBodyScaler } from './lib/tools/Scalers.js'
+import React from 'react';
+import { useRef } from 'react'
+import { Canvas } from '@react-three/fiber';
+import { CelestialBodies } from './lib/data/CelestialBodies.js';
+import { CelestialBodyScaler } from './lib/tools/Scalers.js';
 import {
   OrthographicCamera,
+  PerspectiveCamera,
   BakeShadows,
   ContactShadows,
   Environment,
@@ -12,154 +13,221 @@ import {
   Effects,
   Stars
 } from '@react-three/drei';
+import * as THREE from 'three';
 
-import './styles.css'
+import './styles.css';
 
-import { Sphere } from './lib/components/Sphere.jsx'
+import { Sphere, Star, Planet } from './lib/components/Sphere.jsx';
 
 export class App extends React.Component {
+  #defaultScaler = 'log'
+  #defaultScale = 0.5
+  #defaultBase = 2
+  #defaultRangeMinimum = 1
+  #defaultRangeMaximum = 1000
+  #defaultNear = .0001
+  #defaultFar = 100000
+  #defaultPosition = [0,0,0]
+  #defaultFov = 75
+
   constructor(props) {
-    super(props)
+    super(props);
+    this.ref = React.createRef();
     this.state = {
-      camera: {
-        fov: 75,
-        near: 10,
-        far: 100,
-        position: [0, 10, 10],
-        shadows: true,
+      scene: {
+        aspect: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          ratio: window.innerWidth / window.innerHeight
+        }
       },
+      camera: {
+        fov: this?.props?.camera?.fov || this.#defaultFov,
+        near: this?.props?.camera?.near || this.#defaultNear,
+        far: this?.props?.camera?.far || this.#defaultFar,
+        position: this?.props?.camera?.position || this.#defaultPosition
+      },
+      shadows: this?.props.shadows || true,
       transformation: {
-        scaler: 'linear',
-        scale: 0.5,
-        base: 2,
-        rangeMinimum: 1,
-        rangeMaximum: 100,
+        scaler: this?.props.transformation?.scaler || this.#defaultScaler,
+        scale: this?.props.transformation?.scale || this.#defaultScale,
+        base: this?.props.transformation?.base || this.#defaultBase,
+        rangeMinimum: this?.props?.transformation?.rangeMinimum || this.#defaultRangeMinimum,
+        rangeMaximum: this?.props?.transformation?.rangeMaximum|| this.#defaultRangeMaximum,
       },
       galaxy: {
         pristene: [],
         scaled: []
       }
-    }
-
+    };
   }
 
-  async componentDidMount () {
+  // TODO: research if alternatives for this pattern.
+  componentDidMount() {
     fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
-        const json = response.json()
-        return json
+        const json = response.json();
+        return json;
       })
       .then(async (json) => {
-        const { bodies } = json
-        const galaxyTool = new CelestialBodies({ bodies })
-        const scaleTool = new CelestialBodyScaler()
+        const { bodies } = json;
+        // console.log('testBody', bodies[0])
+        const galaxyTool = new CelestialBodies({ bodies });
+        // console.log('testBody2', galaxyTool.bodies[0])
+        const scaleTool = new CelestialBodyScaler();
 
         if (this.state.transformation.scaler === 'linear') {
-          const galaxy = await galaxyTool.list()
+          console.log(`using linear scaler`)
+          const galaxy = galaxyTool.list();
           const scaledGalaxy = scaleTool.linearTransformation({
             bodies: galaxy,
             rangeMinimum: this.state.transformation.rangeMinimum,
             rangeMaximum: this.state.transformation.rangeMaximum
-          })
+          });
           this.setState((state) => ({
             ...state,
+
             galaxy: {
+              // bodies,
               pristene: galaxy,
               scaled: scaledGalaxy
             }
-          }))
+          }));
         }
 
-
         if (this.state.transformation.scaler === 'sqrt') {
-          const galaxy = await galaxyTool.list()
+          console.log(`using sqrt scaler`)
+          const galaxy = await galaxyTool.list();
           const scaledGalaxy = scaleTool.sqrtTransformation({
             bodies: galaxy,
             rangeMinimum: this.state.transformation.rangeMinimum,
             rangeMaximum: this.state.transformation.rangeMaximum
-          })
+          });
           this.setState((state) => ({
             ...state,
             galaxy: {
               pristene: galaxy,
               scaled: scaledGalaxy
             }
-          }))
+          }));
         }
 
         if (this.state.transformation.scaler === 'log') {
-          const galaxy = await galaxyTool.list()
+          console.log(`using log scaler`)
+          const galaxy = await galaxyTool.list();
+          const planets = await galaxyTool.planets();
+          const stars = await galaxyTool.stars();
           const scaledGalaxy = scaleTool.logTransformation({
             bodies: galaxy,
-            base: this.state.transformation.base
-          })
+            // base: this.state.transformation.base
+          });
           this.setState((state) => ({
             ...state,
             galaxy: {
               pristene: galaxy,
-              scaled: scaledGalaxy
+              scaled: scaledGalaxy,
+              planets: planets,
+              stars: stars
             }
-          }))
+          }));
         }
+      });
+  }
 
-
-      })
-
-
+  camera() {
+    return new THREE.PerspectiveCamera(
+      this.state.camera.fov,
+      window.innerWidth / window.innerHeight,
+      this.state.camera.near,
+      this.state.camera.far
+    );
   }
 
   render() {
-    // const celestial = new CelestialBodies()
-    // const planets = await celestial.planets()
+    // let window
     return (
       <Canvas
-        // concurrent={true}
-        camera={
-          {
-            fov: this.state.camera.fov,
-            near: this.state.camera.near,
-            far: this.state.camera.far,
-            position: this.state.camera.position,
-            shadows: this.state.camera.shadows,
-          }
-        }
+        dpr={[1,2]}
       >
-      <React.Suspense>
-        {/* <Effects disableGamma>
+        <React.Suspense>
+          {/* <Effects disableGamma>
           <unrealBloomPass threshold={1} strength={1.0} radius={1} />
         </Effects> */}
-        <color attach="background" args={['#15151a']} />
-        <fog attach="fog" args={['#202030', 10, 25]} />
-        <hemisphereLight intensity={0.2} color="#eaeaea" groundColor="blue" />
-        {/* <perspectiveCamera
+          <color attach='background' args={['#15151a']} />
+          <fog attach='fog' args={['#202030', 10, 25]} />
+          <hemisphereLight intensity={0.2} color='#eaeaea' groundColor='blue' />
+          {/* <perspectiveCamera
 
         /> */}
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-          {
-            (() => {
-              if (this.state?.galaxy?.scaled?.length > 0) {
-                const sol = this.state.galaxy.scaled.find((body) => body.bodyType === 'Star')
-                console.log('using sun data: ',sol)
+          <Stars
+            radius={500}
+            depth={50}
+            count={5000}
+            factor={4}
+            saturation={1}
+            fade
+            speed={1}
+          />
+          <perspectiveCamera
+            makeDefault
+            fov={this.state.camera.fov}
+            near={this.state.camera.near}
+            far={this.state.camera.far}
+            aspect={this.state.scene.aspect.ratio}
+          >
+            {/* render our sun - sol/soleil */}
+
+            {(() => {
+              if (this.state?.galaxy?.pristene?.length > 0) {
+                const sol = this.state.galaxy.pristene.find(
+                  (body) => body.bodyType === 'Star'
+                );
+                console.log('using sun data: ', sol);
                 return (
-                    <Sphere
+                  <Star
                     // baseColor={'hotpink'}
                     wireFrame={false}
-                    useSpotLight={true}
+                    useSpotLight={false}
                     useAmbientLight={true}
-                    baseColor={'orange'}
+                    baseColor={'#f0f0f0'}
                     // wireFrame={true}
                     // useSpotLight={true}
                     // useAmbientLight={true}
                     meshPositionX={0}
                     meshPositionY={0}
                     meshPositionZ={0}
-                    radius={sol.equaRadius / 2}
+                    radius={sol.equaRadius * 10**-5}
+                    // radius={10}
                   />
-                )
+                );
               }
+            })()}
 
-            })()
-          }
+            {(() => {
+              if (this.state?.galaxy?.planets?.length > 0) {
+
+                this.state?.galaxy?.planets.map((planet, index) => {
+                  console.log('using planet data: ', planet);
+                  return (
+                    <Planet
+                    key={`planet-${index}`}
+                    wireFrame={false}
+                    useSpotLight={false}
+                    useAmbientLight={true}
+                    baseColor={'#f0f0f0'}
+                    meshPositionX={25}
+                    meshPositionY={0}
+                    meshPositionZ={0}
+                    radius={planet.equaRadius}
+                    />
+                  )
+                })
+              }
+            })()}
+
+          </perspectiveCamera>
+            {/* render our planets */}
+
           {/* <Sphere
             baseColor={'hotpink'}
             wireFrame={true}
@@ -168,13 +236,12 @@ export class App extends React.Component {
 
           /> */}
           {/* <Environment preset="sunset" background /> */}
-          <OrbitControls/>
-      </React.Suspense>
-
+          <OrbitControls />
+        </React.Suspense>
 
         {/* <Sphere/> */}
       </Canvas>
-    )
+    );
   }
 }
 

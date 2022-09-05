@@ -130,13 +130,6 @@ export class CelestialBodies {
     return Math.min(
       ...bodies.map((body) => body[attribute])
     )
-    // if (type) {
-
-    //   const filtered = bodies
-    //     .filter((body) => {
-    //       return body.bodyType === type
-    //     })
-    // }
   }
   async max(type=null, attribute) {
 
@@ -145,14 +138,39 @@ export class CelestialBodies {
 
 export class CelestialBody {
   constructor(params = {}) {
-
     // we filter nested objects out, to be added later more efficiently
-    const { mass, vol } = params
-    const filteredParams = Object.fromEntries(
-      Object.entries(params).filter(([key, value]) => key !== 'mass' && key !== 'vol')
-    )
+    console.log('params', params)
+    this.massValue = 100
+    this.massExponent = 0
+    this.volValue = 100
+    this.volExponent = 0
+    for (const [key, value] of Object.entries(params)) {
+      if (key === 'mass') {
+        if (value === null || value === undefined) {
+          this.massValue = 100
+          this.massExponent = 0
+        } else {
+          this.massValue = value.massValue
+          this.massExponent = value.massExponent
+        }
+      }
+      if (key === 'vol') {
+        if (value === null || value === undefined) {
+          this.volValue = 100
+          this.volExponent = 0
+        } else {
+          this.volValue = value.volValue
+          this.volExponent = value.volExponent
+        }
+      }
+      this[key] = value
+    }
+    // const filteredParams = Object.fromEntries(
+    //   Object.entries(params).filter(([key, value]) => key !== 'mass' && key !== 'vol')
+    // )
+    // // console.log('filteredParams:', filteredParams)
 
-    Object.assign(this, { ...filteredParams })
+    // Object.assign(this, filteredParams)
 
     this.unknowns = []
 
@@ -180,24 +198,22 @@ export class CelestialBody {
     // the radius of some celestial bodies is not known
 
     // the mass of some celestial bodies is not known
-    if (!mass) {
-      this.massValue = 1
-      this.massExponent = 0
-      this.unknowns.push('mass')
-    } else {
-      this.massValue = mass.massValue
-      this.massExponent = mass.massExponent
-    }
 
-    // the volume of some celestial bodies is not known
-    if (!vol) {
-      this.volValue = 1
-      this.volExponent = 0
-      this.unknowns.push('volume')
-    } else {
-      this.volValue = vol.volValue
-      this.volExponent = vol.volExponent
-    }
+    console.log(Object.keys(params))
+    // this.massValue = (!params?.mass === null && !params?.mass === undefined) ? params.mass.massValue : 1
+    // this.massExponent = (!params?.mass === null && !params?.mass === undefined) ? params.mass.massExponent : 0
+    // if (this.massValue === 1 && this.massExponent === 0) {
+    //   this.unknowns.push('mass')
+    // }
+
+
+    // // the volume of some celestial bodies is not known
+    // this.volValue = (!params.vol === null && !params.vol === undefined) ? params.vol.volValue : 1
+    // this.volExponent = (!params.vol === null && !params.vol === undefined) ? params.vol.volExponent : 0
+    // if (this.volValue === 1 && this.volExponent === 0) {
+    //   this.unknowns.push('volume')
+    // }
+
   }
 
   get semiminorAxis() {
@@ -212,13 +228,17 @@ export class CelestialBody {
     this.semiminorAxis = value
   }
 
-  get mass() {
+  get objectMass() {
     // eslint-disable-next-line no-undef
-    return this.massValue * Math.pow(10, this.massExponent)
+    return this.massValue || 10 * Math.pow(10, this.massExponent || 0)
   }
 
-  set mass(value) {
+  set objectMass(value) {
 
+    if (value && Object.keys(value).length === 2) {
+      this.massValue = value.massValue
+      this.massExponent = value.massExponent
+    }
     if (value && String(value).split('e').length === 2) { // scientific notation
       const [mantissa, exponent] = String(value).split('e')
       this.massValue = Number(mantissa)
