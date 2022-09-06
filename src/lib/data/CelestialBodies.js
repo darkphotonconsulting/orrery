@@ -9,7 +9,7 @@ export class CelestialBodies {
     this.apiBaseUrl = this.#apiBaseUrl
   }
 
-  async list() {
+  list() {
     // const url = this.apiBaseUrl + '/bodies'
 
     // return new Promise((resolve, reject) => {
@@ -65,22 +65,22 @@ export class CelestialBodies {
 
     for (const body of this.bodies) {
       const celestial = new CelestialBody(body)
-      bodies.push(await celestial.coerce())
+      bodies.push(celestial.coerce())
     }
     return bodies
 
   }
 
-  async stars() {
-    const bodies = await this.list()
+  stars() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.star()
       })
   }
 
-  async planets() {
-    const bodies = await this.list()
+  planets() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.planet()
@@ -90,43 +90,43 @@ export class CelestialBodies {
       })
   }
 
-  async dwarfs() {
-    const bodies = await this.list()
+  dwarfs() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.dwarf()
       })
   }
 
-  async moons() {
-    const bodies = await this.list()
+  moons() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.moon()
       })
   }
 
-  async comets() {
-    const bodies = await this.list()
+  comets() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.comet()
       })
   }
 
-  async asteroids() {
-    const bodies = await this.list()
+  asteroids() {
+    const bodies = this.list()
     return bodies
       .filter((body) => {
         return body.asteroid()
       })
   }
 
-  async min(type=null, attribute) {
+  min(type=null, attribute) {
     const bodies = type ?
-      (await this.list())
+      (this.list())
         .filter((body) => body.bodyType === type)
-      : await this.list()
+      : this.list()
     return Math.min(
       ...bodies.map((body) => body[attribute])
     )
