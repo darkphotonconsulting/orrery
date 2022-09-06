@@ -3,7 +3,7 @@ import { CelestialBodyScaler } from '../src/lib/tools/Scalers.js'
 
 const celestials = new CelestialBodies()
 const planets = await celestials.planets()
-const scaler = new CelestialBodyScaler()
+const scaler = new CelestialBodyScaler({})
 console.log(
   scaler.linearTransformation({
     bodies: planets,
