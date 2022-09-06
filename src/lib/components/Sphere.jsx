@@ -47,7 +47,7 @@ export class Sphere extends React.Component {
             );
           }
         })()}
-        <sphereBufferGeometry
+        <sphereGeometry
           args={[
             this.props.radius || 0.7,
             this.props.widthSections || 30,
@@ -118,7 +118,7 @@ export class Star extends Sphere {
             );
           }
         })()}
-        <sphereBufferGeometry
+        <sphereGeometry
           args={[
             this.props.radius || 0.7,
             this.props.widthSections || 30,
@@ -189,7 +189,7 @@ export class Planet extends Sphere {
             );
           }
         })()}
-        <sphereBufferGeometry
+        <sphereGeometry
           args={[
             this.props.radius || 0.7,
             this.props.widthSections || 30,
