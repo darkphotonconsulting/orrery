@@ -1,184 +1,432 @@
 import React from 'react';
 import { Leva } from 'leva'
 // import { useRef } from 'react'
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { CelestialBodies } from './lib/data/CelestialBodies.js';
 import { CelestialBodyScaler } from './lib/tools/Scalers.js';
 import {
   OrbitControls,
   Stars,
+  // PerspectiveCamera,
+  // OrthographicCamera,
 } from '@react-three/drei';
 import {
   Physics,
 } from "@react-three/cannon";
 import * as THREE from 'three';
-import { useControls } from 'leva'
+import { folder, useControls } from 'leva'
 import './styles.css';
 
 import { Star, Planet } from './lib/components/Sphere.jsx';
-
+import { OrbitalPath, OrbitPath } from './lib/components/Orbit.jsx';
 const scaleTool = new CelestialBodyScaler({
 
 })
 
-function OrreryControlPad({config, handleControlPadUpdate, ...props}) {
+
+function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
   const ref = React.useRef()
   const [ controls, setControls] = React.useState({
-    // scaler: 'identity',
-    // scaleMinimum: 1,
-    // scaleMaximum: 1000,
-    // scaleConstant: 0.1,
-    // scaleBase: 3,
-    // cameraFieldOfView: 75
-    ...config
+    ...scaleConfig
 
   })
-  // console.log('controls', controls)
+
   // eslint-disable-next-line no-unused-vars
-  const { scaler, scaleMinimum, scaleMaximum, scaleConstant, scaleBase } = useControls({
-    scaler: {
-      value: 'identity',
-      options: scaleTool.listTransformations(),
-      onChange: (v) => {
-        // console.log(v)
+  const { scaler, min: scaleMinimum, max: scaleMaximum, constant: scaleConstant, base: scaleBase, fov: cameraFieldOfView, perspective: cameraPerspective } = useControls('control', {
+    scale: folder({
+      scaler: {
+        value: 'log',
+        options: scaleTool.listTransformations(),
+        onChange: (v) => {
+          setControls({
+            ...controls,
+            scaler: v
+          })
+          handleControlPadUpdate({
+            ...controls,
+            scaler: v
+          })
 
-        setControls({
-          ...controls,
-          scaler: v
-        })
-        handleControlPadUpdate({
-          ...controls,
-          scaler: v
-        })
+        }
+      },
+      min: {
+        value: controls.scaleMinimum,
+        min: 0,
+        max: 100,
+        step: 1,
+        onChange: (v) => {
+          // console.log('scale min range updated:', v)
+
+          setControls({
+            ...controls,
+            scaleMinimum: v
+          })
+          handleControlPadUpdate({
+            ...controls,
+            scaleMinimum: v
+          })
+
+
+        }
+      },
+      max: {
+        value: controls.scaleMaximum,
+        min: 100,
+        max: 1000,
+        step: 1,
+        onChange: (v) => {
+
+          setControls({
+            ...controls,
+            scaleMaximum: v
+          })
+          handleControlPadUpdate({
+            ...controls,
+            scaleMaximum: v
+          })
+
+
+        }
+      },
+      constant: {
+        value: controls.scaleConstant,
+        min: 0.1,
+        max: 1,
+        step: 0.01,
+        onChange: (v) => {
+
+          setControls({
+            ...controls,
+            scaleConstant: v
+          })
+          handleControlPadUpdate({
+            ...controls,
+            scaleConstant: v
+          })
+
+
+        }
+      },
+      base: {
+        value: controls.scaleBase,
+        min: 1,
+        max: 10,
+        step: 1,
+        onChange: (v) => {
+
+          setControls({
+            ...controls,
+            scaleBase: v
+          })
+          // console.log('the controls value is ', controls)
+          handleControlPadUpdate({
+            ...controls,
+            scaleBase: v
+          })
+
+
+        }
+      }
+    }),
+    camera: folder({
+      fov: {
+        value: 75,
+        min: 10,
+        max: 100,
+        step: .5,
+        onChange: (v) => {
+
+          setControls({
+            ...controls,
+            cameraFieldOfView: v
+          })
+          // console.log('the controls value is ', controls)
+          handleControlPadUpdate({
+            ...controls,
+            cameraFieldOfView: v
+          })
+
+
+        }
+      },
+      perspective: {
+        value: true,
+        onChange: (v) => {
+
+          setControls({
+            ...controls,
+            cameraPerspective: v
+          })
+          // console.log('the controls value is ', controls)
+          handleControlPadUpdate({
+            ...controls,
+            cameraPerspective: v
+          })
+        }
+      },
+      // x: {
+      //   value: 75,
+      //   min: 10,
+      //   max: 100,
+      //   step: .5,
+      //   onChange: (v) => {
+
+      //     setControls({
+      //       ...controls,
+      //       cameraX: v
+      //     })
+      //     // console.log('the controls value is ', controls)
+      //     handleControlPadUpdate({
+      //       ...controls,
+      //       cameraX: v
+      //     })
+      //   }
+      // },
+      // y: {
+      //   value: 75,
+      //   min: 10,
+      //   max: 100,
+      //   step: .5,
+      //   onChange: (v) => {
+
+      //     setControls({
+      //       ...controls,
+      //       cameraY: v
+      //     })
+      //     // console.log('the controls value is ', controls)
+      //     handleControlPadUpdate({
+      //       ...controls,
+      //       cameraY: v
+      //     })
+      //   }
+      // },
+      // z: {
+      //   value: 75,
+      //   min: 10,
+      //   max: 100,
+      //   step: .5,
+      //   onChange: (v) => {
+
+      //     setControls({
+      //       ...controls,
+      //       cameraZ: v
+      //     })
+      //     // console.log('the controls value is ', controls)
+      //     handleControlPadUpdate({
+      //       ...controls,
+      //       cameraZ: v
+      //     })
+      //   }
+      // },
+      placement: {
+        value: [100,100,100],
+        x: {
+          step: 100
+        },
+        y: {
+          step: 100
+        },
+        z: {
+          step: 100
+        },
+        onChange: (v) => {
+          // console.log('camera placement changed', v[0], v[1], v[2])
+          handleControlPadUpdate({
+            ...controls,
+            cameraX: v[0],
+            cameraY: v[1],
+            cameraZ: v[2]
+          })
+        }
 
       }
-    },
-    scaleMinimum: {
-      value: controls.scaleMinimum,
-      min: 0,
-      max: 100,
-      step: 1,
-      onChange: (v) => {
-        // console.log('scale min range updated:', v)
-
-        setControls({
-          ...controls,
-          scaleMinimum: v
-        })
-        handleControlPadUpdate({
-          ...controls,
-          scaleMinimum: v
-        })
+    }),
+    renderer: folder({
+      shadows: true
+    })
 
 
-      }
-    },
-    scaleMaximum: {
-      value: controls.scaleMaximum,
-      min: 100,
-      max: 1000,
-      step: 1,
-      onChange: (v) => {
-
-        setControls({
-          ...controls,
-          scaleMaximum: v
-        })
-        handleControlPadUpdate({
-          ...controls,
-          scaleMaximum: v
-        })
-
-
-      }
-    },
-    scaleConstant: {
-      value: controls.scaleConstant,
-      min: 0.1,
-      max: 1,
-      step: 0.01,
-      onChange: (v) => {
-
-        setControls({
-          ...controls,
-          scaleConstant: v
-        })
-        handleControlPadUpdate({
-          ...controls,
-          scaleConstant: v
-        })
-
-
-      }
-    },
-    scaleBase: {
-      value: controls.scaleBase,
-      min: 1,
-      max: 10,
-      step: 1,
-      onChange: (v) => {
-
-        setControls({
-          ...controls,
-          scaleBase: v
-        })
-        console.log('the controls value is ', controls)
-        handleControlPadUpdate({
-          ...controls,
-          scaleBase: v
-        })
-
-
-      }
-    }
   })
-
-  // handleControlPadUpdate(controls)
 
   return (
-    <div ref={ref}>an empty div</div>
+   <mesh></mesh>
   )
 }
 
-function OrreryPlanets({ scaler = 'log', base = 2, ...props}) {
+function OrreryCamera({ scaleConfig = {}, scenePlanets = [], ...props}) {
+  // configure farness and nearness of camera
+  // TODO - take into consideration bodies farther than the planets (moons, asteroids, comets, etc)
+  const {
+    gl: { domElement },
+    camera,
+
+  } = useThree();
+
+  const ref = React.useRef()
+  const far = (planets) => {
+    const axis = scenePlanets.map((planet) => planet.semimajorAxis)
+    const max = Math.max(...axis)
+    return max
+  }
+  const near = (planets) => {
+    const axis = scenePlanets.map((planet) => planet.semimajorAxis)
+    const min = Math.min(...axis)
+    return min
+  }
+  const perspectiveCamera = new THREE.PerspectiveCamera(
+    scaleConfig.cameraFieldOfView,
+    window.innerWidth / window.innerHeight,
+    near(scenePlanets),
+    far(scenePlanets)
+
+  )
+  // const orthographicCamera = new THREE.OrthographicCamera(
+
+  // )
+  const sceneCamera = scaleConfig?.cameraPerspective
+    ? (
+      <group>
+        <cameraHelper args={[perspectiveCamera]}/>
+        <OrbitControls
+          autoRotate={false}
+          enableZoom={true}
+          enablePan={true}
+          enableRotate={true}
+          ref={ref}
+          camera={camera}
+        />
+
+      </group>
+    )
+    : (
+      <group>
+        <cameraHelper args={[perspectiveCamera]}/>
+        <OrbitControls
+          autoRotate={false}
+          enableZoom={true}
+          enablePan={true}
+          enableRotate={true}
+          ref={ref}
+          camera={camera}
+          // args={[threeCam, gl.domElement]}
+        />
+
+      </group>
+
+    )
+  return sceneCamera
+}
+
+function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...props}) {
+  const [requestBodies, setRequestBodies] = React.useState([])
   const [scenePlanets, setScenePlanets] = React.useState([])
+  const [scaledScenePlanets, setScaledScenePlanets ] = React.useState([])
   const ref = React.useRef()
   React.useEffect(() => {
-    fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
+    if (scenePlanets.length === 0) {
+      console.log('scene planets is empty')
+      fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
+        // get the data from API and store it in state
         const json = response.json();
         return json;
       })
+      // on a succesful response, set the state
       .then((json) => {
         const { bodies } = json
+        setRequestBodies([
+          requestBodies,
+          ...bodies
+        ])
         const allBodies = new CelestialBodies({ bodies: [...bodies] });
         const planets = allBodies.planets();
+        console.log('visible-planets', planets)
+        const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
+        const scaledPlanets = scaler({
+          bodies: planets,
+          rangeMinimum: scaleConfig.scaleMinimum,
+          rangeMaximum: scaleConfig.scaleMaximum,
+          constant: scaleConfig.scaleConstant,
+          base: scaleConfig.scaleBase
+        })
+        // console.log('scaled: ', scaledPlanets)
 
 
-
+        handleGalaxyUpdate('planets', planets, scaledPlanets)
+        setScaledScenePlanets([
+          ...scaledPlanets
+        ])
         setScenePlanets([
           ...planets
         ])
+        return bodies
       })
-  }, [scenePlanets])
+      .then((bodies) => {
+        console.log('request bodies: ', requestBodies)
+      })
+    } else {
+      // console.log('not remaking request as planets already exist')
+
+      const bodies = requestBodies
+      const allBodies = new CelestialBodies({ bodies: [...bodies] });
+      const planets = allBodies.planets();
 
 
-  const sceneItems = scenePlanets.map((planet, index) => {
+      const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
+      const scaledPlanets = scaler({
+        bodies: planets,
+        rangeMinimum: scaleConfig.scaleMinimum,
+        rangeMaximum: scaleConfig.scaleMaximum,
+        constant: scaleConfig.scaleConstant,
+        base: scaleConfig.scaleBase
+      })
+      // console.log('planet-scale-update', scaledPlanets)
+      handleGalaxyUpdate('planets', planets, scaledPlanets)
+      setScaledScenePlanets([
+        ...scaledPlanets
+      ])
+
+    }
+
+  }, [scenePlanets, scaledScenePlanets, requestBodies, scaleConfig.scaleMinimum, scaleConfig.scaleMaximum, scaleConfig.scaleBase, scaleConfig.scaleConstant, scaleConfig.scaler, handleGalaxyUpdate])
+
+  const star = orreryStars[0]
+
+
+  const sceneItems = scaledScenePlanets.map((planet, index) => {
 
     return (
-      <Planet
-        scale={[1.0, 1.0, 1.0]}
-        key={`planet-body-${planet.englishName.toLowerCase()}`}
-        userData={planet}
-        wireFrame={false}
-        useSpotLight={false}
-        useAmbientLight={true}
-        baseColor={'#22803D'}
-        meshPositionX={planet.semimajorAxis}
-        meshPositionY={planet.semimajorAxis}
-        meshPositionZ={0}
-        radius={planet.equaRadius}
-      />
+      <group>
+
+        <Planet
+          scale={[1.0, 1.0, 1.0]}
+          key={`planet-body-${planet.englishName.toLowerCase()}`}
+          userData={{planet}}
+          wireFrame={false}
+          useSpotLight={false}
+          useAmbientLight={true}
+          baseColor={'#22803D'}
+          meshPositionX={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
+          meshPositionY={0}
+          meshPositionZ={0}
+          radius={planet.englishName.toLowerCase() === 'mercury' ? 0.10 : Math.abs(planet.equaRadius)}
+          index={index}
+        />
+        <OrbitPath
+          key={`planet-orbit-${planet.englishName.toLowerCase()}`}
+          semimajorAxis={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
+          semiminorAxis={(planet.semiminorAxis + star.equaRadius   ) * (index + 2)}
+          inclination={planet.inclination}
+          baseColor={'#FFFFFF'}
+          index={index}
+          thickness={3}
+          userData={{
+            planet,
+            star
+          }}
+        />
+      </group>
+
     )
   })
 
@@ -189,10 +437,11 @@ function OrreryPlanets({ scaler = 'log', base = 2, ...props}) {
   )
 }
 
-function OrreryStars({ scaler = 'log', base = 2, ...props}) {
+function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
   const [sceneStars, setSceneStars] = React.useState([
 
   ])
+  const [scaledSceneStars, setScaledSceneStars ] = React.useState([])
   const ref = React.useRef()
   React.useEffect(() => {
     fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
@@ -204,29 +453,49 @@ function OrreryStars({ scaler = 'log', base = 2, ...props}) {
         const { bodies } = json
         const allBodies = new CelestialBodies({ bodies: [...bodies] });
         const stars = allBodies.stars();
+        const planets = allBodies.planets();
+        const moons = allBodies.moons();
+        const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
+        const scaledStars = scaler({
+          bodies: [...planets, ...moons, ...stars],
+          rangeMinimum: scaleConfig.scaleMinimum,
+          rangeMaximum: scaleConfig.scaleMaximum,
+          constant: scaleConfig.scaleConstant,
+          base: scaleConfig.scaleBase
+        })
+          .filter((body) => body.bodyType === 'Star')
 
+        handleGalaxyUpdate('stars', stars, scaledStars)
+        setScaledSceneStars([
+          ...scaledStars
+        ])
         setSceneStars([
           ...stars
         ])
       })
 
 
-  }, [sceneStars])
+  }, [sceneStars, scaleConfig, handleGalaxyUpdate])
 
-    const sceneItems = sceneStars.map((star, index) => {
+    const sceneItems = scaledSceneStars.map((star, index) => {
       return (
         <Star
-          ref={ref}
+          // ref={ref}
           key={star.id}
-          userData={star}
+          userData={
+            {
+              star,
+              scaleConfig
+            }
+          }
           meshPositionX={0}
           meshPositionY={0}
           meshPositionZ={0}
-          wireFrame={false}
+          wireFrame={true}
           useSpotLight={false}
           useAmbientLight={true}
           baseColor={'#f0f0f0'}
-          radius={10}
+          radius={star.equaRadius}
         />
       )
     })
@@ -238,7 +507,7 @@ function OrreryStars({ scaler = 'log', base = 2, ...props}) {
 }
 
 export class App extends React.Component {
-  #defaultScaler = 'linear'
+  #defaultScaler = 'log'
   #defaultScale = 0.5
   #defaultBase = 2
   #defaultConstant = 0.1
@@ -254,12 +523,16 @@ export class App extends React.Component {
     this.ref = React.createRef();
     this.state = {
       controls: {
-        scaler: 'identity',
+        scaler: 'log',
         scaleMinimum: 1,
         scaleMaximum: 1000,
         scaleConstant: 0.1,
         scaleBase: 5,
-        cameraFieldOfView: 75
+        cameraFieldOfView: 75,
+        cameraPerspective: true,
+        cameraX: 100,
+        cameraY: 100,
+        cameraZ: 100
       },
       scene: {
         aspect: {
@@ -285,170 +558,88 @@ export class App extends React.Component {
         constant: this?.props?.transformation?.constant || this.#defaultConstant
       },
       galaxy: {
-        pristene: [],
-        scaled: []
+        pristene: {
+          stars: [],
+          planets: [],
+          dwarfs: [],
+          moons: [],
+          asteroids: [],
+          comets: [],
+        },
+        scaled: {
+          stars: [],
+          planets: [],
+          dwarfs: [],
+          moons: [],
+          asteroids: [],
+          comets: [],
+        }
       }
     };
     this.handleControlPadUpdate = this.handleControlPadUpdate.bind(this)
+    this.handleGalaxyUpdate = this.handleGalaxyUpdate.bind(this)
+    this.calculateCameraFarness = this.calculateCameraFarness.bind(this)
+    this.calculateCameraNearness = this.calculateCameraNearness.bind(this)
   }
 
   // TODO: research if alternatives for this pattern.
   componentDidMount() {
-    fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
-      .then((response) => {
-        const json = response.json();
-        return json;
-      })
-      .then((json) => {
-        const { bodies } = json;
-        const galaxyTool = new CelestialBodies({ bodies });
-        const scaleTool = new CelestialBodyScaler({});
-        // const galaxy = galaxyTool.list();
-        const planets = galaxyTool.planets()
-        console.log(planets)
-        const stars = galaxyTool.stars()
-        const dwarfs = galaxyTool.dwarfs()
-        const moons = galaxyTool.moons()
-        if (this.state.transformation.scaler === 'linear') {
-          console.log(`using linear scaler`)
-          this.setState((state) => ({
-            ...state,
+    // deprecated for now
 
-            galaxy: {
-              pristene: {
-                stars,
-                planets,
-                dwarfs,
-                moons,
-              },
-              scaled: {
-                stars: scaleTool.linearTransformation({bodies: [...planets, ...stars]}),
-                planets: scaleTool.linearTransformation({bodies: [...stars,...planets]}),
-                dwarfs: scaleTool.linearTransformation({bodies: dwarfs}),
-                moons: scaleTool.linearTransformation({bodies: moons}),
-              }
-            }
-          }));
+  }
+
+  calculateCameraNearness() {
+    const planets = this.state.galaxy.scaled.planets
+    const axis = planets.map((planet) => planet.semimajorAxis)
+    const minAxis = Math.min(...axis)
+    console.log('nearest planet', minAxis)
+    return minAxis
+  }
+
+  calculateCameraFarness() {
+    const planets = this.state.galaxy.scaled.planets
+    const axis = planets.map((planet) => planet.semimajorAxis)
+    const maxAxis = Math.max(...axis)
+    console.log('farthest planet', maxAxis)
+    return maxAxis
+  }
+
+
+
+  handleGalaxyUpdate(type, pristene, scaled) {
+    // console.log('galaxy-updates', {type, pristene, scaled})
+    this.setState((state) => ({
+      ...state,
+      galaxy: {
+        ...state.galaxy,
+        pristene: {
+          ...state.galaxy.pristene,
+          [type]: [
+            ...pristene
+          ]
+        },
+        scaled: {
+          ...state.galaxy.scaled,
+          [type]: [
+            ...scaled
+          ]
         }
-
-        if (this.state.transformation.scaler === 'sqrt') {
-          console.log(`using sqrt scaler`)
-          this.setState((state) => ({
-            ...state,
-            galaxy: {
-              pristene: {
-                stars,
-                planets,
-                dwarfs,
-                moons,
-              },
-              scaled: {
-                stars: scaleTool.sqrtTransformation({
-                  bodies: [...planets, ...stars],
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum
-                }),
-                planets: scaleTool.sqrtTransformation({
-                  bodies: [...stars,...planets],
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum
-                }),
-                dwarfs: scaleTool.sqrtTransformation({
-                  bodies: dwarfs,
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum
-                }),
-                moons: scaleTool.sqrtTransformation({
-                  bodies: moons,
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum
-                }),
-              }
-            }
-          }));
-        }
-
-        if (this.state.transformation.scaler === 'log') {
-          console.log(`using log scaler`)
-          this.setState((state) => ({
-            ...state,
-            galaxy: {
-              pristene: {
-                stars,
-                planets,
-                dwarfs,
-                moons,
-              },
-              scaled: {
-                stars: scaleTool.logTransformation({bodies: [...planets,...stars]}).filter((body) => body.bodyType === 'Star'),
-                planets: scaleTool.logTransformation({bodies: [...stars,...planets]}).filter((body) => body.bodyType === 'Planet'),
-                dwarfs: scaleTool.logTransformation({bodies: dwarfs}).filter((body) => body.bodyType === 'Dwarf Planet'),
-                moons: scaleTool.logTransformation({bodies: moons}).filter((body) => body.bodyType === 'Moon'),
-              }
-
-            }
-          }));
-        }
-
-        if (this.state.transformation.scaler === 'bisymmetric') {
-          console.log(`using bisymmetric scaler`)
-          this.setState((state) => ({
-            ...state,
-            galaxy: {
-              pristene: {
-                stars,
-                planets,
-                dwarfs,
-                moons,
-              },
-              scaled: {
-                stars: scaleTool.bisymmetricTransformation({
-                  bodies: [...planets,...stars],
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum,
-                  constant: this.state.transformation.constant
-                }).filter((body) => body.bodyType === 'Star'),
-                planets: scaleTool.bisymmetricTransformation({
-                  bodies: [...stars,...planets],
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum,
-                  constant: this.state.transformation.constant
-                }).filter((body) => body.bodyType === 'Planet'),
-                dwarfs: scaleTool.bisymmetricTransformation({
-                  bodies: dwarfs,
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum,
-                  constant: this.state.transformation.constant
-                }).filter((body) => body.bodyType === 'Dwarf Planet'),
-                moons: scaleTool.bisymmetricTransformation({
-                  bodies: moons,
-                  rangeMinimum: this.state.transformation.rangeMinimum,
-                  rangeMaximum: this.state.transformation.rangeMaximum,
-                  constant: this.state.transformation.constant
-                }).filter((body) => body.bodyType === 'Moon'),
-              }
-
-            }
-          }));
-        }
-      });
+      }
+    }))
   }
 
   handleControlPadUpdate(controls) {
-    // const settings = event
     console.log('control-pad-updates', controls)
     this.setState((state) => ({
       ...state,
       controls,
-      // foo: 'bar'
 
     }));
-
   }
 
   camera() {
     return new THREE.PerspectiveCamera(
-      this.state.camera.fov,
+      this.state.controls.cameraFieldOfView,
       window.innerWidth / window.innerHeight,
       this.state.camera.near,
       this.state.camera.far
@@ -456,7 +647,6 @@ export class App extends React.Component {
   }
 
   render() {
-    // let window
     return (
       <div>
         <div
@@ -465,21 +655,12 @@ export class App extends React.Component {
             top: 0,
             left: 0,
             width: '100%',
-            // height: '10vh'
+            // height: '1vh'
             }}
         >
-          <OrreryControlPad
-            handleControlPadUpdate={this.handleControlPadUpdate}
-            // handleControlPadUpdate={(controls) => this.setState({
-            //   ...this.state,
-            //   controls
-            // })}
-            config={this.state.controls}
-            {...this.props}
 
-          />
           <Canvas
-            dpr={[1,2]}
+            dpr={window.devicePixelRatio}
           >
             {/* render a control ui  */}
 
@@ -490,30 +671,43 @@ export class App extends React.Component {
           height: '100vh',
         }}>
           <Canvas
-            dpr={[1,2]}
+            dpr={window.devicePixelRatio}
+            camera={{
+              position: [
+                this.state.controls.cameraX,
+                this.state.controls.cameraY,
+                this.state.controls.cameraZ
+              ],
+              fov: this.state.controls.cameraFieldOfView,
+              // near: this.calculateCameraNearness(),
+              // far: 1000
+            }}
           >
             <React.Suspense>
+              <OrreryCamera scaleConfig={this.state.controls} scenePlanets={this.state.galaxy.scaled.planets}/>
+              <OrreryControlPad
+                handleControlPadUpdate={this.handleControlPadUpdate}
+
+                scaleConfig={this.state.controls}
+                {...this.props}
+
+              />
+
+              <primitive object={new THREE.AxesHelper(10)} />
               <color attach='background' args={['#15151a']} />
               <fog attach='fog' args={['#202030', 10, 25]} />
               <hemisphereLight intensity={0.2} color='#eaeaea' groundColor='blue' />
 
               <Stars
-                radius={500}
-                depth={50}
-                count={5000}
+                radius={1000}
+                depth={100}
+                count={15000}
                 factor={4}
                 saturation={1}
                 fade
                 speed={1}
               />
-              <perspectiveCamera
-                makeDefault
-                scale={[1.0, 1.0, 1.0]}
-                fov={this.state.camera.fov}
-                near={this.state.camera.near}
-                far={this.state.camera.far}
-                aspect={this.state.scene.aspect.ratio}
-              />
+
 
                 <Physics>
 
@@ -521,19 +715,20 @@ export class App extends React.Component {
 
 
                   {/* render our sun - sol/soleil */}
-                  <OrreryStars {...this.props}/>
+                  <OrreryStars scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate}  {...this.props}/>
 
                   {/* render the planets */}
-                  <OrreryPlanets {...this.props}/>
+                  <OrreryPlanets scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate} orreryStars={this.state.galaxy.scaled.stars} {...this.props}/>
 
 
                 </Physics>
-              <OrbitControls
+
+              {/* <OrbitControls
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
-                minPolarAngle={Math.PI / 3}
-              />
+
+              /> */}
             </React.Suspense>
 
             {/* <Sphere/> */}
