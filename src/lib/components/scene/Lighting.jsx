@@ -1,4 +1,4 @@
-
+import React from 'react'
 export function Lighting({ intensity = 0.2, color = '#eaeaea', ground = '#0000ff', ...props}) {
   return (
     <group>
