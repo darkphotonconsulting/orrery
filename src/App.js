@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Leva } from 'leva'
 // import { useRef } from 'react'
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { CelestialBodies } from './lib/data/CelestialBodies.js';
 import { CelestialBodyScaler } from './lib/tools/Scalers.js';
 import {
   OrbitControls,
   Stars,
+  Loader,
+  // useFrame,
   // PerspectiveCamera,
   // OrthographicCamera,
 } from '@react-three/drei';
@@ -55,7 +57,6 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
         max: 100,
         step: 1,
         onChange: (v) => {
-          // console.log('scale min range updated:', v)
 
           setControls({
             ...controls,
@@ -118,7 +119,6 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
             ...controls,
             scaleBase: v
           })
-          // console.log('the controls value is ', controls)
           handleControlPadUpdate({
             ...controls,
             scaleBase: v
@@ -140,7 +140,6 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
             ...controls,
             cameraFieldOfView: v
           })
-          // console.log('the controls value is ', controls)
           handleControlPadUpdate({
             ...controls,
             cameraFieldOfView: v
@@ -157,67 +156,12 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
             ...controls,
             cameraPerspective: v
           })
-          // console.log('the controls value is ', controls)
           handleControlPadUpdate({
             ...controls,
             cameraPerspective: v
           })
         }
       },
-      // x: {
-      //   value: 75,
-      //   min: 10,
-      //   max: 100,
-      //   step: .5,
-      //   onChange: (v) => {
-
-      //     setControls({
-      //       ...controls,
-      //       cameraX: v
-      //     })
-      //     // console.log('the controls value is ', controls)
-      //     handleControlPadUpdate({
-      //       ...controls,
-      //       cameraX: v
-      //     })
-      //   }
-      // },
-      // y: {
-      //   value: 75,
-      //   min: 10,
-      //   max: 100,
-      //   step: .5,
-      //   onChange: (v) => {
-
-      //     setControls({
-      //       ...controls,
-      //       cameraY: v
-      //     })
-      //     // console.log('the controls value is ', controls)
-      //     handleControlPadUpdate({
-      //       ...controls,
-      //       cameraY: v
-      //     })
-      //   }
-      // },
-      // z: {
-      //   value: 75,
-      //   min: 10,
-      //   max: 100,
-      //   step: .5,
-      //   onChange: (v) => {
-
-      //     setControls({
-      //       ...controls,
-      //       cameraZ: v
-      //     })
-      //     // console.log('the controls value is ', controls)
-      //     handleControlPadUpdate({
-      //       ...controls,
-      //       cameraZ: v
-      //     })
-      //   }
-      // },
       placement: {
         value: [100,100,100],
         x: {
@@ -230,7 +174,6 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
           step: 100
         },
         onChange: (v) => {
-          // console.log('camera placement changed', v[0], v[1], v[2])
           handleControlPadUpdate({
             ...controls,
             cameraX: v[0],
@@ -252,6 +195,7 @@ function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
    <mesh></mesh>
   )
 }
+
 
 function OrreryCamera({ scaleConfig = {}, scenePlanets = [], ...props}) {
   // configure farness and nearness of camera
@@ -324,7 +268,6 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
   const ref = React.useRef()
   React.useEffect(() => {
     if (scenePlanets.length === 0) {
-      console.log('scene planets is empty')
       fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
         // get the data from API and store it in state
@@ -340,7 +283,6 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
         ])
         const allBodies = new CelestialBodies({ bodies: [...bodies] });
         const planets = allBodies.planets();
-        console.log('visible-planets', planets)
         const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
         const scaledPlanets = scaler({
           bodies: planets,
@@ -349,7 +291,6 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
           constant: scaleConfig.scaleConstant,
           base: scaleConfig.scaleBase
         })
-        // console.log('scaled: ', scaledPlanets)
 
 
         handleGalaxyUpdate('planets', planets, scaledPlanets)
@@ -362,10 +303,8 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
         return bodies
       })
       .then((bodies) => {
-        console.log('request bodies: ', requestBodies)
       })
     } else {
-      // console.log('not remaking request as planets already exist')
 
       const bodies = requestBodies
       const allBodies = new CelestialBodies({ bodies: [...bodies] });
@@ -380,7 +319,6 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
         constant: scaleConfig.scaleConstant,
         base: scaleConfig.scaleBase
       })
-      // console.log('planet-scale-update', scaledPlanets)
       handleGalaxyUpdate('planets', planets, scaledPlanets)
       setScaledScenePlanets([
         ...scaledPlanets
@@ -506,245 +444,692 @@ function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
     )
 }
 
-export class App extends React.Component {
-  #defaultScaler = 'log'
-  #defaultScale = 0.5
-  #defaultBase = 2
-  #defaultConstant = 0.1
-  #defaultRangeMinimum = 20
-  #defaultRangeMaximum = 100
-  #defaultNear = .01
-  #defaultFar = 100000;
-  #defaultPosition = [-5000,-5000,-5000]
-  #defaultFov = 175
+// export class App extends React.Component {
+//   #defaultScaler = 'log'
+//   #defaultScale = 0.5
+//   #defaultBase = 2
+//   #defaultConstant = 0.1
+//   #defaultRangeMinimum = 20
+//   #defaultRangeMaximum = 100
+//   #defaultNear = .01
+//   #defaultFar = 100000;
+//   #defaultPosition = [-5000,-5000,-5000]
+//   #defaultFov = 175
 
-  constructor(props) {
-    super(props);
-    this.ref = React.createRef();
-    this.state = {
-      controls: {
-        scaler: 'log',
-        scaleMinimum: 1,
-        scaleMaximum: 1000,
-        scaleConstant: 0.1,
-        scaleBase: 5,
-        cameraFieldOfView: 75,
-        cameraPerspective: true,
-        cameraX: 100,
-        cameraY: 100,
-        cameraZ: 100
+//   constructor(props) {
+//     super(props);
+//     this.ref = React.createRef();
+//     this.state = {
+//       controls: {
+//         scaler: 'log',
+//         scaleMinimum: 1,
+//         scaleMaximum: 1000,
+//         scaleConstant: 0.1,
+//         scaleBase: 5,
+//         cameraFieldOfView: 75,
+//         cameraPerspective: true,
+//         cameraX: 100,
+//         cameraY: 100,
+//         cameraZ: 100
+//       },
+//       scene: {
+//         aspect: {
+//           width: window.innerWidth,
+//           height: window.innerHeight,
+//           // ratio: window.innerWidth / window.innerHeight
+//           ratio: 1
+//         }
+//       },
+//       camera: {
+//         fov: this?.props?.camera?.fov || this.#defaultFov,
+//         near: this?.props?.camera?.near || this.#defaultNear,
+//         far: this?.props?.camera?.far || this.#defaultFar,
+//         position: this?.props?.camera?.position || this.#defaultPosition
+//       },
+//       shadows: this?.props.shadows || true,
+//       transformation: {
+//         scaler: this?.props.transformation?.scaler || this.#defaultScaler,
+//         scale: this?.props.transformation?.scale || this.#defaultScale,
+//         base: this?.props.transformation?.base || this.#defaultBase,
+//         rangeMinimum: this?.props?.transformation?.rangeMinimum || this.#defaultRangeMinimum,
+//         rangeMaximum: this?.props?.transformation?.rangeMaximum|| this.#defaultRangeMaximum,
+//         constant: this?.props?.transformation?.constant || this.#defaultConstant
+//       },
+//       galaxy: {
+//         pristene: {
+//           stars: [],
+//           planets: [],
+//           dwarfs: [],
+//           moons: [],
+//           asteroids: [],
+//           comets: [],
+//         },
+//         scaled: {
+//           stars: [],
+//           planets: [],
+//           dwarfs: [],
+//           moons: [],
+//           asteroids: [],
+//           comets: [],
+//         }
+//       }
+//     };
+//     this.handleControlPadUpdate = this.handleControlPadUpdate.bind(this)
+//     this.handleGalaxyUpdate = this.handleGalaxyUpdate.bind(this)
+//     this.calculateCameraFarness = this.calculateCameraFarness.bind(this)
+//     this.calculateCameraNearness = this.calculateCameraNearness.bind(this)
+//   }
+
+//   // TODO: research if alternatives for this pattern.
+//   componentDidMount() {
+//     // deprecated for now
+
+//   }
+
+//   calculateCameraNearness() {
+//     const planets = this.state.galaxy.scaled.planets
+//     const axis = planets.map((planet) => planet.semimajorAxis)
+//     const minAxis = Math.min(...axis)
+//     return minAxis
+//   }
+
+//   calculateCameraFarness() {
+//     const planets = this.state.galaxy.scaled.planets
+//     const axis = planets.map((planet) => planet.semimajorAxis)
+//     const maxAxis = Math.max(...axis)
+//     return maxAxis
+//   }
+
+
+
+//   handleGalaxyUpdate(type, pristene, scaled) {
+//     this.setState((state) => ({
+//       ...state,
+//       galaxy: {
+//         ...state.galaxy,
+//         pristene: {
+//           ...state.galaxy.pristene,
+//           [type]: [
+//             ...pristene
+//           ]
+//         },
+//         scaled: {
+//           ...state.galaxy.scaled,
+//           [type]: [
+//             ...scaled
+//           ]
+//         }
+//       }
+//     }))
+//   }
+
+//   handleControlPadUpdate(controls) {
+//     this.setState((state) => ({
+//       ...state,
+//       controls,
+
+//     }));
+//   }
+
+//   camera() {
+//     return new THREE.PerspectiveCamera(
+//       this.state.controls.cameraFieldOfView,
+//       window.innerWidth / window.innerHeight,
+//       this.state.camera.near,
+//       this.state.camera.far
+//     );
+//   }
+
+//   render() {
+//     return (
+//       <div>
+//         <div
+//           style={{
+//             position: 'absolute',
+//             top: 0,
+//             left: 0,
+//             width: '100%',
+//             // height: '1vh'
+//             }}
+//         >
+
+//           <Canvas
+//             dpr={window.devicePixelRatio}
+//           >
+//             {/* render a control ui  */}
+
+//           </Canvas>
+//         </div>
+//         <div style={{
+//           width: '100vw',
+//           height: '100vh',
+//         }}>
+//           <Canvas
+//             dpr={window.devicePixelRatio}
+//             camera={{
+//               position: [
+//                 this.state.controls.cameraX,
+//                 this.state.controls.cameraY,
+//                 this.state.controls.cameraZ
+//               ],
+//               fov: this.state.controls.cameraFieldOfView,
+//               // near: this.calculateCameraNearness(),
+//               // far: 1000
+//             }}
+//           >
+//             <React.Suspense>
+//               <OrreryCamera scaleConfig={this.state.controls} scenePlanets={this.state.galaxy.scaled.planets}/>
+//               <OrreryControlPad
+//                 handleControlPadUpdate={this.handleControlPadUpdate}
+
+//                 scaleConfig={this.state.controls}
+//                 {...this.props}
+
+//               />
+
+//               <primitive object={new THREE.AxesHelper(10)} />
+//               <color attach='background' args={['#15151a']} />
+//               <fog attach='fog' args={['#202030', 10, 25]} />
+//               <hemisphereLight intensity={0.2} color='#eaeaea' groundColor='blue' />
+
+//               <Stars
+//                 radius={1000}
+//                 depth={100}
+//                 count={15000}
+//                 factor={4}
+//                 saturation={1}
+//                 fade
+//                 speed={1}
+//               />
+
+//                 {/* [this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1 ] */}
+//                 <Physics gravity={
+//                   this.state.galaxy.scaled.planets.length > 0
+//                   ?
+//                     [
+//                       // scaled the gravitational force
+//                       this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+//                       this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+//                       this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+//                     ]
+//                   : [1,1,1]
+//                 }>
+
+
+
+
+//                   {/* render our sun - sol/soleil */}
+//                   <OrreryStars scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate}  {...this.props}/>
+
+//                   {/* render the planets */}
+//                   <OrreryPlanets scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate} orreryStars={this.state.galaxy.scaled.stars} {...this.props}/>
+
+
+//                 </Physics>
+
+//               {/* <OrbitControls
+//                 enablePan={true}
+//                 enableZoom={true}
+//                 enableRotate={true}
+
+//               /> */}
+//             </React.Suspense>
+
+//             {/* <Sphere/> */}
+//           </Canvas>
+//         </div>
+//       </div>
+
+//     );
+//   }
+// }
+
+function OrreryLighting({ intensity = 0.2, color = '#eaeaea', ground = '#0000ff', ...props}) {
+  return (
+  <group>
+    {/* <primitive object={new THREE.AxesHelper(10)} /> */}
+
+    <fog attach='fog' args={['#202030', 10, 25]} />
+    <hemisphereLight intensity={intensity} color={color} groundColor={ground} />
+  </group>
+  )
+}
+
+function OrreryCam({ fov = 75, position = [10,15,10], ...props}) {
+  const ref = React.useRef()
+
+
+  const { camera, gl: { domElement } } = useThree();
+  useFrame(({ clock }) => {
+    // console.log(ref)
+    // camera.position.set(
+    //   position[0],
+    //   position[1],
+    //   position[2]
+    // )
+    camera.fov = fov
+
+  })
+
+  return (
+    <group>
+      <cameraHelper ref={ref} args={[camera, domElement]}/>
+    </group>
+
+  )
+}
+
+function OrreryBackground({
+  radius = 100,
+  depth = 100,
+  count = 15000,
+  factor = 5,
+  saturation = 1,
+  speed = 1,
+  fade = true,
+  ...props
+}) {
+  const ref = React.useRef()
+  // useFrame(({ clock }) => {
+
+
+  // })
+  return (
+
+    <group>
+      {
+        fade
+        ?
+        <Stars
+          ref={ref}
+          radius={radius}
+          depth={depth}
+          count={count}
+          factor={factor}
+          saturation={saturation}
+          fade
+          speed={speed}
+        />
+        :
+        <Stars
+          radius={radius}
+          depth={depth}
+          count={count}
+          factor={factor}
+          saturation={saturation}
+          speed={speed}
+        />
+      }
+      {/* <Stars
+        radius={radius}
+        depth={depth}
+        count={count}
+        factor={factor}
+        saturation={saturation}
+        fade
+        speed={speed}
+      /> */}
+    </group>
+  )
+}
+
+
+function OrreryControlPadBeta({ setControls, ...props}) {
+  const ref = React.useRef()
+  const controls = useControls('control-center', {
+    camera: folder({
+      position: {
+        value: [0, 0, 0],
       },
-      scene: {
-        aspect: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-          // ratio: window.innerWidth / window.innerHeight
-          ratio: 1
-        }
+      rotation: {
+        value: [0, 0, 0],
       },
+      fov: 75,
+
+    }),
+    helpers: folder({
+      axes: true,
+      grid: true,
+      direction: true
+    }),
+    lighting: folder({
+      intensity: 0.2,
+      color: '#eaeaea',
+      ground: 'blue'
+    }),
+    scale: folder({
+      type: {
+        value: 'log',
+        options: new CelestialBodyScaler({}).listTransformations()
+      },
+      min: {
+        value: 1,
+        step: 0.1,
+      },
+      max: {
+        value: 100,
+        step: 0.1,
+      },
+      base: {
+        value: 10,
+        step: 1,
+      },
+      constant: {
+        value: 0.1,
+        step: 0.1
+      }
+
+    })
+  })
+
+  useEffect(() => {
+    setControls({
       camera: {
-        fov: this?.props?.camera?.fov || this.#defaultFov,
-        near: this?.props?.camera?.near || this.#defaultNear,
-        far: this?.props?.camera?.far || this.#defaultFar,
-        position: this?.props?.camera?.position || this.#defaultPosition
+        position: controls.position,
+        rotation: controls.rotation,
+        fov: controls.fov
       },
-      shadows: this?.props.shadows || true,
-      transformation: {
-        scaler: this?.props.transformation?.scaler || this.#defaultScaler,
-        scale: this?.props.transformation?.scale || this.#defaultScale,
-        base: this?.props.transformation?.base || this.#defaultBase,
-        rangeMinimum: this?.props?.transformation?.rangeMinimum || this.#defaultRangeMinimum,
-        rangeMaximum: this?.props?.transformation?.rangeMaximum|| this.#defaultRangeMaximum,
-        constant: this?.props?.transformation?.constant || this.#defaultConstant
+      helpers: {
+        axes: controls.axes,
+        grid: controls.grid,
+        direction: controls.direction
       },
-      galaxy: {
-        pristene: {
-          stars: [],
-          planets: [],
-          dwarfs: [],
-          moons: [],
-          asteroids: [],
-          comets: [],
-        },
-        scaled: {
-          stars: [],
-          planets: [],
-          dwarfs: [],
-          moons: [],
-          asteroids: [],
-          comets: [],
-        }
+      lighting: {
+        intensity: controls.intensity,
+        color: controls.color,
+        ground: controls.ground
+      },
+      scale: {
+        type: controls.type,
+        min: controls.min,
+        max: controls.max,
+        base: controls.base,
+        constant: controls.constant
       }
-    };
-    this.handleControlPadUpdate = this.handleControlPadUpdate.bind(this)
-    this.handleGalaxyUpdate = this.handleGalaxyUpdate.bind(this)
-    this.calculateCameraFarness = this.calculateCameraFarness.bind(this)
-    this.calculateCameraNearness = this.calculateCameraNearness.bind(this)
+    })
+  }, [controls, setControls])
+
+  return (
+   <mesh ref={ref}></mesh>
+  )
+}
+
+function OrreryOrbitalControls({pan = true, zoom = true, rotate = true, ...props}) {
+  const ref = React.useRef()
+  return (
+    <OrbitControls
+      ref={ref}
+      enablePan={pan}
+      enableZoom={zoom}
+      enableRotate={rotate}
+    />
+  )
+}
+
+export function App({ ...props}) {
+  const ref = React.useRef()
+  const [celestialBodies, setCelestialBodies] = React.useState([])
+  const [galaxy, setGalaxy ] = React.useState({
+    stars: [],
+    planets: [],
+    dwarfs: [],
+    moons: [],
+    asteroids: [],
+    comets: [],
+  })
+  const [scaledGalaxy, setScaledGalaxy] = React.useState({
+    stars: [],
+    planets: [],
+    dwarfs: [],
+    moons: [],
+    asteroids: [],
+    comets: [],
+  })
+  const [controls, setControls] = React.useState({
+    camera: {
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      fov: 75,
+    },
+    helpers: {
+      camera: true,
+      axes: true,
+      direction: false,
+      grid: false
+    },
+    lighting: {
+      intensity: 0.2,
+      color: '#eaeaea',
+      ground: 'blue',
+    },
+    scale: {
+      type: 'log',
+      min: 1,
+      max: 100,
+      base: 10,
+      constant: 0.1
+    }
+  })
+
+  React.useEffect(() => {
+    // const { current } = ref
+
+
+    if (celestialBodies.length === 0) {
+      // console.log('what is going on?')
+      fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
+      .then((response) => {
+        // get the data from API and store it in state
+        const json = response.json();
+        return json;
+      })
+      .then((json) => {
+        setCelestialBodies(json.bodies)
+        const galaxyTool = new CelestialBodies({
+          bodies: json.bodies,
+        })
+
+        const stars = galaxyTool.stars()
+        const planets = galaxyTool.planets()
+        const dwarfs = galaxyTool.dwarfs()
+        const moons = galaxyTool.moons()
+        const asteroids = galaxyTool.asteroids()
+        const comets = galaxyTool.comets()
+        setGalaxy({
+          stars,
+          planets,
+          dwarfs,
+          moons,
+          asteroids,
+          comets,
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    } else {
+      const scaleTool = new CelestialBodyScaler({})
+      const scaler = scaleTool.getTransormationFunction({
+        type: controls.scale.type,
+      })
+      const scaled = scaler({
+        bodies: [
+          ...galaxy.stars,
+          ...galaxy.planets,
+          ...galaxy.dwarfs,
+          ...galaxy.moons,
+          ...galaxy.asteroids,
+          ...galaxy.comets,
+        ],
+        rangeMinimum: controls.scale.min,
+        rangeMaximum: controls.scale.max,
+        base: controls.scale.base,
+        constant: controls.scale.constant
+      })
+      setScaledGalaxy({
+        stars: scaled.filter((body) => body.bodyType === 'Star'),
+        planets: scaled.filter((body) => body.bodyType === 'Planet'),
+        dwarfs: scaled.filter((body) => body.bodyType === 'Dwarf Planet'),
+        moons: scaled.filter((body) => body.bodyType === 'Moon'),
+        asteroids: scaled.filter((body) => body.bodyType === 'Asteroid'),
+        comets: scaled.filter((body) => body.bodyType === 'Comet'),
+      })
+
+    }
+
+    console.log({
+      event: 'load-galaxy',
+      // current,
+      showAxis: controls.helpers.axes,
+      bodyTypes: Object.keys(galaxy),
+      knownStars: galaxy.stars.length,
+      knownPlanets: galaxy.planets.length,
+      knownDwarfs: galaxy.dwarfs.length,
+      knownMoons: galaxy.moons.length,
+      knownAsteroids: galaxy.asteroids.length,
+      knownComets: galaxy.comets.length,
+      scaleType: controls.scale.type,
+      scaleRangeMin: controls.scale.min,
+      scaleRangeMax: controls.scale.max,
+      scaledStars: scaledGalaxy.stars.length,
+      scaledPlanets: scaledGalaxy.planets.length,
+      scaledDwarfs: scaledGalaxy.dwarfs.length,
+      scaledMoons: scaledGalaxy.moons.length,
+      scaledAsteroids: scaledGalaxy.asteroids.length,
+      scaledComets: scaledGalaxy.comets.length,
+
+    })
+
+  // the list of dependencies is important, it tells react to re-run the effect
+  // including a dependency which changes on each render, will cause the effect to loop infinitely
+  // ignoring the exhaustive-deps warning to avoid confusion.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ controls, galaxy])
+
+  const near = (galaxy, types = ['Planet']) => {
+    const bodies = Object.values(galaxy)
+      // .map(([_, bodies]) => {
+      //   return bodies
+      // })
+      .flat()
+      .filter((body) => types.includes(body.bodyType))
+    const axes = bodies.map((body) => body.semimajorAxis)
+    const min = Math.min(...axes)
+    return min
   }
 
-  // TODO: research if alternatives for this pattern.
-  componentDidMount() {
-    // deprecated for now
-
+  const far = (galaxy, types = ['Planet']) => {
+    const bodies = Object.values(galaxy)
+      // .map(([_, bodies]) => {
+      //   return bodies
+      // })
+      .flat()
+      .filter((body) => types.includes(body.bodyType))
+    const axes = bodies.map((body) => body.semimajorAxis)
+    const max = Math.max(...axes)
+    console.log('axes', axes)
+    return max
   }
-
-  calculateCameraNearness() {
-    const planets = this.state.galaxy.scaled.planets
-    const axis = planets.map((planet) => planet.semimajorAxis)
-    const minAxis = Math.min(...axis)
-    console.log('nearest planet', minAxis)
-    return minAxis
-  }
-
-  calculateCameraFarness() {
-    const planets = this.state.galaxy.scaled.planets
-    const axis = planets.map((planet) => planet.semimajorAxis)
-    const maxAxis = Math.max(...axis)
-    console.log('farthest planet', maxAxis)
-    return maxAxis
-  }
+  console.log('test farness', far(scaledGalaxy))
+  console.log('test nearness', near(scaledGalaxy))
 
 
+  return (
+        <>
+        <Canvas
+          ref={ref}
+          dpr={window.devicePixelRatio}
+          camera={{
+            position: [
+              10,
+              15,
+              10
+            ],
+            fov: 55,
+            near: 0.1,
+            far: 1000
+          }}
 
-  handleGalaxyUpdate(type, pristene, scaled) {
-    // console.log('galaxy-updates', {type, pristene, scaled})
-    this.setState((state) => ({
-      ...state,
-      galaxy: {
-        ...state.galaxy,
-        pristene: {
-          ...state.galaxy.pristene,
-          [type]: [
-            ...pristene
-          ]
-        },
-        scaled: {
-          ...state.galaxy.scaled,
-          [type]: [
-            ...scaled
-          ]
-        }
-      }
-    }))
-  }
-
-  handleControlPadUpdate(controls) {
-    console.log('control-pad-updates', controls)
-    this.setState((state) => ({
-      ...state,
-      controls,
-
-    }));
-  }
-
-  camera() {
-    return new THREE.PerspectiveCamera(
-      this.state.controls.cameraFieldOfView,
-      window.innerWidth / window.innerHeight,
-      this.state.camera.near,
-      this.state.camera.far
-    );
-  }
-
-  render() {
-    return (
-      <div>
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            // height: '1vh'
-            }}
         >
+          <React.Suspense fallback={null}>
+            {/* space is transparent and appears black when not viewed from behind an atmosphere */}
+            <color
+              attach='background' args={['#15151a']}
+            />
 
-          <Canvas
-            dpr={window.devicePixelRatio}
-          >
-            {/* render a control ui  */}
+            {/* render configured scene level helpers */}
+            {
+              controls.helpers.axes && scaledGalaxy.stars.length > 0 ?
+              (<primitive object={new THREE.AxesHelper(scaledGalaxy.stars[0].equaRadius * 100)} />)
+              : null
+            }
+            {
+              controls.helpers.grid && scaledGalaxy.stars.length > 0 ?
+              (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 100, 100)}/>)
+              : null
+            }
+            <OrreryOrbitalControls/>
+            <OrreryCam
+              fov={controls.camera.fov}
+            />
+            <OrreryControlPadBeta
+              setControls={setControls}
+            />
+            <OrreryLighting
+              intensity={controls.lighting.intensity}
+              color={controls.lighting.color}
+              ground={controls.lighting.ground}
 
-          </Canvas>
-        </div>
-        <div style={{
-          width: '100vw',
-          height: '100vh',
-        }}>
-          <Canvas
-            dpr={window.devicePixelRatio}
-            camera={{
-              position: [
-                this.state.controls.cameraX,
-                this.state.controls.cameraY,
-                this.state.controls.cameraZ
-              ],
-              fov: this.state.controls.cameraFieldOfView,
-              // near: this.calculateCameraNearness(),
-              // far: 1000
-            }}
-          >
-            <React.Suspense>
-              <OrreryCamera scaleConfig={this.state.controls} scenePlanets={this.state.galaxy.scaled.planets}/>
-              <OrreryControlPad
-                handleControlPadUpdate={this.handleControlPadUpdate}
+            />
+            <OrreryBackground
+              // radius={far(scaledGalaxy) * 10}
+              // depth={far(scaledGalaxy) * 10}
+            />
+            {
+              scaledGalaxy.stars && scaledGalaxy.stars.length > 0
+              ? (
+                <Star
+                  meshPositionX={0}
+                  meshPositionY={0}
+                  meshPositionZ={0}
+                  meshRotationX={0}
+                  meshRotationY={0}
+                  meshRotationZ={0}
+                  useAmbientLight={true}
+                  useSpotLight={false}
+                  spotlightPositionX={0}
+                  spotlightPositionY={0}
+                  spotlightPositionZ={0}
+                  spotlightAngle={0.3}
+                  lightIntensity={0.5}
+                  widthSections={30}
+                  heightSections={30}
+                  wireFrame={false}
+                  baseColor={'green'}
+                  radius={scaledGalaxy.stars.find((star) => star.englishName === 'Sun').equaRadius}
+                  index={0}
+                  userData={{
+                    star: scaledGalaxy.stars.find((star) => star.englishName === 'Sun'),
+                    controls
+                  }}
+                />
+              )
+              : (<mesh></mesh>)
 
-                scaleConfig={this.state.controls}
-                {...this.props}
-
-              />
-
-              <primitive object={new THREE.AxesHelper(10)} />
-              <color attach='background' args={['#15151a']} />
-              <fog attach='fog' args={['#202030', 10, 25]} />
-              <hemisphereLight intensity={0.2} color='#eaeaea' groundColor='blue' />
-
-              <Stars
-                radius={1000}
-                depth={100}
-                count={15000}
-                factor={4}
-                saturation={1}
-                fade
-                speed={1}
-              />
-
-                {/* [this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1 ] */}
-                <Physics gravity={
-                  this.state.galaxy.scaled.planets.length > 0
-                  ?
-                    [
-                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
-                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
-                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
-                    ]
-                  : [1,1,1]
-                }>
-
-
-
-
-                  {/* render our sun - sol/soleil */}
-                  <OrreryStars scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate}  {...this.props}/>
-
-                  {/* render the planets */}
-                  <OrreryPlanets scaleConfig={this.state.controls} handleGalaxyUpdate={this.handleGalaxyUpdate} orreryStars={this.state.galaxy.scaled.stars} {...this.props}/>
+            }
 
 
-                </Physics>
 
-              {/* <OrbitControls
-                enablePan={true}
-                enableZoom={true}
-                enableRotate={true}
 
-              /> */}
-            </React.Suspense>
+          </React.Suspense>
 
-            {/* <Sphere/> */}
-          </Canvas>
-        </div>
-      </div>
 
-    );
-  }
+        </Canvas>
+        <Loader/>
+        </>
+
+
+
+
+  )
 }

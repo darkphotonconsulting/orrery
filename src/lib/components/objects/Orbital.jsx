@@ -2,7 +2,7 @@ import React from 'react';
 import * as THREE from 'three'
 import { useThree, useUpdate }  from '@react-three/fiber';
 
-export function OrbitPath({
+export function Orbital({
   semimajorAxis = 10,
   semiminorAxis = 11,
   inclination = 0,

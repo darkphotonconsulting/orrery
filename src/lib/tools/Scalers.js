@@ -99,17 +99,17 @@ export class CelestialBodyScaler {
           const scaledValue = scaler(value)
           // only return negative scaled values if the original value was negative
           scaledBody[key] = value > 0 ? Math.abs(scaledValue) : scaledValue
-          console.log({
-            targetId: body.id,
-            targetType: body.bodyType,
-            eventName: 'scaling',
-            scaleLogic: 'log',
-            scaleKey: key,
-            domainMinimum,
-            domainMaximum,
-            oldValue: value,
-            newValue: scaledValue
-          })
+          // console.log({
+          //   targetId: body.id,
+          //   targetType: body.bodyType,
+          //   eventName: 'scaling',
+          //   scaleLogic: 'log',
+          //   scaleKey: key,
+          //   domainMinimum,
+          //   domainMaximum,
+          //   oldValue: value,
+          //   newValue: scaledValue
+          // })
         } else {
           scaledBody[key] = value
         }

@@ -214,7 +214,7 @@ export class CelestialBody {
   }
 
   dwarf() {
-    return this.bodyType === 'Dwarf planet'
+    return this.bodyType === 'Dwarf Planet'
   }
 
   comet() {
