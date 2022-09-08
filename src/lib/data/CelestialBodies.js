@@ -191,6 +191,20 @@ export class CelestialBody {
     }
   }
 
+  get objectAstronomicalUnit() {
+    return this.semimajorAxis * (6.685 * (10**-9.0))
+  }
+
+  set objectAstronomicalUnit(value) {
+  }
+
+  get objectHarmonicFrequency() {
+    return this.objectAstronomicalUnit**3 / this.sideralOrbit
+  }
+
+  set objectHarmonicFrequency(value) {
+  }
+
   moon() {
     return this.bodyType === 'Moon'
   }

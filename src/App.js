@@ -491,7 +491,7 @@ function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
           meshPositionX={0}
           meshPositionY={0}
           meshPositionZ={0}
-          wireFrame={true}
+          wireFrame={false}
           useSpotLight={false}
           useAmbientLight={true}
           baseColor={'#f0f0f0'}
@@ -708,8 +708,17 @@ export class App extends React.Component {
                 speed={1}
               />
 
-
-                <Physics>
+                {/* [this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1, this.state.galaxy.scaled.stars[0].gravity || 1 ] */}
+                <Physics gravity={
+                  this.state.galaxy.scaled.planets.length > 0
+                  ?
+                    [
+                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+                      this.state.galaxy.scaled.planets.find((planet) => planet.englishName === 'Earth').gravity * 27.9,
+                    ]
+                  : [1,1,1]
+                }>
 
 
 

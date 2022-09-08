@@ -100,6 +100,7 @@ export function Star ({
 
   const { size } = useThree()
   const ref = React.useRef();
+  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.star.englishName.toLowerCase()}.jpeg`)
   const [active, setActive] = React.useState(false)
   return (
     <mesh
@@ -155,7 +156,10 @@ export function Star ({
         )
       } else {
         return (
-          <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
+          <meshPhysicalMaterial
+            map={baseTexture}
+          />
+          // <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
         )
       }
     })()}
@@ -197,6 +201,10 @@ export function Planet ({
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
+  useFrame(({ clock }) => {
+    ref.current.rotation.y = clock.getElapsedTime() / userData.planet.objectHarmonicFrequency * Math.PI /3
+    console.log(ref)
+  })
 
 
   return (
