@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Leva } from 'leva'
+// import { Leva } from 'leva'
 // import { useRef } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { CelestialBodies } from './lib/data/CelestialBodies.js';
@@ -12,189 +12,213 @@ import {
   // PerspectiveCamera,
   // OrthographicCamera,
 } from '@react-three/drei';
-import {
-  Physics,
-} from "@react-three/cannon";
+// TODO: incorporate the physics engine proprely
+// import {
+//   Physics,
+// } from "@react-three/cannon";
 import * as THREE from 'three';
 import { folder, useControls } from 'leva'
 import './styles.css';
 
 import { Star, Planet } from './lib/components/Sphere.jsx';
-import { OrbitalPath, OrbitPath } from './lib/components/Orbit.jsx';
+import { OrbitPath } from './lib/components/Orbit.jsx';
+
+// refactored imports
+
+import {
+  Navigation
+} from './lib/components/scene/Navigation.jsx'
+import {
+  Lighting
+} from './lib/components/scene/Lighting.jsx'
+
+import {
+  Background
+} from './lib/components/scene/Background.jsx'
+
+import {
+  ControlPad
+} from './lib/components/scene/ControlPad.jsx'
+
+import {
+  Camera
+} from './lib/components/scene/Camera.jsx'
+
+// globals
 const scaleTool = new CelestialBodyScaler({
 
 })
 
 
-function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
-  const ref = React.useRef()
-  const [ controls, setControls] = React.useState({
-    ...scaleConfig
+// function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
+//   const ref = React.useRef()
+//   const [ controls, setControls] = React.useState({
+//     ...scaleConfig
 
-  })
+//   })
 
-  // eslint-disable-next-line no-unused-vars
-  const { scaler, min: scaleMinimum, max: scaleMaximum, constant: scaleConstant, base: scaleBase, fov: cameraFieldOfView, perspective: cameraPerspective } = useControls('control', {
-    scale: folder({
-      scaler: {
-        value: 'log',
-        options: scaleTool.listTransformations(),
-        onChange: (v) => {
-          setControls({
-            ...controls,
-            scaler: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            scaler: v
-          })
+//   // eslint-disable-next-line no-unused-vars
+//   const { scaler, min: scaleMinimum, max: scaleMaximum, constant: scaleConstant, base: scaleBase, fov: cameraFieldOfView, perspective: cameraPerspective } = useControls('control', {
+//     scale: folder({
+//       scaler: {
+//         value: 'log',
+//         options: scaleTool.listTransformations(),
+//         onChange: (v) => {
+//           setControls({
+//             ...controls,
+//             scaler: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             scaler: v
+//           })
 
-        }
-      },
-      min: {
-        value: controls.scaleMinimum,
-        min: 0,
-        max: 100,
-        step: 1,
-        onChange: (v) => {
+//         }
+//       },
+//       min: {
+//         value: controls.scaleMinimum,
+//         min: 0,
+//         max: 100,
+//         step: 1,
+//         onChange: (v) => {
 
-          setControls({
-            ...controls,
-            scaleMinimum: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            scaleMinimum: v
-          })
-
-
-        }
-      },
-      max: {
-        value: controls.scaleMaximum,
-        min: 100,
-        max: 1000,
-        step: 1,
-        onChange: (v) => {
-
-          setControls({
-            ...controls,
-            scaleMaximum: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            scaleMaximum: v
-          })
+//           setControls({
+//             ...controls,
+//             scaleMinimum: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             scaleMinimum: v
+//           })
 
 
-        }
-      },
-      constant: {
-        value: controls.scaleConstant,
-        min: 0.1,
-        max: 1,
-        step: 0.01,
-        onChange: (v) => {
+//         }
+//       },
+//       max: {
+//         value: controls.scaleMaximum,
+//         min: 100,
+//         max: 1000,
+//         step: 1,
+//         onChange: (v) => {
 
-          setControls({
-            ...controls,
-            scaleConstant: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            scaleConstant: v
-          })
-
-
-        }
-      },
-      base: {
-        value: controls.scaleBase,
-        min: 1,
-        max: 10,
-        step: 1,
-        onChange: (v) => {
-
-          setControls({
-            ...controls,
-            scaleBase: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            scaleBase: v
-          })
+//           setControls({
+//             ...controls,
+//             scaleMaximum: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             scaleMaximum: v
+//           })
 
 
-        }
-      }
-    }),
-    camera: folder({
-      fov: {
-        value: 75,
-        min: 10,
-        max: 100,
-        step: .5,
-        onChange: (v) => {
+//         }
+//       },
+//       constant: {
+//         value: controls.scaleConstant,
+//         min: 0.1,
+//         max: 1,
+//         step: 0.01,
+//         onChange: (v) => {
 
-          setControls({
-            ...controls,
-            cameraFieldOfView: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            cameraFieldOfView: v
-          })
+//           setControls({
+//             ...controls,
+//             scaleConstant: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             scaleConstant: v
+//           })
 
 
-        }
-      },
-      perspective: {
-        value: true,
-        onChange: (v) => {
+//         }
+//       },
+//       base: {
+//         value: controls.scaleBase,
+//         min: 1,
+//         max: 10,
+//         step: 1,
+//         onChange: (v) => {
 
-          setControls({
-            ...controls,
-            cameraPerspective: v
-          })
-          handleControlPadUpdate({
-            ...controls,
-            cameraPerspective: v
-          })
-        }
-      },
-      placement: {
-        value: [100,100,100],
-        x: {
-          step: 100
-        },
-        y: {
-          step: 100
-        },
-        z: {
-          step: 100
-        },
-        onChange: (v) => {
-          handleControlPadUpdate({
-            ...controls,
-            cameraX: v[0],
-            cameraY: v[1],
-            cameraZ: v[2]
-          })
-        }
-
-      }
-    }),
-    renderer: folder({
-      shadows: true
-    })
+//           setControls({
+//             ...controls,
+//             scaleBase: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             scaleBase: v
+//           })
 
 
-  })
+//         }
+//       }
+//     }),
+//     camera: folder({
+//       fov: {
+//         value: 75,
+//         min: 10,
+//         max: 100,
+//         step: .5,
+//         onChange: (v) => {
 
-  return (
-   <mesh></mesh>
-  )
-}
+//           setControls({
+//             ...controls,
+//             cameraFieldOfView: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             cameraFieldOfView: v
+//           })
+
+
+//         }
+//       },
+//       perspective: {
+//         value: true,
+//         onChange: (v) => {
+
+//           setControls({
+//             ...controls,
+//             cameraPerspective: v
+//           })
+//           handleControlPadUpdate({
+//             ...controls,
+//             cameraPerspective: v
+//           })
+//         }
+//       },
+//       placement: {
+//         value: [100,100,100],
+//         x: {
+//           step: 100
+//         },
+//         y: {
+//           step: 100
+//         },
+//         z: {
+//           step: 100
+//         },
+//         onChange: (v) => {
+//           handleControlPadUpdate({
+//             ...controls,
+//             cameraX: v[0],
+//             cameraY: v[1],
+//             cameraZ: v[2]
+//           })
+//         }
+
+//       }
+//     }),
+//     renderer: folder({
+//       shadows: true
+//     })
+
+
+//   })
+
+//   return (
+//    <mesh></mesh>
+//   )
+// }
 
 
 function OrreryCamera({ scaleConfig = {}, scenePlanets = [], ...props}) {
@@ -375,74 +399,74 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
   )
 }
 
-function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
-  const [sceneStars, setSceneStars] = React.useState([
+// function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
+//   const [sceneStars, setSceneStars] = React.useState([
 
-  ])
-  const [scaledSceneStars, setScaledSceneStars ] = React.useState([])
-  const ref = React.useRef()
-  React.useEffect(() => {
-    fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
-      .then((response) => {
-        const json = response.json();
-        return json;
-      })
-      .then((json) => {
-        const { bodies } = json
-        const allBodies = new CelestialBodies({ bodies: [...bodies] });
-        const stars = allBodies.stars();
-        const planets = allBodies.planets();
-        const moons = allBodies.moons();
-        const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
-        const scaledStars = scaler({
-          bodies: [...planets, ...moons, ...stars],
-          rangeMinimum: scaleConfig.scaleMinimum,
-          rangeMaximum: scaleConfig.scaleMaximum,
-          constant: scaleConfig.scaleConstant,
-          base: scaleConfig.scaleBase
-        })
-          .filter((body) => body.bodyType === 'Star')
+//   ])
+//   const [scaledSceneStars, setScaledSceneStars ] = React.useState([])
+//   const ref = React.useRef()
+//   React.useEffect(() => {
+//     fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
+//       .then((response) => {
+//         const json = response.json();
+//         return json;
+//       })
+//       .then((json) => {
+//         const { bodies } = json
+//         const allBodies = new CelestialBodies({ bodies: [...bodies] });
+//         const stars = allBodies.stars();
+//         const planets = allBodies.planets();
+//         const moons = allBodies.moons();
+//         const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
+//         const scaledStars = scaler({
+//           bodies: [...planets, ...moons, ...stars],
+//           rangeMinimum: scaleConfig.scaleMinimum,
+//           rangeMaximum: scaleConfig.scaleMaximum,
+//           constant: scaleConfig.scaleConstant,
+//           base: scaleConfig.scaleBase
+//         })
+//           .filter((body) => body.bodyType === 'Star')
 
-        handleGalaxyUpdate('stars', stars, scaledStars)
-        setScaledSceneStars([
-          ...scaledStars
-        ])
-        setSceneStars([
-          ...stars
-        ])
-      })
+//         handleGalaxyUpdate('stars', stars, scaledStars)
+//         setScaledSceneStars([
+//           ...scaledStars
+//         ])
+//         setSceneStars([
+//           ...stars
+//         ])
+//       })
 
 
-  }, [sceneStars, scaleConfig, handleGalaxyUpdate])
+//   }, [sceneStars, scaleConfig, handleGalaxyUpdate])
 
-    const sceneItems = scaledSceneStars.map((star, index) => {
-      return (
-        <Star
-          // ref={ref}
-          key={star.id}
-          userData={
-            {
-              star,
-              scaleConfig
-            }
-          }
-          meshPositionX={0}
-          meshPositionY={0}
-          meshPositionZ={0}
-          wireFrame={false}
-          useSpotLight={false}
-          useAmbientLight={true}
-          baseColor={'#f0f0f0'}
-          radius={star.equaRadius}
-        />
-      )
-    })
-    return (
-      <group>
-        {sceneItems}
-      </group>
-    )
-}
+//     const sceneItems = scaledSceneStars.map((star, index) => {
+//       return (
+//         <Star
+//           // ref={ref}
+//           key={star.id}
+//           userData={
+//             {
+//               star,
+//               scaleConfig
+//             }
+//           }
+//           meshPositionX={0}
+//           meshPositionY={0}
+//           meshPositionZ={0}
+//           wireFrame={false}
+//           useSpotLight={false}
+//           useAmbientLight={true}
+//           baseColor={'#f0f0f0'}
+//           radius={star.equaRadius}
+//         />
+//       )
+//     })
+//     return (
+//       <group>
+//         {sceneItems}
+//       </group>
+//     )
+// }
 
 // export class App extends React.Component {
 //   #defaultScaler = 'log'
@@ -684,187 +708,180 @@ function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
 //   }
 // }
 
-function OrreryLighting({ intensity = 0.2, color = '#eaeaea', ground = '#0000ff', ...props}) {
-  return (
-  <group>
-    {/* <primitive object={new THREE.AxesHelper(10)} /> */}
+// function OrreryLighting({ intensity = 0.2, color = '#eaeaea', ground = '#0000ff', ...props}) {
+//   return (
+//   <group>
+//     {/* <primitive object={new THREE.AxesHelper(10)} /> */}
 
-    <fog attach='fog' args={['#202030', 10, 25]} />
-    <hemisphereLight intensity={intensity} color={color} groundColor={ground} />
-  </group>
-  )
-}
+//     <fog attach='fog' args={['#202030', 10, 25]} />
+//     <hemisphereLight intensity={intensity} color={color} groundColor={ground} />
+//   </group>
+//   )
+// }
 
-function OrreryCam({ fov = 75, position = [10,15,10], ...props}) {
-  const ref = React.useRef()
-
-
-  const { camera, gl: { domElement } } = useThree();
-  useFrame(({ clock }) => {
-    // console.log(ref)
-    // camera.position.set(
-    //   position[0],
-    //   position[1],
-    //   position[2]
-    // )
-    camera.fov = fov
-
-  })
-
-  return (
-    <group>
-      <cameraHelper ref={ref} args={[camera, domElement]}/>
-    </group>
-
-  )
-}
-
-function OrreryBackground({
-  radius = 100,
-  depth = 100,
-  count = 15000,
-  factor = 5,
-  saturation = 1,
-  speed = 1,
-  fade = true,
-  ...props
-}) {
-  const ref = React.useRef()
-  // useFrame(({ clock }) => {
+// function OrreryCam({ fov = 75, position = [10,15,10], ...props}) {
+//   const ref = React.useRef()
 
 
-  // })
-  return (
+//   const { camera, gl: { domElement } } = useThree();
+//   useFrame(({ clock }) => {
+//     camera.fov = fov
+//   })
 
-    <group>
-      {
-        fade
-        ?
-        <Stars
-          ref={ref}
-          radius={radius}
-          depth={depth}
-          count={count}
-          factor={factor}
-          saturation={saturation}
-          fade
-          speed={speed}
-        />
-        :
-        <Stars
-          radius={radius}
-          depth={depth}
-          count={count}
-          factor={factor}
-          saturation={saturation}
-          speed={speed}
-        />
-      }
-      {/* <Stars
-        radius={radius}
-        depth={depth}
-        count={count}
-        factor={factor}
-        saturation={saturation}
-        fade
-        speed={speed}
-      /> */}
-    </group>
-  )
-}
+//   return (
+//     <group>
+//       <cameraHelper ref={ref} args={[camera, domElement]}/>
+//     </group>
+
+//   )
+// }
+
+// function OrreryBackground({
+//   radius = 100,
+//   depth = 100,
+//   count = 15000,
+//   factor = 5,
+//   saturation = 1,
+//   speed = 1,
+//   fade = true,
+//   ...props
+// }) {
+//   const ref = React.useRef()
+//   // useFrame(({ clock }) => {
 
 
-function OrreryControlPadBeta({ setControls, ...props}) {
-  const ref = React.useRef()
-  const controls = useControls('control-center', {
-    camera: folder({
-      position: {
-        value: [0, 0, 0],
-      },
-      rotation: {
-        value: [0, 0, 0],
-      },
-      fov: 75,
+//   // })
+//   return (
 
-    }),
-    helpers: folder({
-      axes: true,
-      grid: true,
-      direction: true
-    }),
-    lighting: folder({
-      intensity: 0.2,
-      color: '#eaeaea',
-      ground: 'blue'
-    }),
-    scale: folder({
-      type: {
-        value: 'log',
-        options: new CelestialBodyScaler({}).listTransformations()
-      },
-      min: {
-        value: 1,
-        step: 0.1,
-      },
-      max: {
-        value: 100,
-        step: 0.1,
-      },
-      base: {
-        value: 10,
-        step: 1,
-      },
-      constant: {
-        value: 0.1,
-        step: 0.1
-      }
+//     <group>
+//       {
+//         fade
+//         ?
+//         <Stars
+//           ref={ref}
+//           radius={radius}
+//           depth={depth}
+//           count={count}
+//           factor={factor}
+//           saturation={saturation}
+//           fade
+//           speed={speed}
+//         />
+//         :
+//         <Stars
+//           radius={radius}
+//           depth={depth}
+//           count={count}
+//           factor={factor}
+//           saturation={saturation}
+//           speed={speed}
+//         />
+//       }
+//       {/* <Stars
+//         radius={radius}
+//         depth={depth}
+//         count={count}
+//         factor={factor}
+//         saturation={saturation}
+//         fade
+//         speed={speed}
+//       /> */}
+//     </group>
+//   )
+// }
 
-    })
-  })
 
-  useEffect(() => {
-    setControls({
-      camera: {
-        position: controls.position,
-        rotation: controls.rotation,
-        fov: controls.fov
-      },
-      helpers: {
-        axes: controls.axes,
-        grid: controls.grid,
-        direction: controls.direction
-      },
-      lighting: {
-        intensity: controls.intensity,
-        color: controls.color,
-        ground: controls.ground
-      },
-      scale: {
-        type: controls.type,
-        min: controls.min,
-        max: controls.max,
-        base: controls.base,
-        constant: controls.constant
-      }
-    })
-  }, [controls, setControls])
+// function OrreryControlPadBeta({ setControls, ...props}) {
+//   const ref = React.useRef()
+//   const controls = useControls('control-center', {
+//     camera: folder({
+//       position: {
+//         value: [0, 0, 0],
+//       },
+//       rotation: {
+//         value: [0, 0, 0],
+//       },
+//       fov: 75,
 
-  return (
-   <mesh ref={ref}></mesh>
-  )
-}
+//     }),
+//     helpers: folder({
+//       axes: true,
+//       grid: true,
+//       direction: true
+//     }),
+//     lighting: folder({
+//       intensity: 0.2,
+//       color: '#eaeaea',
+//       ground: 'blue'
+//     }),
+//     scale: folder({
+//       type: {
+//         value: 'log',
+//         options: new CelestialBodyScaler({}).listTransformations()
+//       },
+//       min: {
+//         value: 1,
+//         step: 0.1,
+//       },
+//       max: {
+//         value: 100,
+//         step: 0.1,
+//       },
+//       base: {
+//         value: 10,
+//         step: 1,
+//       },
+//       constant: {
+//         value: 0.1,
+//         step: 0.1
+//       }
 
-function OrreryOrbitalControls({pan = true, zoom = true, rotate = true, ...props}) {
-  const ref = React.useRef()
-  return (
-    <OrbitControls
-      ref={ref}
-      enablePan={pan}
-      enableZoom={zoom}
-      enableRotate={rotate}
-    />
-  )
-}
+//     })
+//   })
+
+//   useEffect(() => {
+//     setControls({
+//       camera: {
+//         position: controls.position,
+//         rotation: controls.rotation,
+//         fov: controls.fov
+//       },
+//       helpers: {
+//         axes: controls.axes,
+//         grid: controls.grid,
+//         direction: controls.direction
+//       },
+//       lighting: {
+//         intensity: controls.intensity,
+//         color: controls.color,
+//         ground: controls.ground
+//       },
+//       scale: {
+//         type: controls.type,
+//         min: controls.min,
+//         max: controls.max,
+//         base: controls.base,
+//         constant: controls.constant
+//       }
+//     })
+//   }, [controls, setControls])
+
+//   return (
+//    <mesh ref={ref}></mesh>
+//   )
+// }
+
+// function OrreryOrbitalControls({pan = true, zoom = true, rotate = true, ...props}) {
+//   const ref = React.useRef()
+//   return (
+//     <OrbitControls
+//       ref={ref}
+//       enablePan={pan}
+//       enableZoom={zoom}
+//       enableRotate={rotate}
+//     />
+//   )
+// }
 
 export function App({ ...props}) {
   const ref = React.useRef()
@@ -1008,9 +1025,6 @@ export function App({ ...props}) {
 
   const near = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
-      // .map(([_, bodies]) => {
-      //   return bodies
-      // })
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
@@ -1020,9 +1034,6 @@ export function App({ ...props}) {
 
   const far = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
-      // .map(([_, bodies]) => {
-      //   return bodies
-      // })
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
@@ -1068,20 +1079,20 @@ export function App({ ...props}) {
               (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 100, 100)}/>)
               : null
             }
-            <OrreryOrbitalControls/>
-            <OrreryCam
+            <Navigation/>
+            <Camera
               fov={controls.camera.fov}
             />
-            <OrreryControlPadBeta
+            <ControlPad
               setControls={setControls}
             />
-            <OrreryLighting
+            <Lighting
               intensity={controls.lighting.intensity}
               color={controls.lighting.color}
               ground={controls.lighting.ground}
 
             />
-            <OrreryBackground
+            <Background
               // radius={far(scaledGalaxy) * 10}
               // depth={far(scaledGalaxy) * 10}
             />
@@ -1117,12 +1128,7 @@ export function App({ ...props}) {
               : (<mesh></mesh>)
 
             }
-
-
-
-
           </React.Suspense>
-
 
         </Canvas>
         <Loader/>
