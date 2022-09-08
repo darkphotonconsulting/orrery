@@ -2,7 +2,7 @@ import React from 'react';
 
 import * as THREE from 'three'
 import {
-  useThree,
+  // useThree,
   useFrame,
   useLoader
 }  from '@react-three/fiber';
