@@ -1,6 +1,9 @@
 import React from 'react';
 import * as THREE from 'three'
-import { useThree, useUpdate }  from '@react-three/fiber';
+import {
+  useThree,
+  // useUpdate
+}  from '@react-three/fiber';
 
 export function Orbital({
   semimajorAxis = 10,

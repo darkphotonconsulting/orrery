@@ -3,15 +3,23 @@ import React from 'react';
 import {
   Canvas,
 } from '@react-three/fiber';
-import { CelestialBodies } from './lib/data/CelestialBodies.js';
-import { CelestialBodyScaler } from './lib/tools/Scalers.js';
+import {
+  CelestialBodies
+} from './lib/data/CelestialBodies.js';
+
+import {
+  CelestialBodyScaler
+} from './lib/tools/Scalers.js';
+
 import {
   Loader,
 } from '@react-three/drei';
+
 // TODO: incorporate the physics engine proprely
 // import {
 //   Physics,
 // } from "@react-three/cannon";
+
 import * as THREE from 'three';
 
 import './styles.css';
@@ -24,6 +32,7 @@ import {
 import {
   Navigation
 } from './lib/components/scene/Navigation.jsx'
+
 import {
   Lighting
 } from './lib/components/scene/Lighting.jsx'
@@ -39,6 +48,8 @@ import {
 import {
   Camera
 } from './lib/components/scene/Camera.jsx'
+
+
 
 export function App({ ...props}) {
   const ref = React.useRef()

@@ -2,9 +2,9 @@ import React from 'react';
 
 import * as THREE from 'three'
 import {
-  // useThree,
   useFrame,
-  useLoader
+  useLoader,
+  useThree,
 }  from '@react-three/fiber';
 
 export function Planet ({
@@ -31,14 +31,15 @@ export function Planet ({
   ...props
 }) {
 
+  const { size } = useThree()
   const ref = React.useRef();
   const [active, setActive] = React.useState(false)
-  // TODO: make the texturing of planets better
+  // TODO: improve planet texturing
   const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpeg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
-  // TODO: incorporate the sideral rotation & period of the planet to properly scaly the Y rotation
+  // TODO: scale the rotation of planets based on their axial rotation
   useFrame(({ clock }) => {
     ref.current.rotation.y = clock.getElapsedTime() / userData.planet.objectHarmonicFrequency * Math.PI /3
     console.log(ref)
@@ -47,68 +48,66 @@ export function Planet ({
 
   return (
     <mesh
-    ref={ref}
-    scale={active ? 1.5 : 1}
-    position={[
-      meshPositionX || 0,
-      meshPositionY || 0,
-      meshPositionZ || 0
-    ]}
-    rotation={[
-      meshRotationX || 0,
-      meshRotationY || 0,
-      meshRotationZ || 0
-    ]}
-    onClick={(event) => setActive(!active)}
-  >
-    {(() => {
-      if (useAmbientLight) {
-        return (
-          <ambientLight intensity={lightIntensity || 0.5} />
-        );
-      }
-    })()}
-
-    {(() => {
-      if (useSpotLight || false) {
-        return (
-          <spotLight
-            position={[
-              spotlightPositionX || 10,
-              spotlightPositionY || 15,
-              spotlightPositionZ || 10
-            ]}
-            angle={spotlightAngle || 0.3}
-          />
-        );
-      }
-    })()}
-    <sphereGeometry
       ref={ref}
-      args={[
-        radius || 0.7,
-        widthSections || 30,
-        heightSections || 30
+      scale={active ? 1.5 : 1}
+      position={[
+        meshPositionX || 0,
+        meshPositionY || 0,
+        meshPositionZ || 0
       ]}
-      attach='geometry'
-    />
+      rotation={[
+        meshRotationX || 0,
+        meshRotationY || 0,
+        meshRotationZ || 0
+      ]}
+      onClick={(event) => setActive(!active)}
+    >
+      {(() => {
+        if (useAmbientLight) {
+          return (
+            <ambientLight intensity={lightIntensity || 0.5} />
+          );
+        }
+      })()}
 
-    {(() => {
-      if (wireFrame) {
-        return (
-          <meshStandardMaterial wireframe attach='material' color={active ? 'red' : baseColor || 'black'} />
-        )
-      } else {
-        return (
-          <meshPhysicalMaterial
-            map={baseTexture}
-          />
+      {(() => {
+        if (useSpotLight || false) {
+          return (
+            <spotLight
+              position={[
+                spotlightPositionX || 10,
+                spotlightPositionY || 15,
+                spotlightPositionZ || 10
+              ]}
+              angle={spotlightAngle || 0.3}
+            />
+          );
+        }
+      })()}
+      <sphereGeometry
+        ref={ref}
+        args={[
+          radius || 0.7,
+          widthSections || 30,
+          heightSections || 30
+        ]}
+        attach='geometry'
+      />
 
-
-          // <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} />
-        )
-      }
-    })()}
+      {(() => {
+        if (wireFrame) {
+          return (
+            <meshStandardMaterial wireframe attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
+          )
+        } else {
+          return (
+            <meshPhysicalMaterial
+              map={baseTexture}
+            />
+            // <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} />
+          )
+        }
+      })()}
 
   </mesh>
  )
