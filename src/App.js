@@ -28,6 +28,10 @@ import {
   Star
 } from './lib/components/objects/Star.jsx'
 
+import {
+  PlanetGroup
+} from './lib/components/objects/PlanetGroup.jsx'
+
 
 import {
   Navigation
@@ -309,6 +313,12 @@ export function App({ ...props}) {
                     : (<mesh></mesh>)
 
                   }
+
+                  <PlanetGroup
+                    planets={scaledGalaxy.planets}
+                    stars={scaledGalaxy.stars}
+                    showOrbital={true}
+                  />
                 </React.Suspense>
 
               </Canvas>
