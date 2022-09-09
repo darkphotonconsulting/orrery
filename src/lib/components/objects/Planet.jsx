@@ -39,10 +39,11 @@ export function Planet ({
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
-  // TODO: scale the rotation of planets based on their axial rotation
+
   useFrame(({ clock }) => {
-    ref.current.rotation.y = clock.getElapsedTime() / userData.planet.objectHarmonicFrequency * Math.PI /3
-    console.log(ref)
+    // TODO: scale the rotation of planets based on their axial rotation
+    // ref.current.rotation.y = clock.getElapsedTime() / userData.planet.objectHarmonicFrequency * Math.PI /3
+
   })
 
 
