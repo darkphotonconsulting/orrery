@@ -1,27 +1,33 @@
-import React, { useEffect } from 'react';
-// import { Leva } from 'leva'
-// import { useRef } from 'react'
-import { Canvas, useThree, useFrame } from '@react-three/fiber';
+import React from 'react';
+
+import {
+  Canvas,
+  // useThree,
+  // useFrame
+} from '@react-three/fiber';
 import { CelestialBodies } from './lib/data/CelestialBodies.js';
 import { CelestialBodyScaler } from './lib/tools/Scalers.js';
 import {
-  OrbitControls,
-  Stars,
+  // OrbitControls,
   Loader,
-  // useFrame,
-  // PerspectiveCamera,
-  // OrthographicCamera,
 } from '@react-three/drei';
 // TODO: incorporate the physics engine proprely
 // import {
 //   Physics,
 // } from "@react-three/cannon";
 import * as THREE from 'three';
-import { folder, useControls } from 'leva'
+
 import './styles.css';
 
-import { Star, Planet } from './lib/components/Sphere.jsx';
-import { OrbitPath } from './lib/components/Orbit.jsx';
+// import {
+//   Star,
+//   Planet
+// } from './lib/components/Sphere.jsx';
+
+import {
+  Star
+} from './lib/components/objects/Star.jsx'
+// import { OrbitPath } from './lib/components/Orbit.jsx';
 
 // refactored imports
 
@@ -44,429 +50,186 @@ import {
   Camera
 } from './lib/components/scene/Camera.jsx'
 
-// globals
-const scaleTool = new CelestialBodyScaler({
-
-})
 
 
-// function OrreryControlPad({scaleConfig, handleControlPadUpdate, ...props}) {
+
+// function OrreryCamera({ scaleConfig = {}, scenePlanets = [], ...props}) {
+//   const {
+//     gl: { domElement },
+//     camera,
+
+//   } = useThree();
+
 //   const ref = React.useRef()
-//   const [ controls, setControls] = React.useState({
-//     ...scaleConfig
+//   const far = (planets) => {
+//     const axis = scenePlanets.map((planet) => planet.semimajorAxis)
+//     const max = Math.max(...axis)
+//     return max
+//   }
+//   const near = (planets) => {
+//     const axis = scenePlanets.map((planet) => planet.semimajorAxis)
+//     const min = Math.min(...axis)
+//     return min
+//   }
+//   const perspectiveCamera = new THREE.PerspectiveCamera(
+//     scaleConfig.cameraFieldOfView,
+//     window.innerWidth / window.innerHeight,
+//     near(scenePlanets),
+//     far(scenePlanets)
 
-//   })
-
-//   // eslint-disable-next-line no-unused-vars
-//   const { scaler, min: scaleMinimum, max: scaleMaximum, constant: scaleConstant, base: scaleBase, fov: cameraFieldOfView, perspective: cameraPerspective } = useControls('control', {
-//     scale: folder({
-//       scaler: {
-//         value: 'log',
-//         options: scaleTool.listTransformations(),
-//         onChange: (v) => {
-//           setControls({
-//             ...controls,
-//             scaler: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             scaler: v
-//           })
-
-//         }
-//       },
-//       min: {
-//         value: controls.scaleMinimum,
-//         min: 0,
-//         max: 100,
-//         step: 1,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             scaleMinimum: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             scaleMinimum: v
-//           })
-
-
-//         }
-//       },
-//       max: {
-//         value: controls.scaleMaximum,
-//         min: 100,
-//         max: 1000,
-//         step: 1,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             scaleMaximum: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             scaleMaximum: v
-//           })
-
-
-//         }
-//       },
-//       constant: {
-//         value: controls.scaleConstant,
-//         min: 0.1,
-//         max: 1,
-//         step: 0.01,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             scaleConstant: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             scaleConstant: v
-//           })
-
-
-//         }
-//       },
-//       base: {
-//         value: controls.scaleBase,
-//         min: 1,
-//         max: 10,
-//         step: 1,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             scaleBase: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             scaleBase: v
-//           })
-
-
-//         }
-//       }
-//     }),
-//     camera: folder({
-//       fov: {
-//         value: 75,
-//         min: 10,
-//         max: 100,
-//         step: .5,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             cameraFieldOfView: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             cameraFieldOfView: v
-//           })
-
-
-//         }
-//       },
-//       perspective: {
-//         value: true,
-//         onChange: (v) => {
-
-//           setControls({
-//             ...controls,
-//             cameraPerspective: v
-//           })
-//           handleControlPadUpdate({
-//             ...controls,
-//             cameraPerspective: v
-//           })
-//         }
-//       },
-//       placement: {
-//         value: [100,100,100],
-//         x: {
-//           step: 100
-//         },
-//         y: {
-//           step: 100
-//         },
-//         z: {
-//           step: 100
-//         },
-//         onChange: (v) => {
-//           handleControlPadUpdate({
-//             ...controls,
-//             cameraX: v[0],
-//             cameraY: v[1],
-//             cameraZ: v[2]
-//           })
-//         }
-
-//       }
-//     }),
-//     renderer: folder({
-//       shadows: true
-//     })
-
-
-//   })
-
-//   return (
-//    <mesh></mesh>
 //   )
+//   // const orthographicCamera = new THREE.OrthographicCamera(
+
+//   // )
+//   const sceneCamera = scaleConfig?.cameraPerspective
+//     ? (
+//       <group>
+//         <cameraHelper args={[perspectiveCamera]}/>
+//         <OrbitControls
+//           autoRotate={false}
+//           enableZoom={true}
+//           enablePan={true}
+//           enableRotate={true}
+//           ref={ref}
+//           camera={camera}
+//         />
+
+//       </group>
+//     )
+//     : (
+//       <group>
+//         <cameraHelper args={[perspectiveCamera]}/>
+//         <OrbitControls
+//           autoRotate={false}
+//           enableZoom={true}
+//           enablePan={true}
+//           enableRotate={true}
+//           ref={ref}
+//           camera={camera}
+//           // args={[threeCam, gl.domElement]}
+//         />
+
+//       </group>
+
+//     )
+//   return sceneCamera
 // }
 
-
-function OrreryCamera({ scaleConfig = {}, scenePlanets = [], ...props}) {
-  // configure farness and nearness of camera
-  // TODO - take into consideration bodies farther than the planets (moons, asteroids, comets, etc)
-  const {
-    gl: { domElement },
-    camera,
-
-  } = useThree();
-
-  const ref = React.useRef()
-  const far = (planets) => {
-    const axis = scenePlanets.map((planet) => planet.semimajorAxis)
-    const max = Math.max(...axis)
-    return max
-  }
-  const near = (planets) => {
-    const axis = scenePlanets.map((planet) => planet.semimajorAxis)
-    const min = Math.min(...axis)
-    return min
-  }
-  const perspectiveCamera = new THREE.PerspectiveCamera(
-    scaleConfig.cameraFieldOfView,
-    window.innerWidth / window.innerHeight,
-    near(scenePlanets),
-    far(scenePlanets)
-
-  )
-  // const orthographicCamera = new THREE.OrthographicCamera(
-
-  // )
-  const sceneCamera = scaleConfig?.cameraPerspective
-    ? (
-      <group>
-        <cameraHelper args={[perspectiveCamera]}/>
-        <OrbitControls
-          autoRotate={false}
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={true}
-          ref={ref}
-          camera={camera}
-        />
-
-      </group>
-    )
-    : (
-      <group>
-        <cameraHelper args={[perspectiveCamera]}/>
-        <OrbitControls
-          autoRotate={false}
-          enableZoom={true}
-          enablePan={true}
-          enableRotate={true}
-          ref={ref}
-          camera={camera}
-          // args={[threeCam, gl.domElement]}
-        />
-
-      </group>
-
-    )
-  return sceneCamera
-}
-
-function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...props}) {
-  const [requestBodies, setRequestBodies] = React.useState([])
-  const [scenePlanets, setScenePlanets] = React.useState([])
-  const [scaledScenePlanets, setScaledScenePlanets ] = React.useState([])
-  const ref = React.useRef()
-  React.useEffect(() => {
-    if (scenePlanets.length === 0) {
-      fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
-      .then((response) => {
-        // get the data from API and store it in state
-        const json = response.json();
-        return json;
-      })
-      // on a succesful response, set the state
-      .then((json) => {
-        const { bodies } = json
-        setRequestBodies([
-          requestBodies,
-          ...bodies
-        ])
-        const allBodies = new CelestialBodies({ bodies: [...bodies] });
-        const planets = allBodies.planets();
-        const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
-        const scaledPlanets = scaler({
-          bodies: planets,
-          rangeMinimum: scaleConfig.scaleMinimum,
-          rangeMaximum: scaleConfig.scaleMaximum,
-          constant: scaleConfig.scaleConstant,
-          base: scaleConfig.scaleBase
-        })
-
-
-        handleGalaxyUpdate('planets', planets, scaledPlanets)
-        setScaledScenePlanets([
-          ...scaledPlanets
-        ])
-        setScenePlanets([
-          ...planets
-        ])
-        return bodies
-      })
-      .then((bodies) => {
-      })
-    } else {
-
-      const bodies = requestBodies
-      const allBodies = new CelestialBodies({ bodies: [...bodies] });
-      const planets = allBodies.planets();
-
-
-      const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
-      const scaledPlanets = scaler({
-        bodies: planets,
-        rangeMinimum: scaleConfig.scaleMinimum,
-        rangeMaximum: scaleConfig.scaleMaximum,
-        constant: scaleConfig.scaleConstant,
-        base: scaleConfig.scaleBase
-      })
-      handleGalaxyUpdate('planets', planets, scaledPlanets)
-      setScaledScenePlanets([
-        ...scaledPlanets
-      ])
-
-    }
-
-  }, [scenePlanets, scaledScenePlanets, requestBodies, scaleConfig.scaleMinimum, scaleConfig.scaleMaximum, scaleConfig.scaleBase, scaleConfig.scaleConstant, scaleConfig.scaler, handleGalaxyUpdate])
-
-  const star = orreryStars[0]
-
-
-  const sceneItems = scaledScenePlanets.map((planet, index) => {
-
-    return (
-      <group>
-
-        <Planet
-          scale={[1.0, 1.0, 1.0]}
-          key={`planet-body-${planet.englishName.toLowerCase()}`}
-          userData={{planet}}
-          wireFrame={false}
-          useSpotLight={false}
-          useAmbientLight={true}
-          baseColor={'#22803D'}
-          meshPositionX={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
-          meshPositionY={0}
-          meshPositionZ={0}
-          radius={planet.englishName.toLowerCase() === 'mercury' ? 0.10 : Math.abs(planet.equaRadius)}
-          index={index}
-        />
-        <OrbitPath
-          key={`planet-orbit-${planet.englishName.toLowerCase()}`}
-          semimajorAxis={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
-          semiminorAxis={(planet.semiminorAxis + star.equaRadius   ) * (index + 2)}
-          inclination={planet.inclination}
-          baseColor={'#FFFFFF'}
-          index={index}
-          thickness={3}
-          userData={{
-            planet,
-            star
-          }}
-        />
-      </group>
-
-    )
-  })
-
-  return (
-    <group ref={ref}>
-      {sceneItems}
-    </group>
-  )
-}
-
-// function OrreryStars({ scaleConfig, handleGalaxyUpdate, ...props}) {
-//   const [sceneStars, setSceneStars] = React.useState([
-
-//   ])
-//   const [scaledSceneStars, setScaledSceneStars ] = React.useState([])
+// function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...props}) {
+//   const [requestBodies, setRequestBodies] = React.useState([])
+//   const [scenePlanets, setScenePlanets] = React.useState([])
+//   const [scaledScenePlanets, setScaledScenePlanets ] = React.useState([])
 //   const ref = React.useRef()
 //   React.useEffect(() => {
-//     fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
+//     if (scenePlanets.length === 0) {
+//       fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
 //       .then((response) => {
+//         // get the data from API and store it in state
 //         const json = response.json();
 //         return json;
 //       })
+//       // on a succesful response, set the state
 //       .then((json) => {
 //         const { bodies } = json
+//         setRequestBodies([
+//           requestBodies,
+//           ...bodies
+//         ])
 //         const allBodies = new CelestialBodies({ bodies: [...bodies] });
-//         const stars = allBodies.stars();
 //         const planets = allBodies.planets();
-//         const moons = allBodies.moons();
 //         const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
-//         const scaledStars = scaler({
-//           bodies: [...planets, ...moons, ...stars],
+//         const scaledPlanets = scaler({
+//           bodies: planets,
 //           rangeMinimum: scaleConfig.scaleMinimum,
 //           rangeMaximum: scaleConfig.scaleMaximum,
 //           constant: scaleConfig.scaleConstant,
 //           base: scaleConfig.scaleBase
 //         })
-//           .filter((body) => body.bodyType === 'Star')
 
-//         handleGalaxyUpdate('stars', stars, scaledStars)
-//         setScaledSceneStars([
-//           ...scaledStars
+
+//         handleGalaxyUpdate('planets', planets, scaledPlanets)
+//         setScaledScenePlanets([
+//           ...scaledPlanets
 //         ])
-//         setSceneStars([
-//           ...stars
+//         setScenePlanets([
+//           ...planets
 //         ])
+//         return bodies
 //       })
+//       .then((bodies) => {
+//       })
+//     } else {
+
+//       const bodies = requestBodies
+//       const allBodies = new CelestialBodies({ bodies: [...bodies] });
+//       const planets = allBodies.planets();
 
 
-//   }, [sceneStars, scaleConfig, handleGalaxyUpdate])
+//       const scaler = scaleTool.getTransormationFunction({type: scaleConfig.scaler})
+//       const scaledPlanets = scaler({
+//         bodies: planets,
+//         rangeMinimum: scaleConfig.scaleMinimum,
+//         rangeMaximum: scaleConfig.scaleMaximum,
+//         constant: scaleConfig.scaleConstant,
+//         base: scaleConfig.scaleBase
+//       })
+//       handleGalaxyUpdate('planets', planets, scaledPlanets)
+//       setScaledScenePlanets([
+//         ...scaledPlanets
+//       ])
 
-//     const sceneItems = scaledSceneStars.map((star, index) => {
-//       return (
-//         <Star
-//           // ref={ref}
-//           key={star.id}
-//           userData={
-//             {
-//               star,
-//               scaleConfig
-//             }
-//           }
-//           meshPositionX={0}
-//           meshPositionY={0}
-//           meshPositionZ={0}
+//     }
+
+//   }, [scenePlanets, scaledScenePlanets, requestBodies, scaleConfig.scaleMinimum, scaleConfig.scaleMaximum, scaleConfig.scaleBase, scaleConfig.scaleConstant, scaleConfig.scaler, handleGalaxyUpdate])
+
+//   const star = orreryStars[0]
+
+
+//   const sceneItems = scaledScenePlanets.map((planet, index) => {
+
+//     return (
+//       <group>
+
+//         <Planet
+//           scale={[1.0, 1.0, 1.0]}
+//           key={`planet-body-${planet.englishName.toLowerCase()}`}
+//           userData={{planet}}
 //           wireFrame={false}
 //           useSpotLight={false}
 //           useAmbientLight={true}
-//           baseColor={'#f0f0f0'}
-//           radius={star.equaRadius}
+//           baseColor={'#22803D'}
+//           meshPositionX={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
+//           meshPositionY={0}
+//           meshPositionZ={0}
+//           radius={planet.englishName.toLowerCase() === 'mercury' ? 0.10 : Math.abs(planet.equaRadius)}
+//           index={index}
 //         />
-//       )
-//     })
-//     return (
-//       <group>
-//         {sceneItems}
+//         <OrbitPath
+//           key={`planet-orbit-${planet.englishName.toLowerCase()}`}
+//           semimajorAxis={(planet.semimajorAxis + star.equaRadius   ) * (index + 2)}
+//           semiminorAxis={(planet.semiminorAxis + star.equaRadius   ) * (index + 2)}
+//           inclination={planet.inclination}
+//           baseColor={'#FFFFFF'}
+//           index={index}
+//           thickness={3}
+//           userData={{
+//             planet,
+//             star
+//           }}
+//         />
 //       </group>
+
 //     )
+//   })
+
+//   return (
+//     <group ref={ref}>
+//       {sceneItems}
+//     </group>
+//   )
 // }
+
+
 
 // export class App extends React.Component {
 //   #defaultScaler = 'log'
@@ -708,181 +471,6 @@ function OrreryPlanets({ scaleConfig, orreryStars = [], handleGalaxyUpdate, ...p
 //   }
 // }
 
-// function OrreryLighting({ intensity = 0.2, color = '#eaeaea', ground = '#0000ff', ...props}) {
-//   return (
-//   <group>
-//     {/* <primitive object={new THREE.AxesHelper(10)} /> */}
-
-//     <fog attach='fog' args={['#202030', 10, 25]} />
-//     <hemisphereLight intensity={intensity} color={color} groundColor={ground} />
-//   </group>
-//   )
-// }
-
-// function OrreryCam({ fov = 75, position = [10,15,10], ...props}) {
-//   const ref = React.useRef()
-
-
-//   const { camera, gl: { domElement } } = useThree();
-//   useFrame(({ clock }) => {
-//     camera.fov = fov
-//   })
-
-//   return (
-//     <group>
-//       <cameraHelper ref={ref} args={[camera, domElement]}/>
-//     </group>
-
-//   )
-// }
-
-// function OrreryBackground({
-//   radius = 100,
-//   depth = 100,
-//   count = 15000,
-//   factor = 5,
-//   saturation = 1,
-//   speed = 1,
-//   fade = true,
-//   ...props
-// }) {
-//   const ref = React.useRef()
-//   // useFrame(({ clock }) => {
-
-
-//   // })
-//   return (
-
-//     <group>
-//       {
-//         fade
-//         ?
-//         <Stars
-//           ref={ref}
-//           radius={radius}
-//           depth={depth}
-//           count={count}
-//           factor={factor}
-//           saturation={saturation}
-//           fade
-//           speed={speed}
-//         />
-//         :
-//         <Stars
-//           radius={radius}
-//           depth={depth}
-//           count={count}
-//           factor={factor}
-//           saturation={saturation}
-//           speed={speed}
-//         />
-//       }
-//       {/* <Stars
-//         radius={radius}
-//         depth={depth}
-//         count={count}
-//         factor={factor}
-//         saturation={saturation}
-//         fade
-//         speed={speed}
-//       /> */}
-//     </group>
-//   )
-// }
-
-
-// function OrreryControlPadBeta({ setControls, ...props}) {
-//   const ref = React.useRef()
-//   const controls = useControls('control-center', {
-//     camera: folder({
-//       position: {
-//         value: [0, 0, 0],
-//       },
-//       rotation: {
-//         value: [0, 0, 0],
-//       },
-//       fov: 75,
-
-//     }),
-//     helpers: folder({
-//       axes: true,
-//       grid: true,
-//       direction: true
-//     }),
-//     lighting: folder({
-//       intensity: 0.2,
-//       color: '#eaeaea',
-//       ground: 'blue'
-//     }),
-//     scale: folder({
-//       type: {
-//         value: 'log',
-//         options: new CelestialBodyScaler({}).listTransformations()
-//       },
-//       min: {
-//         value: 1,
-//         step: 0.1,
-//       },
-//       max: {
-//         value: 100,
-//         step: 0.1,
-//       },
-//       base: {
-//         value: 10,
-//         step: 1,
-//       },
-//       constant: {
-//         value: 0.1,
-//         step: 0.1
-//       }
-
-//     })
-//   })
-
-//   useEffect(() => {
-//     setControls({
-//       camera: {
-//         position: controls.position,
-//         rotation: controls.rotation,
-//         fov: controls.fov
-//       },
-//       helpers: {
-//         axes: controls.axes,
-//         grid: controls.grid,
-//         direction: controls.direction
-//       },
-//       lighting: {
-//         intensity: controls.intensity,
-//         color: controls.color,
-//         ground: controls.ground
-//       },
-//       scale: {
-//         type: controls.type,
-//         min: controls.min,
-//         max: controls.max,
-//         base: controls.base,
-//         constant: controls.constant
-//       }
-//     })
-//   }, [controls, setControls])
-
-//   return (
-//    <mesh ref={ref}></mesh>
-//   )
-// }
-
-// function OrreryOrbitalControls({pan = true, zoom = true, rotate = true, ...props}) {
-//   const ref = React.useRef()
-//   return (
-//     <OrbitControls
-//       ref={ref}
-//       enablePan={pan}
-//       enableZoom={zoom}
-//       enableRotate={rotate}
-//     />
-//   )
-// }
-
 export function App({ ...props}) {
   const ref = React.useRef()
   const [celestialBodies, setCelestialBodies] = React.useState([])
@@ -996,7 +584,6 @@ export function App({ ...props}) {
 
     console.log({
       event: 'load-galaxy',
-      // current,
       showAxis: controls.helpers.axes,
       bodyTypes: Object.keys(galaxy),
       knownStars: galaxy.stars.length,
@@ -1017,9 +604,7 @@ export function App({ ...props}) {
 
     })
 
-  // the list of dependencies is important, it tells react to re-run the effect
-  // including a dependency which changes on each render, will cause the effect to loop infinitely
-  // ignoring the exhaustive-deps warning to avoid confusion.
+  // 👹 controls and galaxy are the dependencies, adding additional deps such as the scaled galaxy, may cause an infinite loop
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ controls, galaxy])
 
@@ -1028,6 +613,7 @@ export function App({ ...props}) {
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
+    console.log('near axes', axes)
     const min = Math.min(...axes)
     return min
   }
@@ -1037,102 +623,119 @@ export function App({ ...props}) {
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
+    console.log('far axes', axes)
     const max = Math.max(...axes)
-    console.log('axes', axes)
     return max
   }
-  console.log('test farness', far(scaledGalaxy))
-  console.log('test nearness', near(scaledGalaxy))
+  console.log(
+    {
+      event: 'distance-summary',
+      near: near(scaledGalaxy),
+      far: far(scaledGalaxy),
+    }
+  )
 
 
   return (
-        <>
-        <Canvas
-          ref={ref}
-          dpr={window.devicePixelRatio}
-          camera={{
-            position: [
-              10,
-              15,
-              10
-            ],
-            fov: 55,
-            near: 0.1,
-            far: 1000
-          }}
+        <div>
+          <div>
+            <span>HUD, coming soon {scaledGalaxy.planets.length}</span>
+          </div>
+          <div
+            style={{
+              width: '100vw',
+              height: '100vh',
+            }}
+          >
+            <>
+              <Canvas
+                ref={ref}
+                dpr={window.devicePixelRatio}
+                camera={{
+                  position: [
+                    10,
+                    15,
+                    10
+                  ],
+                  fov: 55,
+                  near: 0.1,
+                  far: 1000
+                }}
 
-        >
-          <React.Suspense fallback={null}>
-            {/* space is transparent and appears black when not viewed from behind an atmosphere */}
-            <color
-              attach='background' args={['#15151a']}
-            />
+              >
+                <React.Suspense fallback={null}>
+                  {/* space is transparent and appears black when not viewed from behind an atmosphere */}
+                  <color
+                    attach='background' args={['#15151a']}
+                  />
 
-            {/* render configured scene level helpers */}
-            {
-              controls.helpers.axes && scaledGalaxy.stars.length > 0 ?
-              (<primitive object={new THREE.AxesHelper(scaledGalaxy.stars[0].equaRadius * 100)} />)
-              : null
-            }
-            {
-              controls.helpers.grid && scaledGalaxy.stars.length > 0 ?
-              (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 100, 100)}/>)
-              : null
-            }
-            <Navigation/>
-            <Camera
-              fov={controls.camera.fov}
-            />
-            <ControlPad
-              setControls={setControls}
-            />
-            <Lighting
-              intensity={controls.lighting.intensity}
-              color={controls.lighting.color}
-              ground={controls.lighting.ground}
+                  {/* render configured scene level helpers */}
+                  {
+                    controls.helpers.axes && scaledGalaxy.stars.length > 0 ?
+                    (<primitive object={new THREE.AxesHelper(scaledGalaxy.stars[0].equaRadius * 100)} />)
+                    : null
+                  }
+                  {
+                    controls.helpers.grid && scaledGalaxy.stars.length > 0 ?
+                    (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 1000, far(scaledGalaxy) * 1000)}/>)
+                    : null
+                  }
+                  <Navigation/>
+                  <Camera
+                    fov={controls.camera.fov}
+                  />
+                  <ControlPad
+                    setControls={setControls}
+                  />
+                  <Lighting
+                    intensity={controls.lighting.intensity}
+                    color={controls.lighting.color}
+                    ground={controls.lighting.ground}
 
-            />
-            <Background
-              // radius={far(scaledGalaxy) * 10}
-              // depth={far(scaledGalaxy) * 10}
-            />
-            {
-              scaledGalaxy.stars && scaledGalaxy.stars.length > 0
-              ? (
-                <Star
-                  meshPositionX={0}
-                  meshPositionY={0}
-                  meshPositionZ={0}
-                  meshRotationX={0}
-                  meshRotationY={0}
-                  meshRotationZ={0}
-                  useAmbientLight={true}
-                  useSpotLight={false}
-                  spotlightPositionX={0}
-                  spotlightPositionY={0}
-                  spotlightPositionZ={0}
-                  spotlightAngle={0.3}
-                  lightIntensity={0.5}
-                  widthSections={30}
-                  heightSections={30}
-                  wireFrame={false}
-                  baseColor={'green'}
-                  radius={scaledGalaxy.stars.find((star) => star.englishName === 'Sun').equaRadius}
-                  index={0}
-                  userData={{
-                    star: scaledGalaxy.stars.find((star) => star.englishName === 'Sun'),
-                    controls
-                  }}
-                />
-              )
-              : (<mesh></mesh>)
+                  />
+                  <Background
+                    // radius={far(scaledGalaxy) * 10}
+                    // depth={far(scaledGalaxy) * 10}
+                  />
+                  {
+                    scaledGalaxy.stars && scaledGalaxy.stars.length > 0
+                    ? (
+                      <Star
+                        meshPositionX={0}
+                        meshPositionY={0}
+                        meshPositionZ={0}
+                        meshRotationX={0}
+                        meshRotationY={0}
+                        meshRotationZ={0}
+                        useAmbientLight={true}
+                        useSpotLight={false}
+                        spotlightPositionX={0}
+                        spotlightPositionY={0}
+                        spotlightPositionZ={0}
+                        spotlightAngle={0.3}
+                        lightIntensity={0.5}
+                        widthSections={30}
+                        heightSections={30}
+                        wireFrame={false}
+                        baseColor={'green'}
+                        radius={scaledGalaxy.stars.find((star) => star.englishName === 'Sun').equaRadius}
+                        index={0}
+                        userData={{
+                          star: scaledGalaxy.stars.find((star) => star.englishName === 'Sun'),
+                          controls
+                        }}
+                      />
+                    )
+                    : (<mesh></mesh>)
 
-            }
-          </React.Suspense>
+                  }
+                </React.Suspense>
 
-        </Canvas>
-        <Loader/>
-        </>
+              </Canvas>
+              <Loader/>
+            </>
+          </div>
+        </div>
 
 
 
