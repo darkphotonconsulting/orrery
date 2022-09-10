@@ -54,6 +54,12 @@ export function ControlPad({ setControls, ...props}) {
         step: 0.1
       }
 
+    }),
+    scene: folder({
+      // animations: true,
+      rotations: true,
+      orbits: true,
+      paths: true,
     })
   })
 
@@ -80,6 +86,12 @@ export function ControlPad({ setControls, ...props}) {
         max: controls.max,
         base: controls.base,
         constant: controls.constant
+      },
+      scene: {
+        // animations: controls.animations,
+        rotations: controls.rotations,
+        orbits: controls.orbits,
+        paths: controls.paths
       }
     })
   }, [controls, setControls])
