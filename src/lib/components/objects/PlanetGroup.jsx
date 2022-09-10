@@ -72,7 +72,6 @@ export function PlanetGroup({
           showOrbital ?
           (
             <Orbital
-              // ref={orbitRef}
               key={`planet-orbit-${planet.englishName.toLowerCase()}`}
               semimajorAxis={
                 (planet.semimajorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
