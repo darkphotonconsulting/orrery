@@ -1,5 +1,11 @@
 import React from 'react';
 import {
+  useFrame,
+  useLoader,
+  useThree,
+}  from '@react-three/fiber';
+
+import {
   Planet
 } from './Planet.jsx';
 import {
@@ -9,19 +15,28 @@ export function PlanetGroup({
   stars = [],
   planets = [],
   showOrbital = true,
+  animateAxialRotation = true,
   ...props
 }) {
-  const ref = React.useRef()
+  // const planetRef = React.useRef()
+  // const orbitRef = React.useRef()
+  const groupRef = React.useRef()
+  useFrame((state, delta) => {
+  })
+
   const renderedPlanets = planets.map((planet, index) => {
     return (
       <group>
         <Planet
+          // ref={planetRef}
           scale={[1.0, 1.0, 1.0]}
           key={`planet-body-${planet.englishName.toLowerCase()}`}
           userData={{
-            planet
+            planet,
+            stars
           }}
           wireFrame={false}
+          animateAxialRotation={animateAxialRotation}
           useSpotLight={false}
           useAmbientLight={true}
           baseColor={'#22803D'}
@@ -31,6 +46,12 @@ export function PlanetGroup({
           }
           meshPositionY={0}
           meshPositionZ={0}
+          semimajorAxis={
+            (planet.semimajorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
+          }
+          semiminorAxis={
+            (planet.semiminorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
+          }
 
           // TODO: find a better way to deal with "vanishing" objects
           /*
@@ -45,6 +66,7 @@ export function PlanetGroup({
           showOrbital ?
           (
             <Orbital
+              // ref={orbitRef}
               key={`planet-orbit-${planet.englishName.toLowerCase()}`}
               semimajorAxis={
                 (planet.semimajorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
@@ -69,7 +91,7 @@ export function PlanetGroup({
   })
 
   return (
-    <group ref={ref}>
+    <group ref={groupRef} userData={{foo: 'bar'}}>
       {renderedPlanets}
     </group>
   )
