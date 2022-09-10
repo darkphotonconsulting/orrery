@@ -97,6 +97,12 @@ export function App({ ...props}) {
       max: 100,
       base: 10,
       constant: 0.1
+    },
+    scene: {
+      // animations: true,
+      rotations: true,
+      orbits: true,
+      paths: true,
     }
   })
 
@@ -197,7 +203,7 @@ export function App({ ...props}) {
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
-    console.log('near axes', axes)
+    // console.log('near axes', axes)
     const min = Math.min(...axes)
     return min
   }
@@ -207,7 +213,7 @@ export function App({ ...props}) {
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
-    console.log('far axes', axes)
+    // console.log('far axes', axes)
     const max = Math.max(...axes)
     return max
   }
@@ -317,7 +323,8 @@ export function App({ ...props}) {
                   <PlanetGroup
                     planets={scaledGalaxy.planets}
                     stars={scaledGalaxy.stars}
-                    showOrbital={true}
+                    showOrbital={controls.scene.paths}
+                    animateAxialRotation={controls.scene.rotations}
                   />
                 </React.Suspense>
 
