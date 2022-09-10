@@ -19,6 +19,18 @@
     background: #272727;
   }
 
+  #hud {
+    background: #981717;
+    padding: auto;
+  }
+
+  #overview {
+    background: #ffffff;
+    align-items: 'center';
+    justify-content: 'center';
+    /* display: flex; */
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
       segoe ui, arial, sans-serif;
