@@ -325,6 +325,7 @@ export function App({ ...props}) {
                     stars={scaledGalaxy.stars}
                     showOrbital={controls.scene.paths}
                     animateAxialRotation={controls.scene.rotations}
+                    animateOrbitalRotation={controls.scene.orbits}
                   />
                 </React.Suspense>
 

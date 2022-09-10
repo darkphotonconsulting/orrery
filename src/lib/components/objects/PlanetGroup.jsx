@@ -15,7 +15,8 @@ export function PlanetGroup({
   stars = [],
   planets = [],
   showOrbital = true,
-  animateAxialRotation = true,
+  animateAxialRotation = false,
+  animateOrbitalRotation = false,
   ...props
 }) {
   // const planetRef = React.useRef()
@@ -36,6 +37,7 @@ export function PlanetGroup({
             stars
           }}
           wireFrame={false}
+          animateOrbitalRotation={animateOrbitalRotation}
           animateAxialRotation={animateAxialRotation}
           useSpotLight={false}
           useAmbientLight={true}
