@@ -38,9 +38,12 @@ export function Planet ({
   ...props
 }) {
 
+  // TODO: investigate why semiminorAxis vanishes on linear scaling mode.
   /*
-    TODO: investigate why semiminorAxis vanishes on linear scaling mode.
-    👨🏻‍🔧 : if the value vanishes to a NaN, estimate an ellipse by taking .80% of the semimajorAxis
+    👨🏻‍🔧: if the value vanishes to a NaN, I currently estimate an ellipse by taking .80% of the semimajorAxis
+    - 💡 the semiminorAxis appears to become NaN because the get/set methods which support it are being stripped from the object by 3js
+    - I need to rethink how to handle semiminorAxis, objectMass and objectVolume as they are all based on get/set methods and calculated at runtime.
+      - I want to preserve this behavior as it allows ease of scaling and manipulation of the object
   */
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
   const { size } = useThree()
