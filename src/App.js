@@ -32,7 +32,9 @@ import {
   PlanetGroup
 } from './lib/components/objects/PlanetGroup.jsx'
 
-
+import {
+  StarGroup
+} from './lib/components/objects/StarGroup.jsx'
 import {
   Navigation
 } from './lib/components/scene/Navigation.jsx'
@@ -57,7 +59,10 @@ import {
 
 export function App({ ...props}) {
   const ref = React.useRef()
+  /* preserve raw API call results */
   const [celestialBodies, setCelestialBodies] = React.useState([])
+
+  /* store & set hydrated CelestialBody.<Objects> */
   const [galaxy, setGalaxy ] = React.useState({
     stars: [],
     planets: [],
@@ -66,6 +71,8 @@ export function App({ ...props}) {
     asteroids: [],
     comets: [],
   })
+
+  /* store & set scaled CelestialBody.<Objects>*/
   const [scaledGalaxy, setScaledGalaxy] = React.useState({
     stars: [],
     planets: [],
@@ -75,6 +82,7 @@ export function App({ ...props}) {
     comets: [],
   })
 
+  /* store & set orrery controls */
   const [controls, setControls] = React.useState({
     camera: {
       position: [0, 0, 0],
@@ -107,30 +115,36 @@ export function App({ ...props}) {
     }
   })
 
+  /* store, set & maintain the list of actively selected bodies */
+  const [activeBodies, setActiveBodies] = React.useState([
+
+  ])
+
   React.useEffect(() => {
-    // const { current } = ref
-
-
+    /* only request from the API when we need to */
     if (celestialBodies.length === 0) {
-      // console.log('what is going on?')
       fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
-        // get the data from API and store it in state
         const json = response.json();
         return json;
       })
       .then((json) => {
+
+        /* store the raw API call results */
         setCelestialBodies(json.bodies)
         const galaxyTool = new CelestialBodies({
           bodies: json.bodies,
         })
 
+        /* proxy generic CelestialBody objects into their appropriate types */
         const stars = galaxyTool.stars()
         const planets = galaxyTool.planets()
         const dwarfs = galaxyTool.dwarfs()
         const moons = galaxyTool.moons()
         const asteroids = galaxyTool.asteroids()
         const comets = galaxyTool.comets()
+
+        /* store the hydrated CelestialBody objects */
         setGalaxy({
           stars,
           planets,
@@ -144,10 +158,16 @@ export function App({ ...props}) {
         console.log(error)
       })
     } else {
+      /*
+        if the API is populated and bodies proxied to objects,
+        we scale all objects based on the defaults or provided controls
+      */
       const scaleTool = new CelestialBodyScaler({})
       const scaler = scaleTool.getTransormationFunction({
         type: controls.scale.type,
       })
+
+      // 'restructure' the galaxy into a single array of objects for scaling
       const scaled = scaler({
         bodies: [
           ...galaxy.stars,
@@ -162,6 +182,7 @@ export function App({ ...props}) {
         base: controls.scale.base,
         constant: controls.scale.constant
       })
+      /* store the scaled CelestialBody objects */
       setScaledGalaxy({
         stars: scaled.filter((body) => body.bodyType === 'Star'),
         planets: scaled.filter((body) => body.bodyType === 'Planet'),
@@ -195,26 +216,32 @@ export function App({ ...props}) {
 
     })
 
-  // 👹 controls and galaxy are the dependencies, adding additional deps such as the scaled galaxy, may cause an infinite loop
+    /* 👹 controls and galaxy are the dependencies
+      - adding additional deps such as the scaled galaxy, may cause an infinite loop
+        - this will cause the app to crash or behave erratically
+          - this is related to the useEffect continuously running on changed depedencies
+          - overloading the API service, and getting temporarily blocked
+      see: https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
+    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ controls, galaxy])
 
+  /* configure the nearness of the scene */
   const near = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
-    // console.log('near axes', axes)
     const min = Math.min(...axes)
     return min
   }
 
+  /* configure the farness of the scene */
   const far = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
-    // console.log('far axes', axes)
     const max = Math.max(...axes)
     return max
   }
@@ -294,7 +321,11 @@ export function App({ ...props}) {
                     // radius={far(scaledGalaxy) * 10}
                     // depth={far(scaledGalaxy) * 10}
                   />
-                  {
+                  <StarGroup
+                    stars={scaledGalaxy.stars}
+                    planets={scaledGalaxy.planets}
+                  />
+                  {/* {
                     scaledGalaxy.stars && scaledGalaxy.stars.length > 0
                     ? (
                       <Star
@@ -325,7 +356,7 @@ export function App({ ...props}) {
                     )
                     : (<mesh></mesh>)
 
-                  }
+                  } */}
 
                   <PlanetGroup
                     planets={scaledGalaxy.planets}
