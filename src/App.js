@@ -227,11 +227,16 @@ export function App({ ...props}) {
 
 
   return (
-        <div>
-          <div>
+        <div
+          id={'orrery'}
+        >
+          <div
+            id={'hud'}
+          >
             <span>HUD, coming soon {scaledGalaxy.planets.length}</span>
           </div>
           <div
+            id={'scene'}
             style={{
               width: '100vw',
               height: '100vh',
@@ -239,6 +244,7 @@ export function App({ ...props}) {
           >
             <>
               <Canvas
+                id={'orrery-canvas'}
                 ref={ref}
                 dpr={window.devicePixelRatio}
                 camera={{

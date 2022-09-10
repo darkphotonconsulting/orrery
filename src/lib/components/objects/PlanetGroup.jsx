@@ -25,6 +25,7 @@ export function PlanetGroup({
   })
 
   const renderedPlanets = planets.map((planet, index) => {
+    // console.log('planet:',planet)
     return (
       <group>
         <Planet
@@ -65,7 +66,8 @@ export function PlanetGroup({
           // 💡 - e.g. at a log scale with a base of 2-10, the values of mercury tend to be too small to be visible
           // 🤔 - perhaps mixing of linear and log scales will help with this
           */
-          radius={planet.englishName.toLowerCase() === 'mercury' ? 0.10 : Math.abs(planet.equaRadius)}
+          // radius={planet.englishName.toLowerCase() === 'mercury' ? 0.10 : Math.abs(planet.equaRadius)}
+          radius={Math.abs(planet.equaRadius)}
           index={index}
         />
         {

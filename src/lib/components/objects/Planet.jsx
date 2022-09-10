@@ -69,7 +69,7 @@ export function Planet ({
   points.push(points[0])
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
+  // const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
 
 
 
@@ -86,7 +86,8 @@ export function Planet ({
     }
 
     if (animateAxialRotation) {
-      mesh.current.rotation.y = t - (userData.planet.objectHarmonicFrequency * Math.PI /2) * (userData.planet.sideralRotation * 1.5)
+
+      mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
     }
   })
   console.log({
