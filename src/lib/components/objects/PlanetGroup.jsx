@@ -19,8 +19,7 @@ export function PlanetGroup({
   animateOrbitalRotation = false,
   ...props
 }) {
-  // const planetRef = React.useRef()
-  // const orbitRef = React.useRef()
+
   const groupRef = React.useRef()
   useFrame((state, delta) => {
   })
@@ -29,7 +28,6 @@ export function PlanetGroup({
     return (
       <group>
         <Planet
-          // ref={planetRef}
           scale={[1.0, 1.0, 1.0]}
           key={`planet-body-${planet.englishName.toLowerCase()}`}
           userData={{
@@ -43,6 +41,12 @@ export function PlanetGroup({
           useAmbientLight={true}
           baseColor={'#22803D'}
           // TODO: expose the contant "2" as a user controlled buffer property
+          /*
+          TODO: investigate why semiminorAxis vanishes on linear scaling mode.
+          - remove the additional operations done on semimajorAxis and semiminorAxis
+          - use the pure scaled values
+
+          */
           meshPositionX={
             (planet.semimajorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
           }
