@@ -125,7 +125,11 @@ export function Planet ({
         meshRotationY || 0,
         meshRotationZ || 0
       ]}
-      onClick={(event) => setActive(!active)}
+      onClick={(event) => {
+        // console.log(`${userData.planet.englishName} active ${!active}`)
+        setActive(!active)
+      }}
+      // onDoubleClick={(event) => {alert(`double click on ${userData.planet.englishName}`)}}
     >
       {/* this is an empty at the center of the scene associated with this planet */}
       <primitive position={[0,0,0]} ref={empty} object={new THREE.Object3D()} />

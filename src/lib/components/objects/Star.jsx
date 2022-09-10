@@ -47,7 +47,9 @@ export function Star ({
       meshRotationY || 0,
       meshRotationZ || 0
     ]}
-    onClick={(event) => setActive(!active)}
+    onClick={(event) => {
+      setActive(!active)
+    }}
   >
     {(() => {
       if (useAmbientLight) {

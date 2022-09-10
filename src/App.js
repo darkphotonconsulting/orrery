@@ -74,6 +74,7 @@ export function App({ ...props}) {
     asteroids: [],
     comets: [],
   })
+
   const [controls, setControls] = React.useState({
     camera: {
       position: [0, 0, 0],
