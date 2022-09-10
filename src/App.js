@@ -55,7 +55,9 @@ import {
   Camera
 } from './lib/components/scene/Camera.jsx'
 
-
+import {
+  Overview
+} from './lib/components/hud/Overview.jsx'
 
 export function App({ ...props}) {
   const ref = React.useRef()
@@ -261,7 +263,8 @@ export function App({ ...props}) {
           <div
             id={'hud'}
           >
-            <span>HUD, coming soon {scaledGalaxy.planets.length}</span>
+            <Overview stars={scaledGalaxy.stars} planets={scaledGalaxy.planets}/>
+            {/* <span>HUD, coming soon {scaledGalaxy.planets.length}</span> */}
           </div>
           <div
             id={'scene'}
