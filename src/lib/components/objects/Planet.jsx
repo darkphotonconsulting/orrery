@@ -36,6 +36,8 @@ export function Planet ({
   radius = 10,
   index = 0,
   userData = {},
+  setActiveBodies = () => {},
+  activeBodies=[],
   ...props
 }) {
 
@@ -128,6 +130,22 @@ export function Planet ({
       onClick={(event) => {
         // console.log(`${userData.planet.englishName} active ${!active}`)
         setActive(!active)
+        const activeNames = activeBodies.map((body) => body.englishName)
+        if (activeNames.includes(userData.planet.englishName) && !active === false) {
+          const index = activeNames.indexOf(userData.planet.englishName)
+          setActiveBodies([
+            ...activeBodies.slice(0, index),
+            ...activeBodies.slice(index +1, activeBodies.length)
+          ])
+        } else {
+          setActiveBodies([
+            ...activeBodies,
+            userData.planet
+          ])
+        }
+
+
+
       }}
       // onDoubleClick={(event) => {alert(`double click on ${userData.planet.englishName}`)}}
     >

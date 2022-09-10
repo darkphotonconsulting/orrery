@@ -17,6 +17,8 @@ export function PlanetGroup({
   showOrbital = true,
   animateAxialRotation = false,
   animateOrbitalRotation = false,
+  activeBodies=[],
+  setActiveBodies = () => {},
   ...props
 }) {
 
@@ -29,6 +31,8 @@ export function PlanetGroup({
     return (
       <group>
         <Planet
+          setActiveBodies={setActiveBodies}
+          activeBodies={activeBodies}
           scale={[1.0, 1.0, 1.0]}
           key={`planet-body-${planet.englishName.toLowerCase()}`}
           userData={{

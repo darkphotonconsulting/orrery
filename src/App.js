@@ -364,6 +364,8 @@ export function App({ ...props}) {
                     showOrbital={controls.scene.paths}
                     animateAxialRotation={controls.scene.rotations}
                     animateOrbitalRotation={controls.scene.orbits}
+                    activeBodies={activeBodies}
+                    setActiveBodies={setActiveBodies}
                   />
                 </React.Suspense>
 
