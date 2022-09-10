@@ -16,7 +16,7 @@ export function Background({
   fade = true,
   ...props
 }) {
-  const ref = React.useRef()
+  const backgroundStars = React.useRef()
   // useFrame(({ clock }) => {
 
 
@@ -28,7 +28,7 @@ export function Background({
         fade
         ?
         <Stars
-          ref={ref}
+          ref={backgroundStars}
           radius={radius}
           depth={depth}
           count={count}
