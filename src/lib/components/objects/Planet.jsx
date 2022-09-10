@@ -7,9 +7,10 @@ import {
   useThree,
 }  from '@react-three/fiber';
 
-import {
-  ellipsePoints
-} from '../../tools/Helpers.js'
+// import {
+//   ellipsePoints
+// } from '../../tools/Helpers.js'
+
 export function Planet ({
   meshPositionX = 0,
   meshPositionY = 0,
