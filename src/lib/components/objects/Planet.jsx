@@ -85,19 +85,28 @@ export function Planet ({
       mesh.current.rotation.y = t - (userData.planet.objectHarmonicFrequency * Math.PI /2) * (userData.planet.sideralRotation * 1.5)
     }
   })
-
+  console.log({
+    event: 'planet-render',
+    planet: userData.planet.englishName,
+    index: index,
+    radius: userData.planet.equaRadius,
+    semimajorAxis: userData.planet.semimajorAxis,
+    semiminorAxis: userData.planet.semiminorAxis,
+    inclination: userData.planet.inclination,
+    keys: Object.keys(userData.planet),
+  })
 
   return (
     <group>
-    <mesh
+    {/* <mesh
       scale={1}
       position={[0,0,0]}
       // rotation={[0,0,0]}
     >
-      <line ref={orbital} geometry={lineGeometry} userData={userData}>
-          <lineBasicMaterial attach='material' color={'red'} />
+      <line ref={orbital} geometry={lineGeometry} userData={userData} >
+          <lineBasicMaterial transparent attach='material' opacity={0} color={'red'} />
       </line>
-    </mesh>
+    </mesh> */}
     <mesh
       ref={mesh}
       scale={active ? 1.5 : 1}
