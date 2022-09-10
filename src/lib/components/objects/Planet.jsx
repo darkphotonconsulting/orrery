@@ -7,6 +7,9 @@ import {
   useThree,
 }  from '@react-three/fiber';
 
+import {
+  ellipsePoints
+} from '../../tools/Helpers.js'
 export function Planet ({
   meshPositionX = 0,
   meshPositionY = 0,
@@ -14,8 +17,12 @@ export function Planet ({
   meshRotationX = 0,
   meshRotationY = 0,
   meshRotationZ = 0,
+  semimajorAxis = 10,
+  semiminorAxis = 5,
   useAmbientLight = true,
   useSpotLight = false,
+  animateAxialRotation = false,
+  animateOrbitalRotation = false,
   spotlightPositionX = 0,
   spotlightPositionY = 0,
   spotlightPositionZ = 0,
@@ -31,8 +38,16 @@ export function Planet ({
   ...props
 }) {
 
+  /*
+    TODO: investigate why semiminorAxis vanishes on linear scaling mode.
+    👨🏻‍🔧 : if the value vanishes to a NaN, estimate an ellipse by taking .80% of the semimajorAxis
+  */
+  semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
   const { size } = useThree()
-  const ref = React.useRef();
+  const empty = React.useRef()
+  const mesh = React.useRef();
+  const geom = React.useRef();
+  const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
   // TODO: improve planet texturing
   const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpeg`)
@@ -40,16 +55,51 @@ export function Planet ({
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
 
-  useFrame(({ clock }) => {
-    // TODO: scale the rotation of planets based on their axial rotation
-    // ref.current.rotation.y = clock.getElapsedTime() / userData.planet.objectHarmonicFrequency * Math.PI /3
+  const points = []
+  for (let i = 0; i < 64; i++) {
+    const angle = (i / 64) * 2 * Math.PI
+    const x = semimajorAxis * Math.cos(angle)
+    const y = semiminorAxis * Math.sin(angle)
+    points.push(new THREE.Vector3(x, 0, y))
+  }
+  points.push(points[0])
+  const curve = new THREE.CatmullRomCurve3(points)
+  curve.closed = true
+  const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
 
+
+
+
+  useFrame((state, delta) => {
+    const t = state.clock.getElapsedTime() * 0.5
+    if (animateOrbitalRotation) {
+      const x = semimajorAxis * Math.cos(t)
+      const y = semiminorAxis * Math.sin(t)
+      // const z = 0
+      mesh.current.position.x = x
+      mesh.current.position.z = y
+
+    }
+
+    if (animateAxialRotation) {
+      mesh.current.rotation.y = t - (userData.planet.objectHarmonicFrequency * Math.PI /2) * (userData.planet.sideralRotation * 1.5)
+    }
   })
 
 
   return (
+    <group>
     <mesh
-      ref={ref}
+      scale={1}
+      position={[0,0,0]}
+      // rotation={[0,0,0]}
+    >
+      <line ref={orbital} geometry={lineGeometry} userData={userData}>
+          <lineBasicMaterial attach='material' color={'red'} />
+      </line>
+    </mesh>
+    <mesh
+      ref={mesh}
       scale={active ? 1.5 : 1}
       position={[
         meshPositionX || 0,
@@ -63,6 +113,9 @@ export function Planet ({
       ]}
       onClick={(event) => setActive(!active)}
     >
+      {/* this is an empty at the center of the scene associated with this planet */}
+      <primitive position={[0,0,0]} ref={empty} object={new THREE.Object3D()} />
+
       {(() => {
         if (useAmbientLight) {
           return (
@@ -86,7 +139,8 @@ export function Planet ({
         }
       })()}
       <sphereGeometry
-        ref={ref}
+        ref={geom}
+
         args={[
           radius || 0.7,
           widthSections || 30,
@@ -111,6 +165,7 @@ export function Planet ({
       })()}
 
   </mesh>
+  </group>
  )
 
 }
