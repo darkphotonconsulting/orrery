@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   useFrame,
-  useLoader,
-  useThree,
+  // useLoader,
+  // useThree,
 }  from '@react-three/fiber';
 
 import {
