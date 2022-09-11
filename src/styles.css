@@ -20,12 +20,13 @@
   }
 
   #hud {
-    background: #981717;
-    padding: auto;
+    background: #090909;
+    display: flex;
+    /* padding: auto; */
   }
 
   #overview {
-    background: #ffffff;
+    background: #9c2121;
     align-items: 'center';
     justify-content: 'center';
     /* display: flex; */
