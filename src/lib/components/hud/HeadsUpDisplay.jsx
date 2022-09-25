@@ -27,12 +27,10 @@ import {
 Icons
 */
 import {
-  Info,
   BugReport,
   QueryStatsRounded,
   FullscreenRounded,
   FullscreenExitRounded,
-  DragHandle,
   Public,
   TouchApp,
   Star,
@@ -49,23 +47,30 @@ export function HeadsUpDisplay({
   activeBodies = [],
   ...props
 }) {
-  const defaultHeight = 100
+  // const defaultHeight = 100
   const hudRef = React.useRef(null)
-  const dragRef = React.useRef(null)
-  const [ width, setWidth ] = React.useState(0)
-  const [ height, setHeight ] = React.useState()
+  const [
+    width,
+    setWidth
+  ] = React.useState(0)
+  const [
+    height,
+    setHeight
+  ] = React.useState()
 
 
   const [ isFullscreen, setIsFullscreen ] = React.useState(false)
 
   const handleFullScreen = (event) => {
-    setIsFullscreen(!isFullscreen)
-    console.log('toggled hud')
+    console.log('toggling hud')
     if (isFullscreen) {
       hudRef.current.style.height = '10vh'
     } else {
-      hudRef.current.style.height = '50vh'
+      hudRef.current.style.height = '30vh'
     }
+    setIsFullscreen(!isFullscreen)
+
+
   }
 
 
@@ -75,8 +80,8 @@ export function HeadsUpDisplay({
       direction={'row'}
       ref={hudRef}
       style={{
-        height: `${height || defaultHeight}px`,
-        padding: '25px',
+        height: `15vh`,
+        padding: '1px',
 
       }}
     >
@@ -90,35 +95,114 @@ export function HeadsUpDisplay({
             unmountOnExit
             container={hudRef.current}
             >
+              <Stack>
+                <Box
+                id={'hud-chip-bar'}
+                >
+                  {/*
+                  TODO: remove the test element on completion of the HUD component(s)
+                  */}
+
+
+                  <Tooltip
+                    title={'Go To DarkPhoton.com'}
+                  >
+                    <IconButton>
+                      <img
+                          src={'/images/logo.png'}
+                          alt={'logo'}
+                          height={50}
+                          width={50}
+
+                        />
+                    </IconButton>
+                  </Tooltip>
+
+
+                  <Tooltip
+                    title={'Stats'}
+                  >
+                    <IconButton>
+                      <QueryStatsRounded />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={'Collapse HUD'}
+                  >
+                    <IconButton onClick={(e) => { handleFullScreen(e) }}>
+                      <FullscreenExitRounded />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={'Debug'}
+                  >
+                    <IconButton>
+                      <BugReport />
+                    </IconButton>
+                  </Tooltip>
+
+
+
+
+
+                  <Chip
+                    icon={<Star/>}
+                    label={`stars: ${scaledGalaxy.stars.length}`}
+                  />
+                  <Chip
+                    icon={<Public/>}
+                    label={`planets: ${scaledGalaxy.planets.length}`}
+                  />
+                  <Chip
+                    icon={<TouchApp/>}
+                    label={`active: ${activeBodies.length}`}
+                  />
+                </Box>
+              </Stack>
+
+
+          </Slide>
+
+        )
+        : (
+          <Slide
+            direction={'left'}
+            in={true}
+            mountOnEnter
+            unmountOnExit
+            container={hudRef.current}
+          >
+            <Stack>
               <Box
               id={'hud-chip-bar'}
               >
-                {/*
-                TODO: remove the test element on completion of the HUD component(s)
-                */}
-                <span>Full Screen</span>
 
-                <IconButton>
-                <img
-                    src={'/images/logo.png'}
-                    alt={'logo'}
-                    height={50}
-                    width={50}
 
-                  />
-                </IconButton>
                 <Tooltip
-                  title={'General Orrery Info'}
+                    title={'Go To DarkPhoton.com'}
                 >
                   <IconButton>
-                    <Info />
+                    <img
+                        src={'/images/logo.png'}
+                        alt={'logo'}
+                        height={50}
+                        width={50}
+
+                      />
                   </IconButton>
                 </Tooltip>
                 <Tooltip
-                  title={'Collapse HUD'}
+                  title={'Stats'}
+                >
+                  <IconButton>
+                    <QueryStatsRounded />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={'Open HUD'}
                 >
                   <IconButton onClick={(e) => { handleFullScreen(e) }}>
-                    <FullscreenExitRounded />
+                    <FullscreenRounded />
                   </IconButton>
                 </Tooltip>
                 <Tooltip
@@ -128,11 +212,6 @@ export function HeadsUpDisplay({
                     <BugReport />
                   </IconButton>
                 </Tooltip>
-
-
-
-
-
                 <Chip
                   icon={<Star/>}
                   label={`stars: ${scaledGalaxy.stars.length}`}
@@ -146,102 +225,16 @@ export function HeadsUpDisplay({
                   label={`active: ${activeBodies.length}`}
                 />
               </Box>
-          </Slide>
-
-        )
-        : (
-          <Slide
-            direction={'left'}
-            in={true}
-            mountOnEnter
-            unmountOnExit
-            container={hudRef.current}
-          >
-            <Box
-            id={'hud-chip-bar'}
-            >
+            </Stack>
 
 
-              <IconButton>
-                <img
-                    src={'/images/logo.png'}
-                    alt={'logo'}
-                    height={50}
-                    width={50}
-
-                />
-              </IconButton>
-              <Tooltip
-                title={'Stats'}
-              >
-                <IconButton>
-                  <QueryStatsRounded />
-                </IconButton>
-              </Tooltip>
-              <Tooltip
-                title={'Open HUD'}
-              >
-                <IconButton onClick={(e) => { handleFullScreen(e) }}>
-                  <FullscreenRounded />
-                </IconButton>
-              </Tooltip>
-              <Tooltip
-                title={'Debug'}
-              >
-                <IconButton>
-                  <BugReport />
-                </IconButton>
-              </Tooltip>
-              <Chip
-                icon={<Star/>}
-                label={`stars: ${scaledGalaxy.stars.length}`}
-              />
-              <Chip
-                icon={<Public/>}
-                label={`planets: ${scaledGalaxy.planets.length}`}
-              />
-              <Chip
-                icon={<TouchApp/>}
-                label={`active: ${activeBodies.length}`}
-              />
-            </Box>
           </Slide>
 
         )
       }
 
 
-      <Tooltip
-        title={'Drag to resize'}
-      >
-        <IconButton
-            ref={dragRef}
-            draggable={true}
-            className={'orrery-draggable'}
-            id={'hud-drag-handle'}
-            size={'small'}
-            style={{
-              position: 'absolute',
-              alignSelf: 'center',
-              justifySelf: 'center',
-              top: height - 34,
-              right: width * 0.5,
-              zIndex: 100,
-            }}
-            sx={{
-              position: 'absolute',
-              top: height * 0.9,
-              right: width * 0.5,
-              zIndex: 100,
-              color: Colors.grey[900]
-            }}
-            // onDragStart={dragStartHandler}
-            // onDragEnd={dragStopHandler}
 
-          >
-            <DragHandle />
-        </IconButton>
-      </Tooltip>
 
     </Stack>
 
