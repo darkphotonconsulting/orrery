@@ -256,6 +256,9 @@ export function App({ ...props}) {
         >
           <div
             id={'hud-container'}
+            style={{
+              // height: '15vh'
+            }}
           >
             <HeadsUpDisplay
               controls={controls}
@@ -269,7 +272,7 @@ export function App({ ...props}) {
             id={'scene-container'}
             style={{
               width: '100vw',
-              height: '100vh',
+              height: '90vh',
             }}
           >
             <>
