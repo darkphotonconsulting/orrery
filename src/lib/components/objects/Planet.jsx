@@ -71,8 +71,6 @@ export function Planet ({
   points.push(points[0])
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
-  // const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
-
 
 
 
@@ -105,15 +103,7 @@ export function Planet ({
 
   return (
     <group>
-    {/* <mesh
-      scale={1}
-      position={[0,0,0]}
-      // rotation={[0,0,0]}
-    >
-      <line ref={orbital} geometry={lineGeometry} userData={userData} >
-          <lineBasicMaterial transparent attach='material' opacity={0} color={'red'} />
-      </line>
-    </mesh> */}
+
     <mesh
       ref={mesh}
       scale={active ? 1.5 : 1}
@@ -128,7 +118,6 @@ export function Planet ({
         meshRotationZ || 0
       ]}
       onClick={(event) => {
-        // console.log(`${userData.planet.englishName} active ${!active}`)
         setActive(!active)
         const activeNames = activeBodies.map((body) => body.englishName)
         if (activeNames.includes(userData.planet.englishName) && !active === false) {
@@ -143,13 +132,10 @@ export function Planet ({
             userData.planet
           ])
         }
-
-
-
       }}
-      // onDoubleClick={(event) => {alert(`double click on ${userData.planet.englishName}`)}}
+
     >
-      {/* this is an empty at the center of the scene associated with this planet */}
+
       <primitive position={[0,0,0]} ref={empty} object={new THREE.Object3D()} />
 
       {(() => {
@@ -195,7 +181,6 @@ export function Planet ({
             <meshPhysicalMaterial
               map={baseTexture}
             />
-            // <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} />
           )
         }
       })()}

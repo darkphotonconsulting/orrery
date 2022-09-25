@@ -34,7 +34,7 @@ export function ControlPad({ setControls, ...props}) {
     }),
     scale: folder({
       type: {
-        value: 'log',
+        value: 'linear',
         options: new CelestialBodyScaler({}).listTransformations()
       },
       min: {

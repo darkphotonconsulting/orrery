@@ -16,11 +16,17 @@
     -ms-user-select: none;
     user-select: none;
     /* overflow: hidden; */
-    background: #272727;
+    /* background: #000000; */
+  }
+
+  .orrery-draggable {
+    position: absolute;
+    cursor: move;
+    user-select: none;
   }
 
   #hud {
-    background: #090909;
+    background: #2b2a2a;
     display: flex;
     /* padding: auto; */
   }

@@ -1,8 +1,19 @@
 import React from 'react';
 
+/*
+TODO: flesh out CSS
+*/
+import './styles.css';
+
 import {
   Canvas,
 } from '@react-three/fiber';
+
+import {
+  Loader,
+} from '@react-three/drei';
+
+
 import {
   CelestialBodies
 } from './lib/data/CelestialBodies.js';
@@ -11,22 +22,20 @@ import {
   CelestialBodyScaler
 } from './lib/tools/Scalers.js';
 
-import {
-  Loader,
-} from '@react-three/drei';
 
-// TODO: incorporate the physics engine proprely
+
+// TODO: use physics engine where appropriate
+
 // import {
 //   Physics,
 // } from "@react-three/cannon";
 
 import * as THREE from 'three';
 
-import './styles.css';
 
 import {
-  Star
-} from './lib/components/objects/Star.jsx'
+  HeadsUpDisplay
+} from './lib/components/hud/HeadsUpDisplay.jsx'
 
 import {
   PlanetGroup
@@ -55,16 +64,10 @@ import {
   Camera
 } from './lib/components/scene/Camera.jsx'
 
-import {
-  Overview
-} from './lib/components/hud/Overview.jsx'
 
 export function App({ ...props}) {
   const ref = React.useRef()
-  /* preserve raw API call results */
   const [celestialBodies, setCelestialBodies] = React.useState([])
-
-  /* store & set hydrated CelestialBody.<Objects> */
   const [galaxy, setGalaxy ] = React.useState({
     stars: [],
     planets: [],
@@ -73,8 +76,6 @@ export function App({ ...props}) {
     asteroids: [],
     comets: [],
   })
-
-  /* store & set scaled CelestialBody.<Objects>*/
   const [scaledGalaxy, setScaledGalaxy] = React.useState({
     stars: [],
     planets: [],
@@ -83,8 +84,6 @@ export function App({ ...props}) {
     asteroids: [],
     comets: [],
   })
-
-  /* store & set orrery controls */
   const [controls, setControls] = React.useState({
     camera: {
       position: [0, 0, 0],
@@ -103,27 +102,24 @@ export function App({ ...props}) {
       ground: 'blue',
     },
     scale: {
-      type: 'log',
-      min: 1,
+      type: 'linear',
+      min: 25,
       max: 100,
       base: 10,
       constant: 0.1
     },
     scene: {
-      // animations: true,
       rotations: true,
       orbits: true,
       paths: true,
     }
   })
-
-  /* store, set & maintain the list of actively selected bodies */
   const [activeBodies, setActiveBodies] = React.useState([
 
   ])
 
   React.useEffect(() => {
-    /* only request from the API when we need to */
+    /* only request data if we need to */
     if (celestialBodies.length === 0) {
       fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
@@ -132,21 +128,16 @@ export function App({ ...props}) {
       })
       .then((json) => {
 
-        /* store the raw API call results */
         setCelestialBodies(json.bodies)
         const galaxyTool = new CelestialBodies({
           bodies: json.bodies,
         })
-
-        /* proxy generic CelestialBody objects into their appropriate types */
         const stars = galaxyTool.stars()
         const planets = galaxyTool.planets()
         const dwarfs = galaxyTool.dwarfs()
         const moons = galaxyTool.moons()
         const asteroids = galaxyTool.asteroids()
         const comets = galaxyTool.comets()
-
-        /* store the hydrated CelestialBody objects */
         setGalaxy({
           stars,
           planets,
@@ -160,16 +151,10 @@ export function App({ ...props}) {
         console.log(error)
       })
     } else {
-      /*
-        if the API is populated and bodies proxied to objects,
-        we scale all objects based on the defaults or provided controls
-      */
       const scaleTool = new CelestialBodyScaler({})
       const scaler = scaleTool.getTransormationFunction({
         type: controls.scale.type,
       })
-
-      // 'restructure' the galaxy into a single array of objects for scaling
       const scaled = scaler({
         bodies: [
           ...galaxy.stars,
@@ -184,7 +169,6 @@ export function App({ ...props}) {
         base: controls.scale.base,
         constant: controls.scale.constant
       })
-      /* store the scaled CelestialBody objects */
       setScaledGalaxy({
         stars: scaled.filter((body) => body.bodyType === 'Star'),
         planets: scaled.filter((body) => body.bodyType === 'Planet'),
@@ -195,7 +179,6 @@ export function App({ ...props}) {
       })
 
     }
-
     console.log({
       event: 'load-galaxy',
       showAxis: controls.helpers.axes,
@@ -218,33 +201,42 @@ export function App({ ...props}) {
 
     })
 
-    /* 👹 controls and galaxy are the dependencies
-      - adding additional deps such as the scaled galaxy, may cause an infinite loop
-        - this will cause the app to crash or behave erratically
-          - this is related to the useEffect continuously running on changed depedencies
-          - overloading the API service, and getting temporarily blocked
-      see: https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
+    /*
+      👹 ATTENTION: the dependencies array is important here
+        - elint warnings are ignored because we want to run this effect with these dependencies only
+      ref: https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects
     */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ controls, galaxy])
 
-  /* configure the nearness of the scene */
+
   const near = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
     const min = Math.min(...axes)
+    console.log({
+      event: 'calculate-minimum-distance',
+      min,
+      max: Math.max(...axes)
+
+    })
     return min
   }
 
-  /* configure the farness of the scene */
   const far = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
       .flat()
       .filter((body) => types.includes(body.bodyType))
     const axes = bodies.map((body) => body.semimajorAxis)
     const max = Math.max(...axes)
+    console.log({
+      event: 'calculate-maximum-distance',
+      max,
+      min: Math.min(...axes)
+
+    })
     return max
   }
   console.log(
@@ -255,19 +247,26 @@ export function App({ ...props}) {
     }
   )
 
-
   return (
         <div
+          sx={{
+            display: 'flex',
+          }}
           id={'orrery'}
         >
           <div
-            id={'hud'}
+            id={'hud-container'}
           >
-            <Overview stars={scaledGalaxy.stars} planets={scaledGalaxy.planets}/>
+            <HeadsUpDisplay
+              controls={controls}
+              galaxy={galaxy}
+              scaledGalaxy={scaledGalaxy}
+              activeBodies={activeBodies}
+            />
 
           </div>
           <div
-            id={'scene'}
+            id={'scene-container'}
             style={{
               width: '100vw',
               height: '100vh',
@@ -275,7 +274,7 @@ export function App({ ...props}) {
           >
             <>
               <Canvas
-                id={'canvas'}
+                id={'canvas-container'}
                 ref={ref}
                 dpr={window.devicePixelRatio}
                 camera={{
@@ -321,45 +320,15 @@ export function App({ ...props}) {
 
                   />
                   <Background
-                    // radius={far(scaledGalaxy) * 10}
+                    radius={500}
+                    depth={50}
                     // depth={far(scaledGalaxy) * 10}
                   />
                   <StarGroup
                     stars={scaledGalaxy.stars}
                     planets={scaledGalaxy.planets}
                   />
-                  {/* {
-                    scaledGalaxy.stars && scaledGalaxy.stars.length > 0
-                    ? (
-                      <Star
-                        meshPositionX={0}
-                        meshPositionY={0}
-                        meshPositionZ={0}
-                        meshRotationX={0}
-                        meshRotationY={0}
-                        meshRotationZ={0}
-                        useAmbientLight={true}
-                        useSpotLight={false}
-                        spotlightPositionX={0}
-                        spotlightPositionY={0}
-                        spotlightPositionZ={0}
-                        spotlightAngle={0.3}
-                        lightIntensity={0.5}
-                        widthSections={30}
-                        heightSections={30}
-                        wireFrame={false}
-                        baseColor={'green'}
-                        radius={scaledGalaxy.stars.find((star) => star.englishName === 'Sun').equaRadius}
-                        index={0}
-                        userData={{
-                          star: scaledGalaxy.stars.find((star) => star.englishName === 'Sun'),
-                          controls
-                        }}
-                      />
-                    )
-                    : (<mesh></mesh>)
 
-                  } */}
 
                   <PlanetGroup
                     planets={scaledGalaxy.planets}

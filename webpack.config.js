@@ -6,18 +6,33 @@ module.exports = {
   mode: "development",
   module: {
     rules: [
+      /* load images */
+      {
+        test: /\.(png|jp(e*)g|svg|gif)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[hash]-[name].[ext]',
+            }
+          }
+        ]
+      },
+      /* load JS and JSX */
       {
         test: /\.(js|jsx)$/,
         exclude: /(node_modules|bower_components)/,
         loader: "babel-loader",
         options: { presets: ["@babel/env"] }
       },
+      /* load CSS */
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"]
       }
     ]
   },
+  /* TODO: better understand the resolution system, these imports do not work */
   resolve: {
     extensions: ["*", ".js", ".jsx"],
     fallback: {
@@ -36,8 +51,8 @@ module.exports = {
     filename: "bundle.js"
   },
   devServer: {
-    // contentBase: path.join(__dirname, "public/"),
     port: 3000,
+    // contentBase: path.join(__dirname, "public/"),
     // publicPath: "http://localhost:3000/dist/",
     // hotOnly: true
   },

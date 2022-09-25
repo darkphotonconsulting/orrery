@@ -8,7 +8,7 @@ import {
 
 export function Background({
   radius = 100,
-  depth = 100,
+  depth = 50,
   count = 15000,
   factor = 5,
   saturation = 1,

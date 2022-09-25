@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three'
 import {
-  useThree,
+  // useThree,
   useFrame,
 }  from '@react-three/fiber';
 
@@ -24,7 +24,9 @@ export function Orbital({
   for (let i = 0; i < 64; i++) {
     const angle = (i / 64) * 2 * Math.PI
     const x = semimajorAxis * Math.cos(angle)
-    /* if the semiminorAxis becomes NaN due to scaling, estimate an ellipse by taking .80% of the semimajorAxis */
+    /* 🤔 Possibly Opinionated Calculation
+    - If the semiminorAxis is `Not a Number`, estimate the semiminorAxis by taking .80% of the semimajorAxis
+    */
     const y = isNaN(semiminorAxis)
     ? (semimajorAxis * 0.8) * Math.sin(angle)
     : semiminorAxis * Math.sin(angle)
@@ -33,13 +35,9 @@ export function Orbital({
   points.push(points[0])
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
-  // const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
 
   useFrame((state, delta) => {
-    // const t = state.clock.getElapsedTime() * 0.5
-
-
   })
   return (
       <mesh ref={mesh}>

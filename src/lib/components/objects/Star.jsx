@@ -93,7 +93,6 @@ export function Star ({
           <meshPhysicalMaterial
             map={baseTexture}
           />
-          // <meshStandardMaterial attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
         )
       }
     })()}
