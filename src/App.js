@@ -1,9 +1,14 @@
 import React from 'react';
-
-/*
-TODO: flesh out CSS
-*/
 import './styles.css';
+
+
+/* TODO: complete reading material about theming changes in v5 */
+import {
+  createTheme,
+} from '@mui/material'
+
+// import { StyledEngineProvider } from '@mui/material/styles';
+
 
 import {
   Canvas,
@@ -22,8 +27,6 @@ import {
   CelestialBodyScaler
 } from './lib/tools/Scalers.js';
 
-
-
 // TODO: use physics engine where appropriate
 
 // import {
@@ -34,8 +37,12 @@ import * as THREE from 'three';
 
 
 import {
-  HeadsUpDisplay
-} from './lib/components/hud/HeadsUpDisplay.jsx'
+  Menu
+} from './lib/components/hud/Menu.jsx'
+
+import {
+  Details
+} from './lib/components/hud/Details.jsx'
 
 import {
   PlanetGroup
@@ -65,8 +72,27 @@ import {
 } from './lib/components/scene/Camera.jsx'
 
 
+
 export function App({ ...props}) {
-  const ref = React.useRef()
+  const theme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#000000',
+
+      },
+      secondary: {
+        main: '#ffffff',
+      }
+    }
+  })
+  console.log({
+    event: 'set-theme',
+    theme
+  })
+  const canvasRef = React.useRef(null)
+  const sceneContainerRef = React.useRef(null)
+  const detailsPanelRef = React.useRef(null)
   const [celestialBodies, setCelestialBodies] = React.useState([])
   const [galaxy, setGalaxy ] = React.useState({
     stars: [],
@@ -117,7 +143,27 @@ export function App({ ...props}) {
   const [activeBodies, setActiveBodies] = React.useState([
 
   ])
+  const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
 
+  const handleDetailsPanelExpanded = (event, expanded) => {
+    setDetailsPanelExpanded(!detailsPanelExpanded)
+    // console.log('event: ',event)
+    // console.log('expanded: ', expanded)
+    if (expanded) {
+      console.log('show panel')
+      detailsPanelRef.current.style.display = 'block'
+      detailsPanelRef.current.style.width = '100wh'
+      detailsPanelRef.current.style.height = '20vh'
+      sceneContainerRef.current.style.height = '80vh'
+    } else {
+      console.log('hide panel')
+      detailsPanelRef.current.style.display = 'none'
+      detailsPanelRef.current.style.width = '0'
+      detailsPanelRef.current.style.height = '0'
+      sceneContainerRef.current.style.height = '100vh'
+
+    }
+  }
   React.useEffect(() => {
     /* only request data if we need to */
     if (celestialBodies.length === 0) {
@@ -248,107 +294,128 @@ export function App({ ...props}) {
   )
 
   return (
-        <div
-          sx={{
-            display: 'flex',
-          }}
-          id={'orrery'}
-        >
-          <div
-            id={'hud-container'}
-            style={{
-              // height: '15vh'
-            }}
-          >
-            <HeadsUpDisplay
-              controls={controls}
-              galaxy={galaxy}
-              scaledGalaxy={scaledGalaxy}
-              activeBodies={activeBodies}
-            />
 
-          </div>
-          <div
-            id={'scene-container'}
-            style={{
-              width: '100vw',
-              height: '90vh',
-            }}
-          >
-            <>
-              <Canvas
-                id={'canvas-container'}
-                ref={ref}
-                dpr={window.devicePixelRatio}
-                camera={{
-                  position: [
-                    10,
-                    15,
-                    10
-                  ],
-                  fov: 55,
-                  near: 0.1,
-                  far: 1000
+            <div
+              style={{
+
+              }}
+              id={'orrery'}
+            >
+
+              <div
+                id={'hud-container'}
+                style={{
+                  // height: '15vh'
                 }}
-
               >
-                <React.Suspense fallback={null}>
-                  {/* space is transparent and appears black when not viewed from behind an atmosphere */}
-                  <color
-                    attach='background' args={['#15151a']}
-                  />
 
-                  {/* render configured scene level helpers */}
-                  {
-                    controls.helpers.axes && scaledGalaxy.stars.length > 0 ?
-                    (<primitive object={new THREE.AxesHelper(scaledGalaxy.stars[0].equaRadius * 100)} />)
-                    : null
-                  }
-                  {
-                    controls.helpers.grid && scaledGalaxy.stars.length > 0 ?
-                    (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 1000, far(scaledGalaxy) * 1000)}/>)
-                    : null
-                  }
-                  <Navigation/>
-                  <Camera
-                    fov={controls.camera.fov}
-                  />
-                  <ControlPad
-                    setControls={setControls}
-                  />
-                  <Lighting
-                    intensity={controls.lighting.intensity}
-                    color={controls.lighting.color}
-                    ground={controls.lighting.ground}
-
-                  />
-                  <Background
-                    radius={500}
-                    depth={50}
-                    // depth={far(scaledGalaxy) * 10}
-                  />
-                  <StarGroup
-                    stars={scaledGalaxy.stars}
-                    planets={scaledGalaxy.planets}
-                  />
-
-
-                  <PlanetGroup
-                    planets={scaledGalaxy.planets}
-                    stars={scaledGalaxy.stars}
-                    showOrbital={controls.scene.paths}
-                    animateAxialRotation={controls.scene.rotations}
-                    animateOrbitalRotation={controls.scene.orbits}
+                  <Menu
+                    controls={controls}
+                    galaxy={galaxy}
+                    scaledGalaxy={scaledGalaxy}
                     activeBodies={activeBodies}
-                    setActiveBodies={setActiveBodies}
+                    detailsPanelRef={detailsPanelRef}
+                    setDetailsPanelExpanded={setDetailsPanelExpanded}
+                    detailsPanelExpanded={detailsPanelExpanded}
+                    handleDetailsPanelExpanded={handleDetailsPanelExpanded}
                   />
-                </React.Suspense>
 
-              </Canvas>
-              <Loader/>
-            </>
-          </div>
-        </div>
+
+
+              </div>
+
+              <div
+                id={'scene-container'}
+                ref={sceneContainerRef}
+                style={{
+                  width: '100vw',
+                  height: '100vh',
+                }}
+              >
+                <>
+
+                  <Canvas
+                    id={'canvas-container'}
+                    ref={canvasRef}
+                    dpr={window.devicePixelRatio}
+                    camera={{
+                      position: [
+                        10,
+                        10,
+                        10
+                      ],
+                      fov: 55,
+                      near: 0.1,
+
+                    }}
+
+                  >
+                    <React.Suspense fallback={null}>
+                      {/* space is transparent and appears black when not viewed from behind an atmosphere */}
+                      <color
+                        attach='background' args={['#15151a']}
+                      />
+
+                      {/* render configured scene level helpers */}
+                      {
+                        controls.helpers.axes && scaledGalaxy.stars.length > 0 ?
+                        (<primitive object={new THREE.AxesHelper(scaledGalaxy.stars[0].equaRadius * 100)} />)
+                        : null
+                      }
+                      {
+                        controls.helpers.grid && scaledGalaxy.stars.length > 0 ?
+                        (<primitive object={new THREE.GridHelper(far(scaledGalaxy) * 1000, far(scaledGalaxy) * 1000)}/>)
+                        : null
+                      }
+                      <Navigation/>
+                      <Camera
+                        fov={controls.camera.fov}
+                      />
+                      <ControlPad
+                        setControls={setControls}
+                      />
+                      <Lighting
+                        intensity={controls.lighting.intensity}
+                        color={controls.lighting.color}
+                        ground={controls.lighting.ground}
+
+                      />
+                      <Background
+                        radius={500}
+                        depth={50}
+                        // depth={far(scaledGalaxy) * 10}
+                      />
+                      <StarGroup
+                        stars={scaledGalaxy.stars}
+                        planets={scaledGalaxy.planets}
+                      />
+
+
+                      <PlanetGroup
+                        planets={scaledGalaxy.planets}
+                        stars={scaledGalaxy.stars}
+                        showOrbital={controls.scene.paths}
+                        animateAxialRotation={controls.scene.rotations}
+                        animateOrbitalRotation={controls.scene.orbits}
+                        activeBodies={activeBodies}
+                        setActiveBodies={setActiveBodies}
+                      />
+                    </React.Suspense>
+
+                  </Canvas>
+                  <Loader/>
+
+                </>
+                <div ref={detailsPanelRef} className={'details'}>
+                      <Details
+                        activeBodies={activeBodies}
+                      />
+
+                </div>
+              </div>
+            </div>
+
+
 
 
 
