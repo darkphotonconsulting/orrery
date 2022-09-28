@@ -19,11 +19,13 @@
     /* background: #000000; */
   }
 
-  .orrery-draggable {
-    position: absolute;
-    cursor: move;
-    user-select: none;
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
+      segoe ui, arial, sans-serif;
   }
+
+
 
   #hud {
     background: #2b2a2a;
@@ -31,14 +33,15 @@
     /* padding: auto; */
   }
 
+  .annotation {
+    color: #ffffff;
+    font-size: 2px;
+  }
+
+
   #overview {
     background: #9c2121;
     align-items: 'center';
     justify-content: 'center';
     /* display: flex; */
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
-      segoe ui, arial, sans-serif;
   }
