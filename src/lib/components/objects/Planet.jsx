@@ -7,6 +7,7 @@ import {
   useThree,
 }  from '@react-three/fiber';
 
+import { Html } from '@react-three/drei'
 // import {
 //   ellipsePoints
 // } from '../../tools/Helpers.js'
@@ -137,7 +138,20 @@ export function Planet ({
     >
 
       <primitive position={[0,0,0]} ref={empty} object={new THREE.Object3D()} />
+      {/* <Html
+        scale={100}
+        position={[0,5,0]}
+        rotation={[0,0,0]}
+        transform
+        occlude={false}
 
+      >
+        <div
+          className={'annotation'}
+        >
+        {userData.planet.englishName}
+        </div>
+      </Html> */}
       {(() => {
         if (useAmbientLight) {
           return (
