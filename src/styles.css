@@ -17,6 +17,7 @@ body,
   -ms-user-select: none;
   user-select: none;
   overflow: hidden;
+  /* TODO: revert the purple background after solidifying the formatting, theming */
   background: #9816a7;
 }
 
