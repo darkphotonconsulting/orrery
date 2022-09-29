@@ -1,29 +1,36 @@
 import React from 'react';
 import { Leva } from 'leva'
-/*
-Colors
-*/
-import * as Colors from '@mui/material/colors'
+
 
 /*
-Structure
+format
 */
+import {
+  Container,
+  // Stack,
+  Box
+} from '@mui/material';
+
+/* typography and iconography */
+import {
+  Typography
+} from '@mui/material';
+
+/* key components */
 import {
   AppBar,
   Toolbar,
-  Stack,
-  Box,
-  Chip,
+  // Chip,
   Tooltip,
   IconButton,
 } from '@mui/material';
 
 /*
-Transoformations
+transofmrations
  */
-import {
-  Slide
-} from '@mui/material';
+// import {
+//   Slide
+// } from '@mui/material';
 
 /*
 Icons
@@ -31,11 +38,8 @@ Icons
 import {
   BugReport,
   QueryStatsRounded,
-  FullscreenRounded,
   FullscreenExitRounded,
-  Public,
-  TouchApp,
-  Star,
+  FullscreenRounded,
 } from '@mui/icons-material'
 
 /*
@@ -43,6 +47,7 @@ TODO: research how to utilize FontAwesome at a project level
 */
 
 export function Menu({
+  theme = {},
   controls = {},
   galaxy = [],
   scaledGalaxy = {},
@@ -53,7 +58,7 @@ export function Menu({
   handleDetailsPanelExpanded = () => {},
   ...props
 }) {
-  // const defaultHeight = 100
+
   const hudRef = React.useRef(null)
   const [
     width,
@@ -65,59 +70,12 @@ export function Menu({
   ] = React.useState()
 
 
-  // const [ isFullscreen, setIsFullscreen ] = React.useState(false)
-  // const [ isDetailsPanelOpen, setIsDetailsPanelOpen ] = React.useState(false)
 
-  const handleFullScreen = (event) => {
-    setDetailsPanelExpanded(!detailsPanelExpanded)
-    console.log('panel height: ', detailsPanelRef.current.style.height)
-    console.log('panel state: ', detailsPanelExpanded)
-    // if (detailsPanelExpanded) {
-    //   detailsPanelRef.current.hidden = false
-    //   detailsPanelRef.current.style.height = '100px'
-    //   detailsPanelRef.current.style['background-color'] = 'red'
-    // } else {
-    //   detailsPanelRef.current.hidden = true
-    //   detailsPanelRef.current.style.display = 'none'
-    //   detailsPanelRef.current.style.height = '0vh'
-    // }
-
-
-    // if (isFullscreen === true) {
-
-    //   hudRef.current.style.height = '30vh'
-    //   console.log({
-    //     event: 'toggled-hud',
-    //     isFullscreen,
-    //     hudRef
-    //   })
-    // } else {
-    //   hudRef.current.style.height = '64px'
-    //   console.log({
-    //     event: 'toggled-hud',
-    //     isFullscreen,
-    //     hudRef
-    //   })
-    // }
-    // setIsFullscreen(!isFullscreen)
-  }
 
   return (
-    <Stack
-      id={'hud'}
-      direction={'row'}
-      ref={hudRef}
-      sx={{
-        flexGrow: 1,
 
-        padding: '2px',
-      }}
-    >
       <AppBar
         position={'static'}
-        sx={{
-          bgcolor: 'grey.900'
-        }}
       >
         <Leva>
           fill={false}
@@ -125,49 +83,61 @@ export function Menu({
           hideTitleBar={true}
           oneLineLabels={true}
         </Leva>
-        <Toolbar>
-          {/* Home Site */}
-          <Tooltip
-            title={'DarkPhotonWorks.com'}
-          >
-            <IconButton>
-              <img
-                  src={'/images/logo.png'}
-                  alt={'logo'}
-                  height={50}
-                  width={50}
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            {/* Home Site */}
+            <Typography>Orrery</Typography>
 
-                />
-            </IconButton>
-          </Tooltip>
-          {/* Orrery Statistics */}
-          <Tooltip
-            title={'Stats'}
-          >
-            <IconButton>
-              <QueryStatsRounded />
-            </IconButton>
-          </Tooltip>
-          {/* Toggle FullScreen HUD */}
-          <Tooltip
-            title={'Collapse HUD'}
-          >
-            <IconButton onClick={(e) => { handleDetailsPanelExpanded(e, detailsPanelExpanded) }}>
-              <FullscreenExitRounded />
-            </IconButton>
-          </Tooltip>
-          {/* Show Debug Messages */}
-          <Tooltip
-            title={'Debug'}
-          >
-            <IconButton>
-              <BugReport />
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
+            {/* Controls */}
+            <Box>
+              <Tooltip
+                title={'Website'}
+              >
+                <IconButton>
+                  <img
+                      src={'/images/logo.png'}
+                      alt={'logo'}
+                      height={50}
+                      width={50}
+
+                    />
+                </IconButton>
+              </Tooltip>
+
+              {/* Orrery Statistics */}
+              <Tooltip
+                title={'Stats'}
+              >
+                <IconButton>
+                  <QueryStatsRounded />
+                </IconButton>
+              </Tooltip>
+              {/* Toggle FullScreen HUD */}
+              <Tooltip
+                title={detailsPanelExpanded ? 'Collapse Details' : 'Expand Details'}
+              >
+                <IconButton onClick={(e) => { handleDetailsPanelExpanded(e, !detailsPanelExpanded) }}>
+                  {
+                    detailsPanelExpanded ? <FullscreenExitRounded /> : <FullscreenRounded />
+                  }
+                  {/* <FullscreenExitRounded /> */}
+                </IconButton>
+              </Tooltip>
+              {/* Show Debug Messages */}
+              <Tooltip
+                title={'Debug'}
+              >
+                <IconButton>
+                  <BugReport />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+          </Toolbar>
+        </Container>
       </AppBar>
 
-    </Stack>
+
 
   )
 }
