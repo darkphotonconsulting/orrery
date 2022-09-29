@@ -2,56 +2,33 @@
     box-sizing: border-box;
   }
 
-  /* Defaults */
-  html,
-  body,
-  #root {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    /* overflow: hidden; */
-    background: #ffffff;
-  }
+/* Defaults */
+html,
+body,
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  overflow: hidden;
+  background: #9816a7;
+}
 
-  /* Font */
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
-      segoe ui, arial, sans-serif;
-  }
-
-.menu {
-    display: flex,
-    /* back */
-  }
-
-.three {
-    background-color: #2b2a2a;
-  }
-
-/* Hud */
-#hud {
-    background-color: #4a4242;
-    /* display: flex; */
-    /* height: 20vh; */
-    /* padding: auto; */
-  }
-
-.annotation {
-    color: #ffffff;
-    font-size: 2px;
+/* Font */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
+    segoe ui, arial, sans-serif;
+}
+#canvasContainer {
+  flex-grow: 1;
 }
 
 
-#overview {
-    background: #9c2121;
-    align-items: 'center';
-    justify-content: 'center';
-    /* display: flex; */
-  }
+
+/* Hud */
