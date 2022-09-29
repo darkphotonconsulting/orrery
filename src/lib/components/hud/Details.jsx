@@ -16,7 +16,9 @@ import {
   Typography,
 } from '@mui/material';
 
-/* 🎥 animation & transitions */
+/*
+  🎥 animation & transitions
+*/
 import {
   // TransitionGroup,
   Slide
