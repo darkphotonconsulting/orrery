@@ -57,27 +57,27 @@ import {
 /* functional components */
 import {
   Navigation
-} from './lib/components/scene/Navigation.jsx'
+} from './lib/components/scene/meta/Navigation.jsx'
 
 import {
   Lighting
-} from './lib/components/scene/Lighting.jsx'
+} from './lib/components/scene/meta/Lighting.jsx'
 
 import {
   Background
-} from './lib/components/scene/Background.jsx'
+} from './lib/components/scene/meta/Background.jsx'
 
 import {
   ControlPad
-} from './lib/components/scene/ControlPad.jsx'
+} from './lib/components/scene/meta/ControlPad.jsx'
 
 import {
   Camera
-} from './lib/components/scene/Camera.jsx'
+} from './lib/components/scene/meta/Camera.jsx'
 
 import {
-  Menu
-} from './lib/components/hud/Menu.jsx'
+  Header
+} from './lib/components/hud/Header.jsx'
 
 import {
   Details
@@ -351,7 +351,7 @@ export function App({ ...props}) {
                   id={'headerContainer'}
                 >
 
-                    <Menu
+                    <Header
                       id={'menuComponent'}
                       controls={controls}
                       galaxy={galaxy}
