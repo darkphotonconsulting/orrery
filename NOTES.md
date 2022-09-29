@@ -2,12 +2,17 @@
 
 ## To Do
 
-- blahblah
-- 🇨🇬
+- incorprate AU calculation into `CelestialObjects`
+  - benefit: using AUs may simplify scaling and make the overall scene appearance more crisp
 
 ## Problems
 
-- scaling
+- object scaling
+  - when scaling various values take on NaN values or values too small to be interpreted by the rendering engine.
+- scene scaling
+  - certain aspects of scene scaling are not working
+- theme
+  - work on and resolve issues with MUI v5 theming for non three-fiber components.
 
 ## Findings
 
