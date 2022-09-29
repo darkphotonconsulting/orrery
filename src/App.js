@@ -4,14 +4,24 @@ import * as THREE from 'three';
 import './styles.css';
 
 // theme
+// import * as Colors from '@mui/material/colors'
 import {
   createTheme,
   ThemeProvider,
+  CssBaseline,
 } from '@mui/material'
+
+
 
 // format
 import {
+  Stack,
   Box
+} from '@mui/material'
+
+// transitions
+import {
+  Grow
 } from '@mui/material'
 
 /* TODO: investigate usage of StyledEngineProvider
@@ -88,14 +98,19 @@ import {
 export function App({ ...props}) {
   const theme = createTheme({
     palette: {
-      mode: 'dark',
-      // primary: {
-      //   main: '#000000',
 
-      // },
-      // secondary: {
-      //   main: '#ffffff',
-      // }
+      primary: {
+        light: '#757ce8',
+        main: '#3f50b5',
+        dark: '#002884',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#ff7961',
+        main: '#f44336',
+        dark: '#ba000d',
+        contrastText: '#000',
+      },
     },
     components: {
 
@@ -161,35 +176,36 @@ export function App({ ...props}) {
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
 
   const handleDetailsPanelExpanded = (event, expanded) => {
-    setDetailsPanelExpanded(!detailsPanelExpanded)
 
+
+    setDetailsPanelExpanded(expanded)
     if (expanded) {
 
       console.log({
         event: 'show-details-panel',
-        expanded
+        expanded,
+        detailsPanelRef
       })
-      detailsPanelRef.current.style.display = 'block'
+
+      detailsPanelRef.current.style.width = '100vw'
       detailsPanelRef.current.style.height = '20vh'
+      detailsPanelRef.current.style.opacity = 1
       sceneContainerRef.current.style.height = '80vh'
+
 
     } else {
       console.log({
         event: 'hide-details-panel',
-        expanded
+        expanded,
+        detailsPanelRef
       })
 
-      /*
-      update details container height
-      - TODO: relative to scene container
-      */
-      detailsPanelRef.current.style.display = 'none'
       detailsPanelRef.current.style.width = '0'
       detailsPanelRef.current.style.height = '0'
-      /* update scene container height */
       sceneContainerRef.current.style.height = '100vh'
 
     }
+
   }
   React.useEffect(() => {
     /* only request data if we need to */
@@ -321,16 +337,10 @@ export function App({ ...props}) {
   )
 
   return (
-
-            /*
-              🌌 Theme Provider for orrery
-            */
             <ThemeProvider theme={theme}>
-
-              <div
-                style={{
-
-                }}
+              <CssBaseline />
+              <Stack
+                direction="column"
                 id={'orrery'}
               >
 
@@ -338,10 +348,11 @@ export function App({ ...props}) {
                 Menu Bar
                 */}
                 <Box
-                  id={'menuContainer'}
+                  id={'headerContainer'}
                 >
 
                     <Menu
+                      id={'menuComponent'}
                       controls={controls}
                       galaxy={galaxy}
                       scaledGalaxy={scaledGalaxy}
@@ -350,6 +361,7 @@ export function App({ ...props}) {
                       setDetailsPanelExpanded={setDetailsPanelExpanded}
                       detailsPanelExpanded={detailsPanelExpanded}
                       handleDetailsPanelExpanded={handleDetailsPanelExpanded}
+                      theme={theme}
                     />
                 </Box>
 
@@ -358,13 +370,18 @@ export function App({ ...props}) {
                   id={'canvasContainer'}
                   ref={sceneContainerRef}
                   style={{
-                    // 👨🏻‍🔧 - this container will change its height based on the status of detailsExpanded
+                    /*
+                    👨🏻‍🔧 -
+                    the height is based on the value of the `detailsExpanded` state variable
+                    */
+
                     width: '100vw',
                     height: '100vh',
+                    flexGrow: 1,
                   }}
                 >
+                  {/* ThreeJS-Fiber Canvas */}
                   <>
-
                     <Canvas
                       id={'canvas'}
                       ref={canvasRef}
@@ -378,12 +395,14 @@ export function App({ ...props}) {
                         fov: 55,
                         near: 0.1,
 
+
+
                       }}
 
                     >
                       <React.Suspense fallback={null}>
                         {/*
-                          space is transparent and appears black when not viewed from behind an atmosphere
+                          space is "black"
                         */}
                         <color
                           attach='background' args={['#15151a']}
@@ -454,21 +473,31 @@ export function App({ ...props}) {
 
                 </Box>
                 {/* Scene Details */}
-                <Box
-                  ref={detailsPanelRef}
-                  // className={'hud'}
-                  sx={{
-                    backgroundColor: 'blue'
-                  }}
-                  id={'detailsContainer'}
-                  // className={'content'}
-                >
-                        <Details
-                          activeBodies={activeBodies}
-                        />
+                <Grow in={detailsPanelExpanded}>
+                  <Box
+                    ref={detailsPanelRef}
+                    id={'detailsContainer'}
+                    width={'100%'}
+                    // height={'inherit'}
+                    sx={{
+                      backgroundColor: 'primary.main',
+                      zIndex: 100,
+                      flexGrow: 1,
+                      width: '100vw',
+                      minWidth: '100vw',
+                    }}
+                  >
+                          <Details
+                            theme={theme}
+                            id={'details'}
+                            activeBodies={activeBodies}
+                            {...props}
+                          />
 
-                </Box>
-              </div>
+                  </Box>
+                </Grow>
+
+              </Stack>
             </ThemeProvider>
   )
 }
