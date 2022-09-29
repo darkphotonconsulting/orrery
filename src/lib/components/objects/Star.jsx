@@ -27,6 +27,8 @@ export function Star ({
   radius = 10,
   index = 0,
   userData = {},
+  setActiveBodies = () => {},
+  activeBodies=[],
   ...props
 }) {
 
@@ -48,7 +50,22 @@ export function Star ({
       meshRotationZ || 0
     ]}
     onClick={(event) => {
+      console.log('clicked star')
       setActive(!active)
+      const activeNames = activeBodies.map((body) => body.englishName)
+      if (activeNames.includes(userData.star.englishName) ) {
+        const index = activeNames.indexOf(userData.star.englishName)
+        setActiveBodies([
+          ...activeBodies.slice(0, index),
+          ...activeBodies.slice(index + 1, activeBodies.length)
+        ])
+      } else {
+        setActiveBodies([
+          ...activeBodies,
+          userData.star
+        ])
+      }
+
     }}
   >
     {(() => {

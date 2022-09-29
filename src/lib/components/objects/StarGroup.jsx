@@ -12,6 +12,8 @@ import {
 export function StarGroup({
   stars = [],
   planets = [],
+  activeBodies=[],
+  setActiveBodies = () => {},
   ...props
 }) {
   const groupRef = React.useRef()
@@ -46,6 +48,8 @@ export function StarGroup({
           userData={{
             star,
           }}
+          setActiveBodies={setActiveBodies}
+          activeBodies={activeBodies}
         />
       </group>
     )
