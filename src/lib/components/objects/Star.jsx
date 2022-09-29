@@ -7,6 +7,7 @@ import {
 }  from '@react-three/fiber';
 
 export function Star ({
+  theme = {},
   meshPositionX = 0,
   meshPositionY = 0,
   meshPositionZ = 0,

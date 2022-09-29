@@ -1,1 +1,1 @@
-// TODO make real comet component
+// TODO make a real comet component

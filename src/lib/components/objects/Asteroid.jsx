@@ -1,1 +1,1 @@
-// TODO - make real asteroid component
+// TODO - make a real asteroid component

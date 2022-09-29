@@ -7,12 +7,16 @@ import {
   useThree,
 }  from '@react-three/fiber';
 
-import { Html } from '@react-three/drei'
-// import {
-//   ellipsePoints
-// } from '../../tools/Helpers.js'
+/*
+  TODO: import and use Html to conditionally render information about the planet above the planet
+    - the transformation should follow the planets orbital path
+    - the rotation should be such that the text is always facing the camera
+  import { Html } from '@react-three/drei'
+*/
+
 
 export function Planet ({
+  theme = {},
   meshPositionX = 0,
   meshPositionY = 0,
   meshPositionZ = 0,
@@ -54,8 +58,9 @@ export function Planet ({
   const empty = React.useRef()
   const mesh = React.useRef();
   const geom = React.useRef();
-  const orbital = React.useRef();
+  // const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
+
   // TODO: improve planet texturing
   const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpeg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
@@ -72,22 +77,26 @@ export function Planet ({
   points.push(points[0])
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
-
-
-
   useFrame((state, delta) => {
     const t = state.clock.getElapsedTime() * 0.5
     if (animateOrbitalRotation) {
       const x = semimajorAxis * Math.cos(t)
       const y = semiminorAxis * Math.sin(t)
-      // const z = 0
+      /*
+      🤔 how should we handle the zed axis?, we should take into account the inclination of the orbit
+      const z = 0
+      */
+
       mesh.current.position.x = x
       mesh.current.position.z = y
 
     }
 
     if (animateAxialRotation) {
-
+      /*
+        opionated scaling to the rotation speed of the planet
+      +5? 🤔
+      */
       mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
     }
   })
@@ -137,21 +146,14 @@ export function Planet ({
 
     >
 
-      <primitive position={[0,0,0]} ref={empty} object={new THREE.Object3D()} />
-      {/* <Html
-        scale={100}
-        position={[0,5,0]}
-        rotation={[0,0,0]}
-        transform
-        occlude={false}
+      {/* 🔧 an empty at center space which represents the orbiting/rotating body */}
+      <primitive
+        position={[0,0,0]}
+        ref={empty}
+        object={new THREE.Object3D()}
+      />
 
-      >
-        <div
-          className={'annotation'}
-        >
-        {userData.planet.englishName}
-        </div>
-      </Html> */}
+      {/* enable/disable ambient lighting */}
       {(() => {
         if (useAmbientLight) {
           return (
@@ -159,7 +161,7 @@ export function Planet ({
           );
         }
       })()}
-
+      {/* enable/disable spot lighting */}
       {(() => {
         if (useSpotLight || false) {
           return (
@@ -174,6 +176,13 @@ export function Planet ({
           );
         }
       })()}
+      {/*
+        base planet shape
+        🤔: should we use a sphere or a plane?
+        TODO:
+          - improve planet texture appearance
+          - improve planet texture mapping (bump, ocean, cloud, etc.)
+      */}
       <sphereGeometry
         ref={geom}
 
@@ -188,7 +197,12 @@ export function Planet ({
       {(() => {
         if (wireFrame) {
           return (
-            <meshStandardMaterial wireframe attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
+            <meshStandardMaterial
+              wireframe
+              attach='material'
+              color={active ? 'red' : baseColor || 'black'}
+              resolution={[size.width, size.height]}
+            />
           )
         } else {
           return (

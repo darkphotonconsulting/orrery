@@ -3,38 +3,20 @@ import { Leva } from 'leva'
 
 
 /*
-format
+  📝 Formatting
 */
 import {
   Container,
-  // Stack,
   Box
 } from '@mui/material';
 
-/* typography and iconography */
+/*
+ ✍🏼 typography & iconography
+*/
 import {
   Typography
-} from '@mui/material';
+} from '@mui/material'
 
-/* key components */
-import {
-  AppBar,
-  Toolbar,
-  // Chip,
-  Tooltip,
-  IconButton,
-} from '@mui/material';
-
-/*
-transofmrations
- */
-// import {
-//   Slide
-// } from '@mui/material';
-
-/*
-Icons
-*/
 import {
   BugReport,
   QueryStatsRounded,
@@ -43,10 +25,22 @@ import {
 } from '@mui/icons-material'
 
 /*
+  🗝 key components
+*/
+import {
+  AppBar,
+  Toolbar,
+  // Chip,
+  Tooltip,
+  IconButton,
+} from '@mui/material';
+
+
+/*
 TODO: research how to utilize FontAwesome at a project level
 */
 
-export function Menu({
+export function Header({
   theme = {},
   controls = {},
   galaxy = [],
@@ -85,10 +79,10 @@ export function Menu({
         </Leva>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Home Site */}
+
             <Typography>Orrery</Typography>
 
-            {/* Controls */}
+
             <Box>
               <Tooltip
                 title={'Website'}
@@ -104,7 +98,7 @@ export function Menu({
                 </IconButton>
               </Tooltip>
 
-              {/* Orrery Statistics */}
+
               <Tooltip
                 title={'Stats'}
               >
@@ -112,7 +106,7 @@ export function Menu({
                   <QueryStatsRounded />
                 </IconButton>
               </Tooltip>
-              {/* Toggle FullScreen HUD */}
+
               <Tooltip
                 title={detailsPanelExpanded ? 'Collapse Details' : 'Expand Details'}
               >
@@ -120,10 +114,10 @@ export function Menu({
                   {
                     detailsPanelExpanded ? <FullscreenExitRounded /> : <FullscreenRounded />
                   }
-                  {/* <FullscreenExitRounded /> */}
+
                 </IconButton>
               </Tooltip>
-              {/* Show Debug Messages */}
+
               <Tooltip
                 title={'Debug'}
               >

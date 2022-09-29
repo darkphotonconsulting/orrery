@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 
 
 
-import { CelestialBodyScaler } from '../../tools/Scalers.js';
+import { CelestialBodyScaler } from '../../../tools/Scalers.js';
 
 
 // import * as THREE from 'three';

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as THREE from 'three'
 import {
-  // useThree,
   useFrame,
 }  from '@react-three/fiber';
 
@@ -15,17 +14,18 @@ export function Orbital({
   userData = {},
   ...props
 }) {
-
-
   const mesh = React.useRef()
   const geom = React.useRef()
-  // const { size } = useThree()
   const points = []
   for (let i = 0; i < 64; i++) {
     const angle = (i / 64) * 2 * Math.PI
     const x = semimajorAxis * Math.cos(angle)
-    /* 🤔 Possibly Opinionated Calculation
-    - If the semiminorAxis is `Not a Number`, estimate the semiminorAxis by taking .80% of the semimajorAxis
+    /*
+      🤔 This is an opinionated calculation and diverges from reality greatly.
+      - If the semiminorAxis is `Not a Number`, estimate the semiminorAxis by taking .80% of the semimajorAxis
+        - it *seems* like Universe Sandbox 2 has a similar approach.
+          - universe sandbox seems to actually prefer the estimated orbit over the actual orbit
+          - universe sandbox displays the actual orbit as an additiional layer
     */
     const y = isNaN(semiminorAxis)
     ? (semimajorAxis * 0.8) * Math.sin(angle)
@@ -36,7 +36,6 @@ export function Orbital({
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64))
-
   useFrame((state, delta) => {
   })
   return (

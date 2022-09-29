@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   useFrame,
-  // useLoader,
-  // useThree,
 }  from '@react-three/fiber';
 
 import {
@@ -10,6 +8,7 @@ import {
 } from './Star.jsx';
 
 export function StarGroup({
+  theme = {},
   stars = [],
   planets = [],
   activeBodies=[],
