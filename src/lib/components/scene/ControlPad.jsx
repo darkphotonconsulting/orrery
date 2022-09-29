@@ -24,7 +24,7 @@ export function ControlPad({ setControls, ...props}) {
     }),
     helpers: folder({
       axes: true,
-      grid: true,
+      grid: false,
       direction: true
     }),
     lighting: folder({
