@@ -58,13 +58,11 @@ export function Header({
     width,
     setWidth
   ] = React.useState(0)
+
   const [
     height,
     setHeight
   ] = React.useState()
-
-
-
 
   return (
 
