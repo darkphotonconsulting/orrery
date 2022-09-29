@@ -12,14 +12,17 @@ import {
 } from '@mui/material'
 
 
-
-// format
+/*
+  📝 Formatting
+*/
 import {
   Stack,
   Box
 } from '@mui/material'
 
-// transitions
+/*
+  🎥 animation & transitions
+*/
 import {
   Grow
 } from '@mui/material'
@@ -39,13 +42,15 @@ import {
   Loader,
 } from '@react-three/drei';
 
-/* TODO: use physics engine where appropriate
+/* TODO: use the physics engine where appropriate
   import {
     Physics,
   } from "@react-three/cannon";
 */
 
-/* data classes */
+/*
+  📉 data classes
+*/
 import {
   CelestialBodies
 } from './lib/data/CelestialBodies.js';
@@ -54,7 +59,9 @@ import {
   CelestialBodyScaler
 } from './lib/tools/Scalers.js';
 
-/* functional components */
+/*
+  🗝 key components
+*/
 import {
   Navigation
 } from './lib/components/scene/meta/Navigation.jsx'
@@ -98,7 +105,6 @@ import {
 export function App({ ...props}) {
   const theme = createTheme({
     palette: {
-
       primary: {
         light: '#757ce8',
         main: '#3f50b5',
@@ -113,16 +119,20 @@ export function App({ ...props}) {
       },
     },
     components: {
-
     }
   })
+
   console.log({
     event: 'set-theme',
-    theme
+    ...theme
   })
   const canvasRef = React.useRef(null)
   const sceneContainerRef = React.useRef(null)
   const detailsPanelRef = React.useRef(null)
+
+  /*
+    📀 state
+  */
   const [celestialBodies, setCelestialBodies] = React.useState([])
   const [galaxy, setGalaxy ] = React.useState({
     stars: [],
@@ -175,9 +185,10 @@ export function App({ ...props}) {
   ])
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
 
+  /*
+    🛠 handlers
+  */
   const handleDetailsPanelExpanded = (event, expanded) => {
-
-
     setDetailsPanelExpanded(expanded)
     if (expanded) {
 
@@ -205,22 +216,28 @@ export function App({ ...props}) {
       sceneContainerRef.current.style.height = '100vh'
 
     }
-
   }
+
+  /* 💡 effects run when state changes */
   React.useEffect(() => {
-    /* only request data if we need to */
+
     if (celestialBodies.length === 0) {
+      /*
+        fetch celestial bodies from API
+      */
       fetch('https://api.le-systeme-solaire.net/rest.php/bodies')
       .then((response) => {
         const json = response.json();
         return json;
       })
       .then((json) => {
-
         setCelestialBodies(json.bodies)
         const galaxyTool = new CelestialBodies({
           bodies: json.bodies,
         })
+        /*
+         🔪 chop up the data into groups
+        */
         const stars = galaxyTool.stars()
         const planets = galaxyTool.planets()
         const dwarfs = galaxyTool.dwarfs()
@@ -240,6 +257,9 @@ export function App({ ...props}) {
         console.log(error)
       })
     } else {
+    /*
+      💡 scale celestial bodies based on controls state values
+    */
       const scaleTool = new CelestialBodyScaler({})
       const scaler = scaleTool.getTransormationFunction({
         type: controls.scale.type,
@@ -328,6 +348,7 @@ export function App({ ...props}) {
     })
     return max
   }
+
   console.log(
     {
       event: 'distance-summary',
