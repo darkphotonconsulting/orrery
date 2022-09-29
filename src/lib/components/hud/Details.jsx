@@ -2,6 +2,8 @@ import React from 'react';
 import {
   Stack,
   Box,
+  Paper,
+  Typography,
   // Tooltip,
   // IconButton,
 } from '@mui/material';
@@ -10,14 +12,38 @@ export function Details({
   activeBodies=[]
 }) {
   return (
-    <Stack>
+    <Stack
+      sx={{
+        backgroundColor: 'primary.main',
+      }}
+    >
       {
         activeBodies.length && activeBodies.length > 0
         ? (
-          <Box>{activeBodies.length} active</Box>
+          <Stack
+            sx={{
+              // backgroundColor: 'primary.main',
+            }}
+          >
+            <Box>
+              <Paper>
+                <Typography>{activeBodies.length} active</Typography>
+              </Paper>
+
+            </Box>
+
+          </Stack>
         )
         : (
-          <Box>none active</Box>
+          <Box
+            sx={{
+              // backgroundColor: 'primary.main',
+            }}
+          >
+            <Paper>
+              <Typography>0 active</Typography>
+            </Paper>
+          </Box>
         )
       }
     </Stack>
