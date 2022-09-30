@@ -11,10 +11,13 @@ import {
 
 /*
  ✍🏼 typography & iconography
-*/
+
 import {
   Typography,
 } from '@mui/material';
+
+*/
+
 
 /*
   🎥 animation & transitions
@@ -53,9 +56,6 @@ function Selections({
       padding: '5px',
     }}
   >
-    <Paper>
-      <Typography>Selections {activeBodies.length}</Typography>
-    </Paper>
 
     <Box
       display={'flex'}
@@ -96,6 +96,7 @@ export function Details({
   return (
     <Stack
       id={'details'}
+      direction={'column'}
     >
       <Selections activeBodies={activeBodies} />
     </Stack>
