@@ -68,20 +68,23 @@ export function Header({
 
       <AppBar
         position={'static'}
+        id={'header'}
       >
-        <Leva>
+        <Leva
+          id={'levaConfiguration'}
+        >
           fill={false}
           collapsed={true}
           hideTitleBar={true}
           oneLineLabels={true}
         </Leva>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
+        <Container maxWidth="xl" id={'headerBoundingBox'}>
+          <Toolbar disableGutters id={'headerToolbar'}>
 
-            <Typography>Orrery</Typography>
+            <Typography id={'headerTitle'}>Orrery</Typography>
 
 
-            <Box>
+            <Box id={'headerButtons'}>
               <Tooltip
                 title={'Website'}
               >
