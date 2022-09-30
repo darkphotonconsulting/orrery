@@ -30,7 +30,27 @@ import {
   Grow
 } from '@mui/material'
 
-/* TODO: investigate usage of StyledEngineProvider
+/*
+ ✍🏼 typography & iconography
+*/
+import {
+  Typography
+} from '@mui/material'
+
+import {
+  DragHandleRounded
+} from '@mui/icons-material'
+
+/*
+  🗝 key components
+*/
+import {
+  IconButton,
+  Tooltip
+} from '@mui/material'
+
+/*
+  TODO: investigate usage of StyledEngineProvider
   import {
     StyledEngineProvider
   } from '@mui/material/styles';
@@ -187,7 +207,10 @@ export function App({ ...props}) {
 
   ])
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
-
+  // const [ detailsPanelPosition, setDetailsPanelPosition ] = React.useState(null)
+  const [ detailsPanelSize, setDetailsPanelSize ] = React.useState(null)
+  const [ canvasPanelSize, setCanvasPanelSize ] = React.useState(null)
+  const [ draggablePosition, setDraggablePosition ] = React.useState(null)
   /*
     🛠 handlers
   */
@@ -202,7 +225,7 @@ export function App({ ...props}) {
       })
 
       detailsPanelRef.current.style.width = '100vw'
-      detailsPanelRef.current.style.height = '20vh'
+      detailsPanelRef.current.style.height = '200px'
       detailsPanelRef.current.style.opacity = 1
       sceneContainerRef.current.style.height = '80vh'
 
@@ -219,6 +242,40 @@ export function App({ ...props}) {
       sceneContainerRef.current.style.height = '100vh'
 
     }
+  }
+
+
+  const handleDetailsPanelInitialized = (event) => {
+    const canvasContainer = document.getElementById('canvasContainer')
+    const detailsContainer = document.getElementById('detailsContainer')
+    setDetailsPanelSize(parseInt(detailsContainer.offsetHeight))
+    setCanvasPanelSize(parseInt(canvasContainer.offsetHeight))
+    setDraggablePosition(parseInt(event.clientY))
+    console.log({
+      event: 'dragging-details-panel'
+    })
+    // setDetailsPa
+
+  }
+  const handleDetailsPanelResize = (event) => {
+    const canvasContainer = document.getElementById('canvasContainer')
+    const detailsContainer = document.getElementById('detailsContainer')
+
+    // const currentY = draggablePosition - parseInt(event.clientX)
+
+    console.log({
+      event: 'resize-details-panel',
+      eventDetails: event,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      canvasHeight:  `${parseInt(canvasPanelSize) + parseInt( event.clientY - draggablePosition)}px`,
+      detailsHeight:  `${detailsContainer.style.height}`,
+      // canvasDiv: canvasContainer,
+      // detailsDiv: detailsContainer
+    })
+    // detailsContainer.style.height = `${parseInt(detailsPanelSize) + parseInt( event.clientY - draggablePosition)}px`
+    canvasContainer.style.height = `${parseInt(canvasPanelSize) + parseInt( event.clientY - draggablePosition)}px`
+    detailsContainer.style.height = `${parseInt(detailsPanelSize) - parseInt( event.clientY - draggablePosition)}px`
   }
 
   /* 💡 effects run when state changes */
@@ -502,6 +559,7 @@ export function App({ ...props}) {
                     ref={detailsPanelRef}
                     id={'detailsContainer'}
                     width={'100%'}
+                    draggable={true}
 
                     sx={{
                       backgroundColor: 'primary.main',
@@ -511,6 +569,26 @@ export function App({ ...props}) {
                       minWidth: '100vw',
                     }}
                   >
+                          <Tooltip
+                            title={'Resize Details'}
+                          >
+                            <IconButton
+                              id={'resizeDetails'}
+                              onClick={(e) => {handleDetailsPanelResize(e)}}
+                              draggable={true}
+                              onDragStart = {(e) => {handleDetailsPanelInitialized(e)}}
+                              onDrag = {(e) => {handleDetailsPanelResize(e)}}
+                              sx={{
+                                position: 'fixed',
+                                margin: 0,
+                                left: '50%',
+                                cursor: 'row-resize',
+                              }}
+                            >
+                              <DragHandleRounded/>
+                            </IconButton>
+                          </Tooltip>
+
                           <Details
                             theme={theme}
                             id={'details'}
