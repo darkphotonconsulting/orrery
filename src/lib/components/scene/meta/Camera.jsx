@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { PerspectiveCamera } from '@react-three/drei';
 import {
   useThree,
   useFrame
@@ -15,7 +15,12 @@ export function Camera({ fov = 75, position = [10,15,10], ...props}) {
 
   return (
     <group>
-      <cameraHelper ref={ref} args={[camera, domElement]}/>
+      {/* <cameraHelper ref={ref} args={[camera, domElement]}/> */}
+      <PerspectiveCamera
+        makeDefault
+        position={position}
+        fov={fov}
+      />
     </group>
 
   )
