@@ -217,7 +217,6 @@ export function App({ ...props}) {
   const handleDetailsPanelExpanded = (event, expanded) => {
     setDetailsPanelExpanded(expanded)
     if (expanded) {
-
       console.log({
         event: 'show-details-panel',
         expanded,
@@ -254,15 +253,11 @@ export function App({ ...props}) {
     console.log({
       event: 'dragging-details-panel'
     })
-    // setDetailsPa
-
   }
+
   const handleDetailsPanelResize = (event) => {
     const canvasContainer = document.getElementById('canvasContainer')
     const detailsContainer = document.getElementById('detailsContainer')
-
-    // const currentY = draggablePosition - parseInt(event.clientX)
-
     console.log({
       event: 'resize-details-panel',
       eventDetails: event,
@@ -273,7 +268,7 @@ export function App({ ...props}) {
       // canvasDiv: canvasContainer,
       // detailsDiv: detailsContainer
     })
-    // detailsContainer.style.height = `${parseInt(detailsPanelSize) + parseInt( event.clientY - draggablePosition)}px`
+
     canvasContainer.style.height = `${parseInt(canvasPanelSize) + parseInt( event.clientY - draggablePosition)}px`
     detailsContainer.style.height = `${parseInt(detailsPanelSize) - parseInt( event.clientY - draggablePosition)}px`
   }
