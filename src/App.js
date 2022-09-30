@@ -502,7 +502,7 @@ export function App({ ...props}) {
                     ref={detailsPanelRef}
                     id={'detailsContainer'}
                     width={'100%'}
-                    // height={'inherit'}
+
                     sx={{
                       backgroundColor: 'primary.main',
                       zIndex: 100,
