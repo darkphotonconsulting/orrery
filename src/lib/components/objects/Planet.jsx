@@ -78,10 +78,11 @@ export function Planet ({
   const curve = new THREE.CatmullRomCurve3(points)
   curve.closed = true
   useFrame((state, delta) => {
+    const earthYear = 2 * Math.PI * (1 /60) * (1/60)
     const t = state.clock.getElapsedTime() * 0.5
     if (animateOrbitalRotation) {
-      const x = semimajorAxis * Math.cos(t)
-      const y = semiminorAxis * Math.sin(t)
+      const x = semimajorAxis * Math.cos(t * (earthYear * userData.planet.sideralOrbit))
+      const y = semiminorAxis * Math.sin(t * (earthYear * userData.planet.sideralOrbit))
       /*
       🤔 how should we handle the zed axis?, we should take into account the inclination of the orbit
       const z = 0
@@ -93,11 +94,9 @@ export function Planet ({
     }
 
     if (animateAxialRotation) {
-      /*
-        opionated scaling to the rotation speed of the planet
-      +5? 🤔
-      */
-      mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
+
+      // mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
+      mesh.current.rotation.y += earthYear * userData.planet.sideralRotation
     }
   })
   console.log({
