@@ -3,8 +3,11 @@ import * as THREE from 'three';
 
 import './styles.css';
 
-// theme
-// import * as Colors from '@mui/material/colors'
+/*
+  theme, fonts, colors
+*/
+
+
 import {
   createTheme,
   ThemeProvider,
