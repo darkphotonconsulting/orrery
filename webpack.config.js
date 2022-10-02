@@ -6,6 +6,15 @@ module.exports = {
   mode: "development",
   module: {
     rules: [
+      /* load GLSL files */
+      {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        exclude: /node_modules/,
+        use: [
+          'raw-loader',
+          'glslify-loader'
+        ]
+      },
       /* load images */
       {
         test: /\.(png|jp(e*)g|svg|gif)$/,
