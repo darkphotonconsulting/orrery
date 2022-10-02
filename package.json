@@ -27,6 +27,21 @@
   ],
   "author": "",
   "license": "ISC",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "plugins": [
+            "glslify"
+          ]
+        }
+      ]
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -43,11 +58,17 @@
     "@react-three/cannon": "^6.4.0",
     "@react-three/drei": "^9.25.3",
     "@react-three/fiber": "^8.6.2",
+    "babel-plugin-glsl": "^1.0.0",
+    "babel-plugin-glslify": "^2.0.0",
     "d3-scale": "^4.0.2",
+    "glsl-noise": "^0.0.0",
+    "glslify": "^7.1.1",
+    "glslify-loader": "^2.0.0",
     "https": "^1.0.0",
     "lamina": "^1.1.23",
     "leva": "^0.9.31",
     "node-polyfill-webpack-plugin": "^2.0.1",
+    "raw-loader": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
