@@ -1,12 +1,17 @@
 import React from 'react';
 
 import * as THREE from 'three'
+// import
+// import fs from 'fs'
+// import glsl from 'glslify'
 import {
   useFrame,
   useLoader,
   useThree,
 }  from '@react-three/fiber';
 
+// import vertexShader from '../../../assets/shaders/planetVertex.glsl'
+// import meta from '../../../assets/bodies.json'
 /*
   TODO: import and use Html to conditionally render information about the planet above the planet
     - the transformation should follow the planets orbital path
@@ -53,6 +58,9 @@ export function Planet ({
     - I need to rethink how to handle semiminorAxis, objectMass and objectVolume as they are all based on get/set methods and calculated at runtime.
       - I want to preserve this behavior as it allows ease of scaling and manipulation of the object
   */
+  // console.log(vertexShader.text())
+  // console.log(glsl)
+  // console.log(meta)
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
   const { size } = useThree()
   const empty = React.useRef()
@@ -192,6 +200,8 @@ export function Planet ({
         ]}
         attach='geometry'
       />
+
+      {/* improve texturing, bump, masking, atmosphere, etc. */}
 
       {(() => {
         if (wireFrame) {
