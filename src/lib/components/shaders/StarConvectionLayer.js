@@ -11,9 +11,9 @@ export class StarConvectionLayer extends Abstract {
   static u_scale = 1
   static u_time = 1
   static u_color = '#666666'
-  // static u_noiseType = 'perlin'
 
   static fragmentShader = glsl`
+
     uniform vec3 u_color;
     uniform vec3 u_colorA;
     uniform vec3 u_colorB;
@@ -126,7 +126,6 @@ export class StarConvectionLayer extends Abstract {
     }
 
     vec4 main() {
-      // Local variables must be prefixed by "f_"
       float f_n = lamina_noise_white((v_Position + u_offset) * u_scale);
       float f_step1 = 0.;
       float f_step2 = 0.2;
@@ -174,7 +173,6 @@ export class StarConvectionLayer extends Abstract {
   `
 
   static vertexShader = glsl`
-    // Varyings must be prefixed by "v_"
     varying vec3 v_Position;
     varying vec2 v_Uv;
 
