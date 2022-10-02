@@ -6,10 +6,17 @@ export function Lighting({
   ground = '#0000ff',
   ...props
 }) {
+  const lightingRef = React.useRef()
   return (
-    <group>
+    <group >
       <fog attach='fog' args={['#202030', 10, 25]} />
-      <hemisphereLight intensity={intensity} color={color} groundColor={ground} />
+      <hemisphereLight
+        ref={lightingRef}
+        intensity={intensity}
+        color={color}
+        groundColor={ground}
+        scale={1}
+      />
     </group>
   )
 }
