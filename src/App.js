@@ -466,7 +466,7 @@ export function App({ ...props}) {
                         position: [
                           10,
                           10,
-                          10
+                          15
                         ],
                         fov: 55,
                         near: 0.1,
