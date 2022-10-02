@@ -11,7 +11,7 @@ import { folder, useControls } from 'leva'
 
 export function ControlPad({ setControls, ...props}) {
   const ref = React.useRef()
-  const controls = useControls('control-center', {
+  const controls = useControls('mission-control', {
     camera: folder({
       position: {
         value: [0, 0, 0],
