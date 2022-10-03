@@ -15,7 +15,7 @@ export function Camera({ fov = 75, position = [10,15,10], ...props}) {
   } = useThree();
   useFrame(({ clock }) => {
     camera.fov = fov
-    console.log(cameraRef)
+    // console.log(cameraRef)
   })
 
 
