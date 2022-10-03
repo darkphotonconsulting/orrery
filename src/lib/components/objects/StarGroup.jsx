@@ -21,6 +21,9 @@ export function StarGroup({
   })
 
   const renderedStars = stars.map((star, index) => {
+    const starName = star.englishName.toLowerCase()
+
+
     return (
       <group
         key={`star-group-${star.englishName.toLowerCase()}`}
@@ -49,6 +52,9 @@ export function StarGroup({
           index={0}
           userData={{
             star,
+            enhancements: Object.keys(enhancements?.stars).includes(starName)
+              ? enhancements.stars[starName]
+              : enhancements.stars.default,
           }}
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
