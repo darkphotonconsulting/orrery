@@ -10,8 +10,10 @@ import {
   Orbital
 } from './Orbital.jsx'
 export function PlanetGroup({
+  theme = {},
   stars = [],
   planets = [],
+  enhancements = {},
   showOrbital = true,
   animateAxialRotation = false,
   animateOrbitalRotation = false,
@@ -25,8 +27,13 @@ export function PlanetGroup({
   })
 
   const renderedPlanets = planets.map((planet, index) => {
+    const planetName = planet.englishName.toLowerCase()
+    if (Object.keys(enhancements?.planets).includes(planetName)) {
+      console.log('enhancing planet', planetName)
+    }
+
     return (
-      <group>
+      <group key={`planet-group-${planet.englishName.toLowerCase()}`}>
         <Planet
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
@@ -34,7 +41,10 @@ export function PlanetGroup({
           key={`planet-body-${planet.englishName.toLowerCase()}`}
           userData={{
             planet,
-            stars
+            stars,
+            enhancements: Object.keys(enhancements?.planets).includes(planetName)
+              ? enhancements.planets[planetName]
+              : enhancements.planets.default,
           }}
           wireFrame={false}
           animateOrbitalRotation={animateOrbitalRotation}

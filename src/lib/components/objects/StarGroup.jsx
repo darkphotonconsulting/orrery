@@ -11,6 +11,7 @@ export function StarGroup({
   theme = {},
   stars = [],
   planets = [],
+  enhancements = {},
   activeBodies=[],
   setActiveBodies = () => {},
   ...props
@@ -21,7 +22,9 @@ export function StarGroup({
 
   const renderedStars = stars.map((star, index) => {
     return (
-      <group>
+      <group
+        key={`star-group-${star.englishName.toLowerCase()}`}
+      >
         <Star
           scale={[1.0, 1.0, 1.0]}
           key={`star-body-${star.englishName.toLowerCase()}`}
