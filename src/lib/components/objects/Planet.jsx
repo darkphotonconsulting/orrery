@@ -71,9 +71,9 @@ export function Planet ({
   // console.log(meta)
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
   const { size } = useThree()
-  const empty = React.useRef()
-  const mesh = React.useRef();
-  const geom = React.useRef();
+  const emptyRef = React.useRef()
+  const meshRef = React.useRef();
+  const geomRef = React.useRef();
   // const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
 
@@ -104,15 +104,15 @@ export function Planet ({
       const z = 0
       */
 
-      mesh.current.position.x = x
-      mesh.current.position.z = y
+      meshRef.current.position.x = x
+      meshRef.current.position.z = y
 
     }
 
     if (animateAxialRotation) {
 
       // mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
-      mesh.current.rotation.y += earthYear * userData.planet.sideralRotation
+      meshRef.current.rotation.y += earthYear * userData.planet.sideralRotation
     }
   })
   console.log({
@@ -127,123 +127,108 @@ export function Planet ({
   })
 
   return (
-    <group>
-
-    <mesh
-      ref={mesh}
-      scale={active ? 1.5 : 1}
-      position={[
-        meshPositionX || 0,
-        meshPositionY || 0,
-        meshPositionZ || 0
-      ]}
-      rotation={[
-        meshRotationX || 0,
-        meshRotationY || 0,
-        meshRotationZ || 0
-      ]}
-      onClick={(event) => {
-        setActive(!active)
-        const activeNames = activeBodies.map((body) => body.englishName)
-        if (activeNames.includes(userData.planet.englishName) && !active === false) {
-          const index = activeNames.indexOf(userData.planet.englishName)
-          setActiveBodies([
-            ...activeBodies.slice(0, index),
-            ...activeBodies.slice(index +1, activeBodies.length)
-          ])
-        } else {
-          setActiveBodies([
-            ...activeBodies,
-            userData.planet
-          ])
-        }
-      }}
-
+    <group
+      key={`planet-group-${userData.planet.englishName}`}
     >
-
-      {/* 🔧 an empty at center space which represents the orbiting/rotating body */}
-      <primitive
-        position={[0,0,0]}
-        ref={empty}
-        object={new THREE.Object3D()}
-      />
-
-      {/* enable/disable ambient lighting */}
-      {(() => {
-        if (useAmbientLight) {
-          return (
-            <ambientLight intensity={lightIntensity || 0.5} />
-          );
-        }
-      })()}
-      {/* enable/disable spot lighting */}
-      {(() => {
-        if (useSpotLight || false) {
-          return (
-            <spotLight
-              position={[
-                spotlightPositionX || 10,
-                spotlightPositionY || 15,
-                spotlightPositionZ || 10
-              ]}
-              angle={spotlightAngle || 0.3}
-            />
-          );
-        }
-      })()}
-      {/*
-        base planet shape
-        🤔: should we use a sphere or a plane?
-        TODO:
-          - improve planet texture appearance
-          - improve planet texture mapping (bump, ocean, cloud, etc.)
-      */}
-      <sphereGeometry
-        ref={geom}
-
-        args={[
-          radius || 0.7,
-          widthSections || 30,
-          heightSections || 30
+      <mesh
+        key={`planet-mesh-${userData.planet.englishName}`}
+        ref={meshRef}
+        scale={active ? 1.5 : 1}
+        position={[
+          meshPositionX || 0,
+          meshPositionY || 0,
+          meshPositionZ || 0
         ]}
-        attach='geometry'
+        rotation={[
+          meshRotationX || 0,
+          meshRotationY || 0,
+          meshRotationZ || 0
+        ]}
+        onClick={(event) => {
+          setActive(!active)
+          const activeNames = activeBodies.map((body) => body.englishName)
+          if (activeNames.includes(userData.planet.englishName) && !active === false) {
+            const index = activeNames.indexOf(userData.planet.englishName)
+            setActiveBodies([
+              ...activeBodies.slice(0, index),
+              ...activeBodies.slice(index +1, activeBodies.length)
+            ])
+          } else {
+            setActiveBodies([
+              ...activeBodies,
+              userData.planet
+            ])
+          }
+        }}
+
       >
 
-      </sphereGeometry>
-      <LayerMaterial
-          lighting={'phong'}
-          resolution={[size.width, size.height]}
+        {/* 🔧 an empty at center space which represents the orbiting/rotating body */}
+        <primitive
+          key={`planet-empty-${userData.planet.englishName}`}
+          position={[0,0,0]}
+          ref={emptyRef}
+          object={new THREE.Object3D()}
+        />
+
+        {/* enable/disable ambient lighting */}
+        {(() => {
+          if (useAmbientLight) {
+            return (
+              <ambientLight
+                key={`planet-ambient-light-${userData.planet.englishName}`}
+                intensity={lightIntensity || 0.5}
+              />
+            );
+          }
+        })()}
+        {/* enable/disable spot lighting */}
+        {(() => {
+          if (useSpotLight || false) {
+            return (
+              <spotLight
+                key={`planet-spot-light-${userData.planet.englishName}`}
+                position={[
+                  spotlightPositionX || 10,
+                  spotlightPositionY || 15,
+                  spotlightPositionZ || 10
+                ]}
+                angle={spotlightAngle || 0.3}
+              />
+            );
+          }
+        })()}
+        {/*
+          base planet shape
+          🤔: should we use a sphere or a plane?
+          TODO:
+            - improve planet texture appearance
+            - improve planet texture mapping (bump, ocean, cloud, etc.)
+        */}
+        <sphereGeometry
+          key={`planet-geometry-${userData.planet.englishName}`}
+          ref={geomRef}
+          args={[
+            radius || 0.7,
+            widthSections || 30,
+            heightSections || 30
+          ]}
+          attach='geometry'
         >
-          <Texture
-            map={baseTexture}
-            alpha={1}
-            mode={'normal'}
-          />
-      </LayerMaterial>
 
-
-      {/* improve texturing, bump, masking, atmosphere, etc. */}
-
-      {/* {(() => {
-        if (wireFrame) {
-          return (
-            <meshStandardMaterial
-              wireframe
-              attach='material'
-              color={active ? 'red' : baseColor || 'black'}
-              resolution={[size.width, size.height]}
-            />
-          )
-        } else {
-          return (
-            <meshPhysicalMaterial
+        </sphereGeometry>
+        <LayerMaterial
+            key={`planet-layers-${userData.planet.englishName}`}
+            lighting={'phong'}
+            resolution={[size.width, size.height]}
+          >
+            <Texture
               map={baseTexture}
+              alpha={1}
+              mode={'normal'}
             />
-          )
-        }
-      })()} */}
-
-  </mesh>
+        </LayerMaterial>
+    </mesh>
   </group>
  )
 
