@@ -74,6 +74,10 @@ import {
 /*
   📉 data classes
 */
+
+import {
+  enhancementData
+} from './lib/data/EnhancementData.js'
 import {
   CelestialBodies
 } from './lib/data/CelestialBodies.js';
@@ -206,6 +210,8 @@ export function App({ ...props}) {
   const [activeBodies, setActiveBodies] = React.useState([
 
   ])
+  const [enhancedData, setEnhancedData] = React.useState({})
+
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
   // const [ detailsPanelPosition, setDetailsPanelPosition ] = React.useState(null)
   const [ detailsPanelSize, setDetailsPanelSize ] = React.useState(null)
@@ -287,6 +293,10 @@ export function App({ ...props}) {
       })
       .then((json) => {
         setCelestialBodies(json.bodies)
+        setEnhancedData({
+          ...enhancedData,
+          ...enhancementData
+        })
         const galaxyTool = new CelestialBodies({
           bodies: json.bodies,
         })
@@ -525,6 +535,7 @@ export function App({ ...props}) {
                         <StarGroup
                           stars={scaledGalaxy.stars}
                           planets={scaledGalaxy.planets}
+                          enhancements={enhancedData}
                           activeBodies={activeBodies}
                           setActiveBodies={setActiveBodies}
                         />
@@ -533,6 +544,7 @@ export function App({ ...props}) {
                         <PlanetGroup
                           planets={scaledGalaxy.planets}
                           stars={scaledGalaxy.stars}
+                          enhancements={enhancedData}
                           showOrbital={controls.scene.paths}
                           animateAxialRotation={controls.scene.rotations}
                           animateOrbitalRotation={controls.scene.orbits}
