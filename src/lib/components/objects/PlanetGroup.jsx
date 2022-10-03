@@ -33,7 +33,7 @@ export function PlanetGroup({
     }
 
     return (
-      <group key={`planet-group-${planet.englishName.toLowerCase()}`}>
+      <group key={`planet-container-${planet.englishName.toLowerCase()}`}>
         <Planet
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
