@@ -150,7 +150,7 @@ export function Star ({
 
       </sphereGeometry>
       <DebugLayerMaterial
-          lighting={'basic'}
+          lighting={'phong'}
           color={'#D86433'}
 
         >
