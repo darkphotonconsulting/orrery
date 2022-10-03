@@ -10,6 +10,14 @@ import {
   useThree,
 }  from '@react-three/fiber';
 
+
+import {
+  LayerMaterial,
+  DebugLayerMaterial,
+  Texture,
+  Noise
+} from 'lamina'
+
 // import vertexShader from '../../../assets/shaders/planetVertex.glsl'
 // import meta from '../../../assets/bodies.json'
 /*
@@ -199,11 +207,24 @@ export function Planet ({
           heightSections || 30
         ]}
         attach='geometry'
-      />
+      >
+
+      </sphereGeometry>
+      <LayerMaterial
+          lighting={'phong'}
+          resolution={[size.width, size.height]}
+        >
+          <Texture
+            map={baseTexture}
+            alpha={1}
+            mode={'normal'}
+          />
+      </LayerMaterial>
+
 
       {/* improve texturing, bump, masking, atmosphere, etc. */}
 
-      {(() => {
+      {/* {(() => {
         if (wireFrame) {
           return (
             <meshStandardMaterial
@@ -220,7 +241,7 @@ export function Planet ({
             />
           )
         }
-      })()}
+      })()} */}
 
   </mesh>
   </group>
