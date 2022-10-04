@@ -83,6 +83,8 @@ export function Planet ({
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
 
+
+
   const points = []
   for (let i = 0; i < 64; i++) {
     const angle = (i / 64) * 2 * Math.PI
@@ -100,8 +102,13 @@ export function Planet ({
       const x = semimajorAxis * Math.cos(t * (earthYear * userData.planet.sideralOrbit))
       const y = semiminorAxis * Math.sin(t * (earthYear * userData.planet.sideralOrbit))
       /*
-      🤔 how should we handle the zed axis?, we should take into account the inclination of the orbit
-      const z = 0
+      TODO: handle the orbital inclication
+
+        The planets orbit the sun at different inclinations, this should be reflected in the orbital path of the planet.
+        - the inclination is the angle between the orbital plane and the ecliptic plane
+
+        - 🤔 we should take into account the inclination of the orbit?
+          - const x = 0 (currently, all orbital rotation is on 0 on the x axis)
       */
 
       meshRef.current.position.x = x
