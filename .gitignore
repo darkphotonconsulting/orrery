@@ -148,3 +148,4 @@ dist
 .npmrc
 
 .junk
+.DS_Store
