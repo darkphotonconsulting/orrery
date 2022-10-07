@@ -82,6 +82,10 @@ export function Planet ({
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
+  const bumpTexture = useLoader(THREE.TextureLoader, `/textures/bump/${userData.planet.englishName.toLowerCase()}.jpg`)
+  bumpTexture.wrapS = THREE.RepeatWrapping;
+  bumpTexture.wrapT = THREE.RepeatWrapping;
+  bumpTexture.repeat.set( 1, 1 );
 
 
 
@@ -226,13 +230,17 @@ export function Planet ({
         </sphereGeometry>
         <LayerMaterial
             key={`planet-layers-${userData.planet.englishName}`}
-            lighting={'phong'}
+            lighting={'standard'}
             resolution={[size.width, size.height]}
           >
             <Texture
               map={baseTexture}
+              displacementMap={bumpTexture}
               alpha={1}
+              depthTest={true}
+              depthWrite={true}
               mode={'normal'}
+              displacementScale={1}
             />
         </LayerMaterial>
     </mesh>
