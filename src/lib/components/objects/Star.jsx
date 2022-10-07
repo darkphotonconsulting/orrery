@@ -55,7 +55,7 @@ export function Star ({
   const starRef = React.useRef();
   const noiseRef = React.useRef();
   const convectionRef = React.useRef();
-  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.star.englishName.toLowerCase()}.jpeg`)
+  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.star.englishName.toLowerCase()}.jpg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );

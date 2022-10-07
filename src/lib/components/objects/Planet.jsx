@@ -78,7 +78,7 @@ export function Planet ({
   const [active, setActive] = React.useState(false)
 
   // TODO: improve planet texturing
-  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpeg`)
+  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
