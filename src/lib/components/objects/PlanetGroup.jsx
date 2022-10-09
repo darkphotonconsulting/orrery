@@ -19,6 +19,7 @@ export function PlanetGroup({
   animateOrbitalRotation = false,
   activeBodies=[],
   setActiveBodies = () => {},
+  controls = {},
   ...props
 }) {
 
@@ -28,15 +29,16 @@ export function PlanetGroup({
 
   const renderedPlanets = planets.map((planet, index) => {
     const planetName = planet.englishName.toLowerCase()
-    if (Object.keys(enhancements?.planets).includes(planetName)) {
-      console.log('enhancing planet', planetName)
-    }
+    // if (Object.keys(enhancements?.planets).includes(planetName)) {
+    //   console.log('enhancing planet', planetName)
+    // }
 
     return (
       <group key={`planet-container-${planet.englishName.toLowerCase()}`}>
         <Planet
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
+          controls={controls}
           scale={[1.0, 1.0, 1.0]}
           key={`planet-body-${planet.englishName.toLowerCase()}`}
           userData={{
@@ -65,6 +67,7 @@ export function PlanetGroup({
           }
           radius={Math.abs(planet.equaRadius)}
           index={index}
+
         />
         {
           showOrbital ?

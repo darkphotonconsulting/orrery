@@ -39,8 +39,8 @@ export function Star ({
   spotlightPositionZ = 0,
   spotlightAngle = 0.3,
   lightIntensity = 0.5,
-  widthSections = 30,
-  heightSections = 30,
+  widthSections = 50,
+  heightSections = 50,
   wireFrame = true,
   baseColor = 'green',
   radius = 10,
@@ -48,14 +48,19 @@ export function Star ({
   userData = {},
   setActiveBodies = () => {},
   activeBodies=[],
+  controls = {},
   ...props
 }) {
 
   const { size } = useThree()
-  const starRef = React.useRef();
-  const noiseRef = React.useRef();
+  const groupRef = React.useRef()
+  const meshRef = React.useRef()
+  const geomRef = React.useRef();
+  const layerMaterialRef = React.useRef();
+  const textureRef = React.useRef();
+  // const noiseRef = React.useRef();
   const convectionRef = React.useRef();
-  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.star.englishName.toLowerCase()}.jpg`)
+  const baseTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.star.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
@@ -64,10 +69,10 @@ export function Star ({
   const [active, setActive] = React.useState(false)
 
   useFrame((state, delta) => {
-    const earthYear = 2 * Math.PI * (1 /60) * (1/60)
+    // const earthYear = 2 * Math.PI * (1 /60) * (1/60)
     const t = state.clock.getElapsedTime()
     if (convectionRef.current) {
-      // console.log(convectionRef)
+
       convectionRef.current.time = t
       convectionRef.current.scale += t
     }
@@ -75,8 +80,9 @@ export function Star ({
 
 
   return (
-    <group>
+    <group ref={groupRef}>
       <mesh
+      ref={meshRef}
       scale={active ? 1.5 : 1}
       position={[
         meshPositionX || 0,
@@ -138,8 +144,8 @@ export function Star ({
           );
         }
       })()}
-      <sphereGeometry
-        ref={starRef}
+      <sphereBufferGeometry
+        ref={geomRef}
         args={[
           radius || 0.7,
           widthSections || 30,
@@ -148,14 +154,18 @@ export function Star ({
         attach='geometry'
       >
 
-      </sphereGeometry>
-      <DebugLayerMaterial
-          lighting={'phong'}
+      </sphereBufferGeometry>
+      <LayerMaterial
+          ref={layerMaterialRef}
+          lighting={'standard'}
           color={'#D86433'}
+          side={THREE.DoubleSide}
+          emissive={new THREE.Color('#D86433')}
 
         >
 
           <Texture
+            ref={textureRef}
             map={baseTexture}
             alpha={1}
             mode={'multiply'}
@@ -175,7 +185,7 @@ export function Star ({
             mode={'multiply'}
           /> */}
 
-        </DebugLayerMaterial>
+        </LayerMaterial>
 
       {/* {(() => {
         if (wireFrame) {

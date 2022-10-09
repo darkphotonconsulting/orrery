@@ -14,6 +14,7 @@ export function StarGroup({
   enhancements = {},
   activeBodies=[],
   setActiveBodies = () => {},
+  controls = {},
   ...props
 }) {
   const groupRef = React.useRef()
@@ -58,6 +59,7 @@ export function StarGroup({
           }}
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
+          controls={controls}
         />
       </group>
     )

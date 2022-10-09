@@ -7,15 +7,19 @@ import {
 
 
 export function Background({
-  radius = 100,
-  depth = 50,
+  radius = 1000,
+  depth = 250000,
   count = 15000,
-  factor = 5,
+  factor = 1,
   saturation = 1,
-  speed = 1,
+  speed = 2,
   fade = true,
+  controls = {},
+  scaledGalaxy = {},
   ...props
 }) {
+  const groupRef = React.useRef()
+  // const backgroundRef = React.useRef()
   const backgroundStars = React.useRef()
   // useFrame(({ clock }) => {
 
@@ -23,7 +27,7 @@ export function Background({
   // })
   return (
 
-    <group>
+    <group ref={groupRef}>
       {
         fade
         ?
@@ -39,6 +43,7 @@ export function Background({
         />
         :
         <Stars
+          ref={backgroundStars}
           radius={radius}
           depth={depth}
           count={count}

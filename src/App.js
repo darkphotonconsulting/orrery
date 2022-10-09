@@ -56,6 +56,10 @@ import {
   } from '@mui/material/styles';
 */
 
+//
+import {
+  useThree
+} from '@react-three/fiber'
 // three-Fiber
 import {
   Canvas,
@@ -149,6 +153,14 @@ export function App({ ...props}) {
     }
   })
 
+  // const { gl, scene } = useThree()
+  console.log({
+    event: 'app-load',
+    time: new Date().toISOString(),
+    // gl: gl,
+    // scene: scene
+  })
+
   console.log({
     event: 'set-theme',
     ...theme
@@ -179,7 +191,7 @@ export function App({ ...props}) {
   })
   const [controls, setControls] = React.useState({
     camera: {
-      position: [0, 0, 0],
+      position: [150, 150, 250],
       rotation: [0, 0, 0],
       fov: 75,
     },
@@ -205,6 +217,7 @@ export function App({ ...props}) {
       rotations: true,
       orbits: true,
       paths: true,
+      resolution: '4k'
     }
   })
   const [activeBodies, setActiveBodies] = React.useState([
@@ -217,6 +230,7 @@ export function App({ ...props}) {
   const [ detailsPanelSize, setDetailsPanelSize ] = React.useState(null)
   const [ canvasPanelSize, setCanvasPanelSize ] = React.useState(null)
   const [ draggablePosition, setDraggablePosition ] = React.useState(null)
+
   /*
     🛠 handlers
   */
@@ -271,8 +285,6 @@ export function App({ ...props}) {
       clientY: event.clientY,
       canvasHeight:  `${parseInt(canvasPanelSize) + parseInt( event.clientY - draggablePosition)}px`,
       detailsHeight:  `${detailsContainer.style.height}`,
-      // canvasDiv: canvasContainer,
-      // detailsDiv: detailsContainer
     })
 
     canvasContainer.style.height = `${parseInt(canvasPanelSize) + parseInt( event.clientY - draggablePosition)}px`
@@ -384,6 +396,10 @@ export function App({ ...props}) {
   }, [ controls, galaxy])
 
 
+  /*
+    calculate nearness & farness for ThreeJS views and internal calculations
+    - this currently does not work as expected
+  */
   const near = (galaxy, types = ['Planet']) => {
     const bodies = Object.values(galaxy)
       .flat()
@@ -479,7 +495,8 @@ export function App({ ...props}) {
                           15
                         ],
                         fov: 55,
-                        near: 0.1,
+                        near: 0.01,
+                        far: 2000
 
 
 
@@ -512,6 +529,8 @@ export function App({ ...props}) {
                         <Navigation/>
                         {/* Scene Camera */}
                         <Camera
+                          controls={controls}
+                          scaledGalaxy={scaledGalaxy}
                           fov={controls.camera.fov}
                         />
                         {/* Scene ControlPad */}
@@ -529,6 +548,8 @@ export function App({ ...props}) {
                         <Background
                           radius={500}
                           depth={50}
+                          controls={controls}
+                          scaledGalaxy={scaledGalaxy}
                           // depth={far(scaledGalaxy) * 10}
                         />
                         {/* Scene Stars */}
@@ -538,6 +559,7 @@ export function App({ ...props}) {
                           enhancements={enhancedData}
                           activeBodies={activeBodies}
                           setActiveBodies={setActiveBodies}
+                          controls={controls}
                         />
 
                         {/* Scene Planets  */}
@@ -550,6 +572,7 @@ export function App({ ...props}) {
                           animateOrbitalRotation={controls.scene.orbits}
                           activeBodies={activeBodies}
                           setActiveBodies={setActiveBodies}
+                          controls={controls}
                         />
                       </React.Suspense>
 

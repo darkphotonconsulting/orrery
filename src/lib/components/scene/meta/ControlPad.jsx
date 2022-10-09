@@ -14,7 +14,7 @@ export function ControlPad({ setControls, ...props}) {
   const controls = useControls('mission-control', {
     camera: folder({
       position: {
-        value: [0, 0, 0],
+        value: [150, 150, 250],
       },
       rotation: {
         value: [0, 0, 0],
@@ -60,6 +60,10 @@ export function ControlPad({ setControls, ...props}) {
       rotations: true,
       orbits: true,
       paths: true,
+      resolution: {
+        value: '2k',
+        options: ['2k', '4k', '8k']
+      }
     })
   })
 
@@ -91,7 +95,8 @@ export function ControlPad({ setControls, ...props}) {
         // animations: controls.animations,
         rotations: controls.rotations,
         orbits: controls.orbits,
-        paths: controls.paths
+        paths: controls.paths,
+        resolution: controls.resolution
       }
     })
   }, [controls, setControls])

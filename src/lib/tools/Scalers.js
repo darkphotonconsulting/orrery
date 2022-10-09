@@ -1,5 +1,4 @@
 import {
-  // CelestialBodies,
   CelestialBody
 } from '../data/CelestialBodies.js'
 
@@ -28,7 +27,6 @@ export class CelestialBodyScaler {
     log: this.logTransformation.bind(this),
     naive: this.naiveTransormation.bind(this),
     bisymmetric: this.bisymmetricTransformation.bind(this),
-    // scripted: this.scriptedTransformation.bind(this)
   }
 
   #identityTransformation({ bodies = []}) {
@@ -37,33 +35,35 @@ export class CelestialBodyScaler {
       const scaledBody = {}
       for (const [key, value] of Object.entries(body)) {
         if (value && !this.#staticProperties.includes(key) && value.constructor.name === 'Number') {
-          // construct a domain for the linear scaler
+          /*
+            construct the domain(min,max) for the scaler
+          */
           const domainMinimum = Math.min(
             ...bodies.map((body) => body[key])
-
           )
-          // console.log(key, 'min', domainMinimum)
+
           const domainMaximum = Math.max(
             ...bodies.map((body) => body[key])
           )
-          // console.log(key, 'max', domainMaximum)
+
           const scaler = scaleIdentity()
             .domain([domainMinimum , domainMaximum])
             .range([domainMinimum, domainMaximum])
 
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
-          // console.log({
-          //   targetId: body.id,
-          //   targetType: body.bodyType,
-          //   eventName: 'scaling',
-          //   scaleLogic: 'identity',
-          //   scaleKey: key,
-          //   domainMinimum,
-          //   domainMaximum,
-          //   oldValue: value,
-          //   newValue: scaledValue
-          // })
+          console.log({
+            event: 'set-scale',
+            type: 'identity',
+            bodyId: body.id,
+            targetType: body.bodyType,
+            target: key,
+            min: domainMinimum,
+            max: domainMaximum,
+            opts: {},
+            previous: value,
+            current: scaledValue
+          })
         } else {
           scaledBody[key] = value
         }
@@ -83,33 +83,37 @@ export class CelestialBodyScaler {
       const scaledBody = {}
       for (const [key, value] of Object.entries(body)) {
         if (value && !this.#staticProperties.includes(key) && value.constructor.name === 'Number') {
-          // construct a domain for the linear scaler
+          /*
+            construct the domain(min,max) for the scaler
+          */
           const domainMinimum = Math.min(
             ...bodies.map((body) => body[key])
-
           )
-          // console.log(key, 'min', domainMinimum)
+
           const domainMaximum = Math.max(
             ...bodies.map((body) => body[key])
           )
-          // console.log(key, 'max', domainMaximum)
+
           const scaler = scaleLog()
             .base(base)
             .domain([domainMinimum + 0.1, domainMaximum])
           const scaledValue = scaler(value)
-          // only return negative scaled values if the original value was negative
+          /*
+
+          */
           scaledBody[key] = value > 0 ? Math.abs(scaledValue) : scaledValue
-          // console.log({
-          //   targetId: body.id,
-          //   targetType: body.bodyType,
-          //   eventName: 'scaling',
-          //   scaleLogic: 'log',
-          //   scaleKey: key,
-          //   domainMinimum,
-          //   domainMaximum,
-          //   oldValue: value,
-          //   newValue: scaledValue
-          // })
+          console.log({
+            event: 'set-scale',
+            type: 'log',
+            bodyId: body.id,
+            targetType: body.bodyType,
+            target: key,
+            min: domainMinimum,
+            max: domainMaximum,
+            opts: { base },
+            previous: value,
+            current: scaledValue
+          })
         } else {
           scaledBody[key] = value
         }
@@ -145,17 +149,18 @@ export class CelestialBodyScaler {
             .constant(constant)
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
-          // console.log({
-          //   targetId: body.id,
-          //   targetType: body.bodyType,
-          //   eventName: 'scaling',
-          //   scaleLogic: 'bisymmetric',
-          //   scaleKey: key,
-          //   domainMinimum,
-          //   domainMaximum,
-          //   oldValue: value,
-          //   newValue: scaledValue
-          // })
+          console.log({
+            event: 'set-scale',
+            type: 'bisymmetric',
+            bodyId: body.id,
+            bodyType: body.bodyType,
+            target: key,
+            min: domainMinimum,
+            max: domainMaximum,
+            opts: { rangeMinimum, rangeMaximum, constant },
+            previous: value,
+            current: scaledValue
+          })
         } else {
           scaledBody[key] = value
         }
@@ -190,6 +195,18 @@ export class CelestialBodyScaler {
             .range([rangeMinimum, rangeMaximum])
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
+          console.log({
+            event: 'set-scale',
+            type: 'linear',
+            bodyId: body.id,
+            bodyType: body.bodyType,
+            target: key,
+            min: domainMinimum,
+            max: domainMaximum,
+            opts: { rangeMinimum, rangeMaximum,  },
+            previous: value,
+            current: scaledValue
+          })
           // console.log({
           //   target: body.id,
           //   event: 'scaling',

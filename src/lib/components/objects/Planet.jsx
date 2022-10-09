@@ -47,8 +47,8 @@ export function Planet ({
   spotlightPositionZ = 0,
   spotlightAngle = 0.3,
   lightIntensity = 0.5,
-  widthSections = 30,
-  heightSections = 30,
+  widthSections = 50,
+  heightSections = 50,
   wireFrame = true,
   baseColor = 'green',
   radius = 10,
@@ -56,6 +56,7 @@ export function Planet ({
   userData = {},
   setActiveBodies = () => {},
   activeBodies=[],
+  controls = {},
   ...props
 }) {
 
@@ -63,29 +64,39 @@ export function Planet ({
   /*
     👨🏻‍🔧: if the value vanishes to a NaN, I currently estimate an ellipse by taking .80% of the semimajorAxis
     - 💡 the semiminorAxis appears to become NaN because the get/set methods which support it are being stripped from the object by 3js
+    - when the object is passed into the userData field, three3js strips any executable functions leaving only properties
     - I need to rethink how to handle semiminorAxis, objectMass and objectVolume as they are all based on get/set methods and calculated at runtime.
       - I want to preserve this behavior as it allows ease of scaling and manipulation of the object
   */
-  // console.log(vertexShader.text())
-  // console.log(glsl)
-  // console.log(meta)
+
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
-  const { size } = useThree()
+  const { size, gl, scene } = useThree()
+  console.log({
+    size,
+    gl,
+    scene
+  })
   const emptyRef = React.useRef()
   const meshRef = React.useRef();
   const geomRef = React.useRef();
+  const layerMaterialRef = React.useRef();
+  const textureRef = React.useRef();
   // const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
 
   // TODO: improve planet texturing
-  const baseTexture = useLoader(THREE.TextureLoader, `/textures/base/${userData.planet.englishName.toLowerCase()}.jpg`)
+  const baseTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
-  const bumpTexture = useLoader(THREE.TextureLoader, `/textures/bump/${userData.planet.englishName.toLowerCase()}.jpg`)
+  const bumpTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   bumpTexture.wrapS = THREE.RepeatWrapping;
   bumpTexture.wrapT = THREE.RepeatWrapping;
   bumpTexture.repeat.set( 1, 1 );
+  const normalTexture = useLoader(THREE.TextureLoader, `/textures/normal/${userData.planet.englishName.toLowerCase()}.jpg`)
+  normalTexture.wrapS = THREE.RepeatWrapping;
+  normalTexture.wrapT = THREE.RepeatWrapping;
+  normalTexture.repeat.set( 1, 1 );
 
 
 
@@ -102,9 +113,12 @@ export function Planet ({
   useFrame((state, delta) => {
     const earthYear = 2 * Math.PI * (1 /60) * (1/60)
     const t = state.clock.getElapsedTime() * 0.5
+    geomRef.current.computeVertexNormals()
+    geomRef.current.computeTangents()
+
     if (animateOrbitalRotation) {
-      const x = semimajorAxis * Math.cos(t * (earthYear * userData.planet.sideralOrbit))
-      const y = semiminorAxis * Math.sin(t * (earthYear * userData.planet.sideralOrbit))
+      const x = semimajorAxis * Math.cos(t / (earthYear * userData.planet.sideralOrbit))
+      const y = semiminorAxis * Math.sin(t / (earthYear * userData.planet.sideralOrbit))
       /*
       TODO: handle the orbital inclication
 
@@ -123,7 +137,7 @@ export function Planet ({
     if (animateAxialRotation) {
 
       // mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
-      meshRef.current.rotation.y += earthYear * userData.planet.sideralRotation
+      meshRef.current.rotation.y += t / (earthYear * userData.planet.sideralRotation)
     }
   })
   console.log({
@@ -135,6 +149,13 @@ export function Planet ({
     semiminorAxis: userData.planet.semiminorAxis,
     inclination: userData.planet.inclination,
     keys: Object.keys(userData.planet),
+    refs: [
+      meshRef,
+      geomRef,
+      emptyRef,
+      layerMaterialRef,
+      textureRef
+    ]
   })
 
   return (
@@ -167,7 +188,15 @@ export function Planet ({
           } else {
             setActiveBodies([
               ...activeBodies,
-              userData.planet
+              {
+                ...userData.planet,
+                meshRef,
+                geomRef,
+                emptyRef,
+                layerMaterialRef,
+                textureRef
+              }
+              // userData.planet
             ])
           }
         }}
@@ -216,7 +245,7 @@ export function Planet ({
             - improve planet texture appearance
             - improve planet texture mapping (bump, ocean, cloud, etc.)
         */}
-        <sphereGeometry
+        <sphereBufferGeometry
           key={`planet-geometry-${userData.planet.englishName}`}
           ref={geomRef}
           args={[
@@ -227,20 +256,35 @@ export function Planet ({
           attach='geometry'
         >
 
-        </sphereGeometry>
+        </sphereBufferGeometry>
         <LayerMaterial
             key={`planet-layers-${userData.planet.englishName}`}
             lighting={'standard'}
             resolution={[size.width, size.height]}
+            ref={layerMaterialRef}
+            // adds properties to the actual layer material
+            color={'#615C5C'}
+            bumpMap={bumpTexture}
+            bumpScale={1}
+            alpha={1}
+            transparent={false}
+            opacity={1}
+            precision={'highp'}
+            depthTest={true}
+            depthWrite={true}
+            mode={'normal'}
+            side={THREE.DoubleSide}
+
           >
             <Texture
+              ref={textureRef}
               map={baseTexture}
-              displacementMap={bumpTexture}
+              bumpMap={bumpTexture}
               alpha={1}
               depthTest={true}
               depthWrite={true}
               mode={'normal'}
-              displacementScale={1}
+              bumpScale={1}
             />
         </LayerMaterial>
     </mesh>
