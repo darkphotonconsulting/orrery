@@ -14,7 +14,6 @@ export function factorial(n) {
   }
   const array = Array.from(Array(n+1).keys())
     .filter((n) => n > 0)
-  // console.log(array)
   return array.reduce((a, b) => b * a, 1)
 }
 
