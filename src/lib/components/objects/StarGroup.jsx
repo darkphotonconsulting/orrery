@@ -28,10 +28,13 @@ export function StarGroup({
     return (
       <group
         key={`star-group-${star.englishName.toLowerCase()}`}
+        name={`star-group-${star.englishName.toLowerCase()}`}
+
       >
         <Star
           scale={[1.0, 1.0, 1.0]}
-          key={`star-body-${star.englishName.toLowerCase()}`}
+          key={`star-component-${star.englishName.toLowerCase()}`}
+          name={`star-component-${star.englishName.toLowerCase()}`}
           meshPositionX={0}
           meshPositionY={0}
           meshPositionZ={0}
@@ -66,7 +69,7 @@ export function StarGroup({
   })
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} name={'star-group'}>
       {renderedStars}
     </group>
   )

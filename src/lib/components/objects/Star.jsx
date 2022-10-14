@@ -22,6 +22,7 @@ import {
   StarConvectionLayer
 } from '../shaders/StarConvectionLayer.js'
 
+
 extend({ StarConvectionLayer})
 
 export function Star ({
@@ -80,7 +81,11 @@ export function Star ({
 
 
   return (
-    <group ref={groupRef}>
+    <group
+      ref={groupRef}
+      name={`star-base-group-${userData.star.englishName.toLowerCase()}`}
+      // id={`star-base-group-${userData.star.englishName.toLowerCase()}`}
+    >
       <mesh
       ref={meshRef}
       scale={active ? 1.5 : 1}
@@ -113,37 +118,14 @@ export function Star ({
 
       }}
     >
-      <directionalLight
-        color={'#ffffff'}
-        position={[0,0,0]}
-        intensity={1}
+      <pointLight
+        color={'#E61717'}
+        power={10}
+        intensity={5.5}
+        decay={2}
       />
-      {(() => {
-        <directionalLight
-          position={[meshPositionX, meshPositionY, meshPositionZ]}
-          intensity={0.5}
-        />
-        if (useAmbientLight) {
-          return (
-            <ambientLight intensity={lightIntensity || 0.5} />
-          );
-        }
-      })()}
 
-      {(() => {
-        if (useSpotLight || false) {
-          return (
-            <spotLight
-              position={[
-                spotlightPositionX || 10,
-                spotlightPositionY || 15,
-                spotlightPositionZ || 10
-              ]}
-              angle={spotlightAngle || 0.3}
-            />
-          );
-        }
-      })()}
+
       <sphereBufferGeometry
         ref={geomRef}
         args={[
@@ -157,25 +139,31 @@ export function Star ({
       </sphereBufferGeometry>
       <LayerMaterial
           ref={layerMaterialRef}
-          lighting={'standard'}
-          color={'#D86433'}
+          lighting={'physical'}
+          color={'#000000'}
           side={THREE.DoubleSide}
-          emissive={new THREE.Color('#D86433')}
+          transmission={0.5}
+          roughness={0.1}
+          metalness={0.2}
+          emissive={new THREE.Color('#BC5641')}
+          emissiveIntensity={0}
 
         >
 
           <Texture
+            visible={false}
             ref={textureRef}
             map={baseTexture}
             alpha={1}
-            mode={'multiply'}
+            mode={'normal'}
             emissive={'#862828'}
             color={'#862828'}
           />
           <starConvectionLayer
+            visible={true}
             ref={convectionRef}
-            mode={'normal'}
-            color={'#fff123'}
+            mode={'multiply'}
+            color={new THREE.Color('#FF5E23')}
             alpha={0.9}
           />
           {/* <Noise

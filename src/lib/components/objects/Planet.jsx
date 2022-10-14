@@ -15,7 +15,8 @@ import {
   LayerMaterial,
   DebugLayerMaterial,
   Texture,
-  Noise
+  Noise,
+  Depth
 } from 'lamina'
 
 // import vertexShader from '../../../assets/shaders/planetVertex.glsl'
@@ -71,11 +72,11 @@ export function Planet ({
 
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
   const { size, gl, scene } = useThree()
-  console.log({
-    size,
-    gl,
-    scene
-  })
+  // console.log({
+  //   size,
+  //   gl,
+  //   scene
+  // })
   const emptyRef = React.useRef()
   const meshRef = React.useRef();
   const geomRef = React.useRef();
@@ -89,10 +90,15 @@ export function Planet ({
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
+  baseTexture.encoding = THREE.sRGBEncoding;
+  baseTexture.mapping = THREE.EquirectangularRefractionMapping
+  // baseTexture.
   const bumpTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   bumpTexture.wrapS = THREE.RepeatWrapping;
   bumpTexture.wrapT = THREE.RepeatWrapping;
   bumpTexture.repeat.set( 1, 1 );
+  // bumpTexture.encoding
+
   const normalTexture = useLoader(THREE.TextureLoader, `/textures/normal/${userData.planet.englishName.toLowerCase()}.jpg`)
   normalTexture.wrapS = THREE.RepeatWrapping;
   normalTexture.wrapT = THREE.RepeatWrapping;
@@ -160,10 +166,12 @@ export function Planet ({
 
   return (
     <group
-      key={`planet-group-${userData.planet.englishName}`}
+      key={`planet-group-${userData.planet.englishName.toLowerCase()}`}
+      name={`planet-group-${userData.planet.englishName.toLowerCase()}`}
     >
       <mesh
-        key={`planet-mesh-${userData.planet.englishName}`}
+        key={`planet-mesh-${userData.planet.englishName.toLowerCase()}`}
+        name={`planet-mesh-${userData.planet.englishName.toLowerCase()}`}
         ref={meshRef}
         scale={active ? 1.5 : 1}
         position={[
@@ -204,40 +212,17 @@ export function Planet ({
       >
 
         {/* 🔧 an empty at center space which represents the orbiting/rotating body */}
-        <primitive
+        {/* <primitive
           key={`planet-empty-${userData.planet.englishName}`}
+          name={`planet-empty-${userData.planet.englishName}`}
           position={[0,0,0]}
           ref={emptyRef}
           object={new THREE.Object3D()}
-        />
+        /> */}
 
         {/* enable/disable ambient lighting */}
-        {(() => {
-          if (useAmbientLight) {
-            return (
-              <ambientLight
-                key={`planet-ambient-light-${userData.planet.englishName}`}
-                intensity={lightIntensity || 0.5}
-              />
-            );
-          }
-        })()}
-        {/* enable/disable spot lighting */}
-        {(() => {
-          if (useSpotLight || false) {
-            return (
-              <spotLight
-                key={`planet-spot-light-${userData.planet.englishName}`}
-                position={[
-                  spotlightPositionX || 10,
-                  spotlightPositionY || 15,
-                  spotlightPositionZ || 10
-                ]}
-                angle={spotlightAngle || 0.3}
-              />
-            );
-          }
-        })()}
+
+
         {/*
           base planet shape
           🤔: should we use a sphere or a plane?
@@ -246,7 +231,8 @@ export function Planet ({
             - improve planet texture mapping (bump, ocean, cloud, etc.)
         */}
         <sphereBufferGeometry
-          key={`planet-geometry-${userData.planet.englishName}`}
+          key={`planet-geometry-${userData.planet.englishName.toLowerCase()}`}
+          name={`planet-geometry-${userData.planet.englishName.toLowerCase()}`}
           ref={geomRef}
           args={[
             radius || 0.7,
@@ -257,34 +243,50 @@ export function Planet ({
         >
 
         </sphereBufferGeometry>
+        <ambientLight
+                key={`planet-ambient-light-${userData.planet.englishName}`}
+                name={`planet-ambient-light-${userData.planet.englishName}`}
+                intensity={2}
+        />
         <LayerMaterial
-            key={`planet-layers-${userData.planet.englishName}`}
-            lighting={'standard'}
-            resolution={[size.width, size.height]}
-            ref={layerMaterialRef}
-            // adds properties to the actual layer material
-            color={'#615C5C'}
-            bumpMap={bumpTexture}
-            bumpScale={1}
-            alpha={1}
-            transparent={false}
-            opacity={1}
-            precision={'highp'}
+            key={`planet-layers-${userData.planet.englishName.toLowerCase()}`}
+            name={`planet-layers-${userData.planet.englishName.toLowerCase()}`}
+            lighting={'physical'}
             depthTest={true}
             depthWrite={true}
-            mode={'normal'}
-            side={THREE.DoubleSide}
+            transmission={0.5}
+            opacity={1}
+            roughness={0.9}
+            metalness={0.7}
+            resolution={[size.width, size.height]}
+            ref={layerMaterialRef}
+            visible={true}
+            // adds properties to the actual layer material
+            color={'#060606'}
+            // bumpScale={8}
+            // alpha={1}
+            // transparent={false}
+            // opacity={1}
+            // precision={'highp'}
+            // depthTest={true}
+            // depthWrite={true}
+            // mode={'normal'}
+            // side={THREE.DoubleSide}
 
           >
+
             <Texture
+              visible={true}
               ref={textureRef}
               map={baseTexture}
-              bumpMap={bumpTexture}
+              // bumpMap={bumpTexture}
+              // bumpScale={10}
               alpha={1}
               depthTest={true}
               depthWrite={true}
               mode={'normal'}
-              bumpScale={1}
+
+              side={THREE.DoubleSide}
             />
         </LayerMaterial>
     </mesh>

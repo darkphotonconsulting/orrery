@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   useFrame,
+  useThree
 }  from '@react-three/fiber';
 
 import {
@@ -24,18 +25,19 @@ export function PlanetGroup({
 }) {
 
   const groupRef = React.useRef()
+  const { gl } = useThree()
+  // console.log('renderer', gl)
   useFrame((state, delta) => {
   })
 
   const renderedPlanets = planets.map((planet, index) => {
     const planetName = planet.englishName.toLowerCase()
-    // if (Object.keys(enhancements?.planets).includes(planetName)) {
-    //   console.log('enhancing planet', planetName)
-    // }
+
 
     return (
-      <group key={`planet-container-${planet.englishName.toLowerCase()}`}>
+      <group key={`planet-container-${planet.englishName.toLowerCase()}`} name={`planet-container-${planet.englishName.toLowerCase()}`}>
         <Planet
+          name={`planet-component-${planet.englishName.toLowerCase()}`}
           setActiveBodies={setActiveBodies}
           activeBodies={activeBodies}
           controls={controls}
@@ -74,6 +76,7 @@ export function PlanetGroup({
           (
             <Orbital
               key={`planet-orbit-${planet.englishName.toLowerCase()}`}
+              name={`planet-orbit-${planet.englishName.toLowerCase()}`}
               semimajorAxis={
                 (planet.semimajorAxis + stars.map((star) => star.equaRadius).reduce((a, b) => a+b, 0)   ) * (index + 2)
               }
@@ -97,7 +100,7 @@ export function PlanetGroup({
   })
 
   return (
-    <group ref={groupRef} userData={{foo: 'bar'}}>
+    <group ref={groupRef} userData={{foo: 'bar'}} name={'planet-group'}>
       {renderedPlanets}
     </group>
   )
