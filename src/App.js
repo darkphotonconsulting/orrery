@@ -131,7 +131,29 @@ import {
 
 
 
+function Internals() {
+  const { scene, gl } = useThree()
+  scene.name = 'orrery'
+  // console.log({
+  //   event: 'load-internals',
+  //   scene: scene,
+  //   renderer: gl
 
+  // })
+
+  // try using scene object to get nested objects
+  // console.log(scene.getObjectByName('planet-mesh-mercury'))
+
+  // for (const child of scene.children) {
+  //   if (child.type === 'Group') {
+  //     console.log({
+  //       event: 'child-group',
+  //       child: child
+  //     })
+  //   }
+  // }
+  return null
+}
 
 export function App({ ...props}) {
   const theme = createTheme({
@@ -165,14 +187,28 @@ export function App({ ...props}) {
     event: 'set-theme',
     ...theme
   })
+
+  /*
+  references:
+  */
+
   const canvasRef = React.useRef(null)
   const sceneContainerRef = React.useRef(null)
   const detailsPanelRef = React.useRef(null)
+  // const cameraRef = React.useRef(null)
+  // const navigationRef = React.useRef(null)
+  // const controlPadRef = React.useRef(null)
+  // const lightingRef = React.useRef(null)
+  // const backgroundRef = React.useRef(null)
+  // const planetGroupRef = React.useRef(null)
+  // const starGroupRef = React.useRef(null)
+
 
   /*
     📀 state
   */
   const [celestialBodies, setCelestialBodies] = React.useState([])
+
   const [galaxy, setGalaxy ] = React.useState({
     stars: [],
     planets: [],
@@ -225,8 +261,20 @@ export function App({ ...props}) {
   ])
   const [enhancedData, setEnhancedData] = React.useState({})
 
+  const [ sceneReferenceCatalog, setSceneReferenceCatalog] = React.useState({
+    meta: {
+      camera: null,
+      lighting: null,
+      background: null,
+
+    },
+    celestialBodies: {
+      stars: [],
+      planets: [],
+    },
+  })
+
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
-  // const [ detailsPanelPosition, setDetailsPanelPosition ] = React.useState(null)
   const [ detailsPanelSize, setDetailsPanelSize ] = React.useState(null)
   const [ canvasPanelSize, setCanvasPanelSize ] = React.useState(null)
   const [ draggablePosition, setDraggablePosition ] = React.useState(null)
@@ -438,6 +486,11 @@ export function App({ ...props}) {
     }
   )
 
+  console.log({
+    event: 'debug-canvas',
+    canvas: canvasRef
+  })
+
   return (
             <ThemeProvider theme={theme}>
               <CssBaseline />
@@ -504,13 +557,23 @@ export function App({ ...props}) {
 
                     >
                       <React.Suspense fallback={null}>
+
                         {/*
                           space is "black"
                         */}
                         <color
-                          attach='background' args={['#15151a']}
+                          attach='background' args={['#1E1E20']}
                         />
+                        {/* Scene Lights (global) */}
+                        <Lighting
+                          // ref={lightingRef}
+                          intensity={controls.lighting.intensity}
+                          color={controls.lighting.color}
+                          ground={controls.lighting.ground}
+                          setSceneReferenceCatalog={setSceneReferenceCatalog}
+                          sceneReferenceCatalog={sceneReferenceCatalog}
 
+                        />
                         {/*
                           enable/disable mesh-level helpers
                         */}
@@ -525,27 +588,30 @@ export function App({ ...props}) {
                           : null
                         }
 
+                        {/* Three.JS internals */}
+                        <Internals/>
                         {/* Scene Navigation */}
-                        <Navigation/>
+                        <Navigation
+                          // ref={navigationRef}
+                          // setSceneReferenceCatalog={setSceneReferenceCatalog}
+                          // sceneReferenceCatalog={sceneReferenceCatalog}
+                        />
                         {/* Scene Camera */}
                         <Camera
+                          // ref={cameraRef}
                           controls={controls}
                           scaledGalaxy={scaledGalaxy}
                           fov={controls.camera.fov}
                         />
                         {/* Scene ControlPad */}
                         <ControlPad
+                          // ref={controlPadRef}
                           setControls={setControls}
                         />
-                        {/* Scene Lights (global) */}
-                        <Lighting
-                          intensity={controls.lighting.intensity}
-                          color={controls.lighting.color}
-                          ground={controls.lighting.ground}
 
-                        />
                         {/* Scene Background */}
                         <Background
+                          // ref={backgroundRef}
                           radius={500}
                           depth={50}
                           controls={controls}
@@ -554,6 +620,7 @@ export function App({ ...props}) {
                         />
                         {/* Scene Stars */}
                         <StarGroup
+                          // ref={starGroupRef}
                           stars={scaledGalaxy.stars}
                           planets={scaledGalaxy.planets}
                           enhancements={enhancedData}
@@ -564,6 +631,7 @@ export function App({ ...props}) {
 
                         {/* Scene Planets  */}
                         <PlanetGroup
+                          // ref={planetGroupRef}
                           planets={scaledGalaxy.planets}
                           stars={scaledGalaxy.stars}
                           enhancements={enhancedData}
@@ -574,6 +642,7 @@ export function App({ ...props}) {
                           setActiveBodies={setActiveBodies}
                           controls={controls}
                         />
+
                       </React.Suspense>
 
                     </Canvas>
