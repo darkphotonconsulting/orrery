@@ -3,8 +3,8 @@ import { Abstract } from 'lamina/vanilla'
 import glsl from 'babel-plugin-glsl/macro'
 
 export class StarConvectionLayer extends Abstract {
-  static u_colorA = '#010101'
-  static u_colorB = '#000000'
+  static u_colorA = '#ED8F15'
+  static u_colorB = '#ED970C'
   static u_colorC = '#FFFFFF'
   static u_colorD = '#FFFFFF'
   static u_offset = new THREE.Vector3(0,0,0)
