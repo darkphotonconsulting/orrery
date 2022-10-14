@@ -2,6 +2,7 @@ import fs from 'fs'
 import { exec } from 'child_process'
 import {resolve, join as pathJoin } from 'path'
 import { Command } from 'commander'
+// import { ContactlessOutlined } from '@mui/icons-material'
 
 const program = new Command()
 
@@ -89,13 +90,18 @@ const resizeImage = async ({ imagePath, resolution, preserveAspect = true, resiz
   // })
 }
 
+const updateColorSpace = async ({ imagePath, colorSpace = 'Gray'}) => {
+  const imageIdentity = await identifyImage({ imagePath })
+  console.log(imageIdentity)
+}
+
 program
   .name('resizeImages')
   .description('resize images to a specific size')
   .version('0.0.1')
 
 program
-  .command('identify')
+  .command('info')
   .description('dump metadata about an image(s)')
   .option('-d, --directory <string>', 'the directory to resize images in', './public/textures/base')
   .option('-f, --filter <string>', 'regex filter', '.*[^k].jpg')
@@ -143,5 +149,26 @@ program
     }
   })
 
+program
+  .command('colorSpace')
+  .description('update the color space of an image')
+  .option('-d, --directory <string>', 'the directory to resize images in', './public/textures/diffuse')
+  .option('-f, --filter <string>', 'regex filter', '.*[^k].jpg')
+  .option('-s, --space <string>', 'the color space to convert to', 'LinearGray')
+  .action(async (options) => {
+    const { directory, filter } = options
+    const rgx = new RegExp(filter)
+    // const supportedResolutions = Object.keys(resolutions)
+
+
+    const files = (await fs.promises.readdir(directory))
+      .filter((file) => rgx.test(file))
+
+
+    for (const file of files) {
+      const imageIdentity = await identifyImage({ imagePath: pathJoin(directory, file) })
+      console.log(imageIdentity)
+    }
+  })
 
 program.parse()
