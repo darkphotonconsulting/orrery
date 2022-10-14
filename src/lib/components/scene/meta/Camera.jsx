@@ -16,7 +16,11 @@ export function Camera({
 }) {
   const groupRef = React.useRef();
   const cameraRef = React.useRef()
-  console.log('cameraRef', cameraRef)
+
+  console.log({
+    event: 'debug-camera',
+    camera: cameraRef
+  })
   const {
     camera,
     // gl: { domElement }
@@ -64,7 +68,7 @@ export function Camera({
 
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} name={'camera-group'}>
       {/* <cameraHelper ref={ref} args={[camera, domElement]}/> */}
       <PerspectiveCamera
         ref={cameraRef}

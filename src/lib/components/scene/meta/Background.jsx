@@ -27,7 +27,7 @@ export function Background({
   // })
   return (
 
-    <group ref={groupRef}>
+    <group ref={groupRef} name="background-group">
       {
         fade
         ?

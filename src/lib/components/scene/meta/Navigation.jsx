@@ -7,24 +7,42 @@ import {
 
 extend({OrbitControls})
 
-export function Navigation({pan = true, zoom = true, rotate = true, ...props}) {
+export function Navigation({
+  pan = true,
+  zoom = true,
+  rotate = true,
+  setSceneReferenceCatalog = () => {},
+  sceneReferenceCatalog = {},
+  ...props
+}) {
   const ref = React.useRef()
   const { camera, gl: { domElement } } = useThree();
-  useFrame((state) => {
-    // console.log(state)
-  })
-  React.useEffect(() => {
-    if (!!ref.current) {
-      // console.log(ref.current)
+  // useFrame((state) => {
+  //   // console.log(state)
+  // })
+  // React.useEffect(() => {
+
+  //   setSceneReferenceCatalog({
+  //     navigation: ref,
+  //     ...sceneReferenceCatalog
+  //   })
+  // }, [sceneReferenceCatalog, ref, setSceneReferenceCatalog])
+  console.log(
+    {
+      event: 'debug-navigation',
+      navigation: ref
     }
-  }, [ref.current])
+  )
   return (
     <OrbitControls
       ref={ref}
       enablePan={pan}
       enableZoom={zoom}
       enableRotate={rotate}
+      dampingFactor={0.1}
+
       args={[camera, domElement]}
+
     />
   )
 }
