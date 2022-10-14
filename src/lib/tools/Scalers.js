@@ -29,7 +29,7 @@ export class CelestialBodyScaler {
     bisymmetric: this.bisymmetricTransformation.bind(this),
   }
 
-  #identityTransformation({ bodies = []}) {
+  #identityTransformation({ bodies = [], debug = false}) {
     const scaledBodies = []
     for (const body of bodies) {
       const scaledBody = {}
@@ -52,18 +52,21 @@ export class CelestialBodyScaler {
 
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
-          console.log({
-            event: 'set-scale',
-            type: 'identity',
-            bodyId: body.id,
-            targetType: body.bodyType,
-            target: key,
-            min: domainMinimum,
-            max: domainMaximum,
-            opts: {},
-            previous: value,
-            current: scaledValue
-          })
+          if (debug) {
+            console.log({
+              event: 'set-scale',
+              type: 'identity',
+              bodyId: body.id,
+              targetType: body.bodyType,
+              target: key,
+              min: domainMinimum,
+              max: domainMaximum,
+              opts: {},
+              previous: value,
+              current: scaledValue
+            })
+          }
+
         } else {
           scaledBody[key] = value
         }
@@ -77,7 +80,7 @@ export class CelestialBodyScaler {
       })
   }
 
-  #logTransformation({ bodies = [], base = 2}) {
+  #logTransformation({ bodies = [], base = 2, debug = false }) {
     const scaledBodies = []
     for (const body of bodies) {
       const scaledBody = {}
@@ -102,18 +105,21 @@ export class CelestialBodyScaler {
 
           */
           scaledBody[key] = value > 0 ? Math.abs(scaledValue) : scaledValue
-          console.log({
-            event: 'set-scale',
-            type: 'log',
-            bodyId: body.id,
-            targetType: body.bodyType,
-            target: key,
-            min: domainMinimum,
-            max: domainMaximum,
-            opts: { base },
-            previous: value,
-            current: scaledValue
-          })
+          if (debug) {
+            console.log({
+              event: 'set-scale',
+              type: 'log',
+              bodyId: body.id,
+              targetType: body.bodyType,
+              target: key,
+              min: domainMinimum,
+              max: domainMaximum,
+              opts: { base },
+              previous: value,
+              current: scaledValue
+            })
+          }
+
         } else {
           scaledBody[key] = value
         }
@@ -127,7 +133,7 @@ export class CelestialBodyScaler {
       })
   }
 
-  #bisymmetricTransformation({ bodies = [], rangeMinimum = 1, rangeMaximum = 100, constant = 0.1 }) {
+  #bisymmetricTransformation({ bodies = [], rangeMinimum = 1, rangeMaximum = 100, constant = 0.1, debug = false }) {
     const scaledBodies = []
     for (const body of bodies) {
       const scaledBody = {}
@@ -149,18 +155,21 @@ export class CelestialBodyScaler {
             .constant(constant)
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
-          console.log({
-            event: 'set-scale',
-            type: 'bisymmetric',
-            bodyId: body.id,
-            bodyType: body.bodyType,
-            target: key,
-            min: domainMinimum,
-            max: domainMaximum,
-            opts: { rangeMinimum, rangeMaximum, constant },
-            previous: value,
-            current: scaledValue
-          })
+          if (debug) {
+            console.log({
+              event: 'set-scale',
+              type: 'bisymmetric',
+              bodyId: body.id,
+              bodyType: body.bodyType,
+              target: key,
+              min: domainMinimum,
+              max: domainMaximum,
+              opts: { rangeMinimum, rangeMaximum, constant },
+              previous: value,
+              current: scaledValue
+            })
+          }
+
         } else {
           scaledBody[key] = value
         }
@@ -174,7 +183,7 @@ export class CelestialBodyScaler {
       })
   }
 
-  #linearTransformation({ bodies = [], rangeMinimum = 0, rangeMaximum = 100 }) {
+  #linearTransformation({ bodies = [], rangeMinimum = 0, rangeMaximum = 100, debug = false }) {
     const scaledBodies = []
     for (const body of bodies) {
       const scaledBody = {}
@@ -195,18 +204,21 @@ export class CelestialBodyScaler {
             .range([rangeMinimum, rangeMaximum])
           const scaledValue = scaler(value)
           scaledBody[key] = scaledValue
-          console.log({
-            event: 'set-scale',
-            type: 'linear',
-            bodyId: body.id,
-            bodyType: body.bodyType,
-            target: key,
-            min: domainMinimum,
-            max: domainMaximum,
-            opts: { rangeMinimum, rangeMaximum,  },
-            previous: value,
-            current: scaledValue
-          })
+          if (debug) {
+            console.log({
+              event: 'set-scale',
+              type: 'linear',
+              bodyId: body.id,
+              bodyType: body.bodyType,
+              target: key,
+              min: domainMinimum,
+              max: domainMaximum,
+              opts: { rangeMinimum, rangeMaximum,  },
+              previous: value,
+              current: scaledValue
+            })
+          }
+
           // console.log({
           //   target: body.id,
           //   event: 'scaling',
@@ -228,7 +240,7 @@ export class CelestialBodyScaler {
       })
   }
 
-  #sqrtTransformation({ bodies = [], rangeMinimum = 0, rangeMaximum = 100 }) {
+  #sqrtTransformation({ bodies = [], rangeMinimum = 0, rangeMaximum = 100, debug = false }) {
     const scaledBodies = []
     for (const body of bodies) {
       const scaledBody = {}
@@ -250,6 +262,20 @@ export class CelestialBodyScaler {
           const scaledValue = scaler(value)
 
           scaledBody[key] = scaledValue
+          if (debug) {
+            console.log({
+              event: 'set-scale',
+              type: 'sqrt',
+              bodyId: body.id,
+              bodyType: body.bodyType,
+              target: key,
+              min: domainMinimum,
+              max: domainMaximum,
+              opts: { rangeMinimum, rangeMaximum,  },
+              previous: value,
+              current: scaledValue
+            })
+          }
 
         } else {
           scaledBody[key] = value
