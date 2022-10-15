@@ -542,6 +542,8 @@ export function App({ ...props}) {
                       id={'canvas'}
                       ref={canvasRef}
                       dpr={window.devicePixelRatio}
+                      colorManagement={true}
+                      gl2={true}
                       camera={{
                         position: [
                           10,
@@ -550,10 +552,17 @@ export function App({ ...props}) {
                         ],
                         fov: 55,
                         near: 0.01,
-                        far: 2000
-
-
-
+                        far: 2000,
+                      }}
+                      onPointerMissed={(event) => {
+                        console.log('pointer missed, clearing active bodies')
+                        for (const body of activeBodies) {
+                          const meshReference = body.meshRef.current
+                          if (meshReference.children && meshReference.children.length > 0) {
+                            meshReference.children.find((child) => child.type === 'AxesHelper').visible = false
+                          }
+                        }
+                        setActiveBodies([])
                       }}
 
                     >
@@ -596,6 +605,7 @@ export function App({ ...props}) {
                           // ref={navigationRef}
                           // setSceneReferenceCatalog={setSceneReferenceCatalog}
                           // sceneReferenceCatalog={sceneReferenceCatalog}
+                          activeBodies={activeBodies}
                         />
                         {/* Scene Camera */}
                         <Camera
@@ -622,6 +632,7 @@ export function App({ ...props}) {
                         {/* Scene Stars */}
                         <StarGroup
                           // ref={starGroupRef}
+                          animateAxialRotation={controls.scene.rotations}
                           stars={scaledGalaxy.stars}
                           planets={scaledGalaxy.planets}
                           enhancements={enhancedData}
