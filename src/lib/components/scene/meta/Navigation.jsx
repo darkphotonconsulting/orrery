@@ -13,13 +13,14 @@ export function Navigation({
   rotate = true,
   setSceneReferenceCatalog = () => {},
   sceneReferenceCatalog = {},
+  activeBodies=[],
   ...props
 }) {
-  const ref = React.useRef()
+  const navigationRef = React.useRef()
   const { camera, gl: { domElement } } = useThree();
-  // useFrame((state) => {
-  //   // console.log(state)
-  // })
+  useFrame((state) => {
+    // console.log('navigationBodies: ', activeBodies)
+  })
   // React.useEffect(() => {
 
   //   setSceneReferenceCatalog({
@@ -30,16 +31,17 @@ export function Navigation({
   console.log(
     {
       event: 'debug-navigation',
-      navigation: ref
+      navigation: navigationRef
     }
   )
   return (
     <OrbitControls
-      ref={ref}
+      ref={navigationRef}
       enablePan={pan}
       enableZoom={zoom}
       enableRotate={rotate}
       dampingFactor={0.1}
+      target={[0, 0, 0]}
 
       args={[camera, domElement]}
 
