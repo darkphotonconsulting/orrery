@@ -135,8 +135,8 @@ export class StarConvectionLayer extends Abstract {
       );
       float f_fbmnoise = fbm(f_p);
       vec4 f_p1 = vec4(
-        v_position / 50.,
-        abs(u_time) * 0.05
+        v_position / 100.,
+        abs(u_time) * 0.5
       );
       float f_spots = max(
         snoise(f_p1), 0.1
