@@ -48,6 +48,7 @@ export function Star ({
   radius = 10,
   index = 0,
   userData = {},
+  animateAxialRotation = false,
   setActiveBodies = () => {},
   activeBodies=[],
   controls = {},
@@ -73,9 +74,17 @@ export function Star ({
   useFrame((state, delta) => {
     // const earthYear = 2 * Math.PI * (1 /60) * (1/60)
     // textureRef.current.updateMatrix()
+
+
     geomRef.current.computeVertexNormals()
     geomRef.current.computeTangents()
     const t = state.clock.getElapsedTime()
+    const earthYear = 2 * Math.PI * (1 /60) * (1/60)
+
+    if (animateAxialRotation) {
+      meshRef.current.rotation.y += earthYear / 365 * t
+    }
+
 
     if (convectionRef.current) {
 
@@ -98,7 +107,8 @@ export function Star ({
     >
       <mesh
       ref={meshRef}
-      scale={active ? 1.5 : 1}
+      // scale={active ? 1.5 : 1}
+      scale={1}
       position={[
         meshPositionX || 0,
         meshPositionY || 0,
@@ -121,15 +131,24 @@ export function Star ({
         } else {
           setActiveBodies([
             ...activeBodies,
-            userData.star
+            {
+              ...userData.star,
+              groupRef,
+              meshRef,
+              geomRef,
+              layerMaterialRef,
+              textureRef,
+            }
           ])
         }
 
       }}
+      receiveShadow={true}
     >
-      {/* <pointLight
+      <pointLight
         color={'#FFFFFF'}
-        power={2}
+        power={250}
+        distance={5000}
         intensity={5.5}
         decay={2}
       >
@@ -140,7 +159,7 @@ export function Star ({
             heightSections
           ]}
         />
-      </pointLight> */}
+      </pointLight>
 
 
       <sphereBufferGeometry
@@ -154,7 +173,10 @@ export function Star ({
         attach='geometry'
       >
 
+
+
       </sphereBufferGeometry>
+      <primitive visible={active} object={new THREE.AxesHelper(2 * radius)} />
       <LayerMaterial
           attach={'material'}
           ref={layerMaterialRef}
@@ -167,6 +189,7 @@ export function Star ({
           transmission={0.91}
           roughness={0.01}
           metalness={0.05}
+          thickness={1.0}
 
           // emissive={new THREE.Color('#C3650D')}
 
@@ -187,7 +210,7 @@ export function Star ({
           />
           <Texture
             attach={'material'}
-            visible={false}
+            visible={true}
             ref={textureRef}
             map={baseTexture}
             alpha={1}
@@ -201,7 +224,7 @@ export function Star ({
             ref={convectionRef}
             mode={'multiply'}
             color={new THREE.Color('#184AE0').convertSRGBToLinear()}
-            alpha={0.75}
+            alpha={0.55}
           />
           <Noise
             // ref={noiseRef}
