@@ -9,7 +9,7 @@ import {
   useLoader,
   useThree,
 }  from '@react-three/fiber';
-
+import { PerspectiveCamera } from '@react-three/drei';
 
 import {
   LayerMaterial,
@@ -71,17 +71,17 @@ export function Planet ({
   */
 
   semiminorAxis = isNaN(semiminorAxis) ? semimajorAxis * 0.8 : semiminorAxis
-  const { size, gl, scene } = useThree()
-  // console.log({
-  //   size,
-  //   gl,
-  //   scene
-  // })
-  // const emptyRef = React.useRef()
+  const {
+    size,
+    gl,
+    scene
+  } = useThree()
+
   const meshRef = React.useRef();
   const geomRef = React.useRef();
   const layerMaterialRef = React.useRef();
   const textureRef = React.useRef();
+  const cameraRef = React.useRef();
   // const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
 
@@ -107,7 +107,7 @@ export function Planet ({
   normalTexture.repeat.set( 1, 1 );
 
 
-
+  const perspectiveCam = new THREE.PerspectiveCamera( 75, size.width / size.height, 0.1, 25 );
   const points = []
   for (let i = 0; i < 64; i++) {
     const angle = (i / 64) * 2 * Math.PI
@@ -123,22 +123,52 @@ export function Planet ({
     const t = state.clock.getElapsedTime() * 0.5
     geomRef.current.computeVertexNormals()
     geomRef.current.computeTangents()
+    // console.log(meshRef)
+    // console.log(cameraRef)
+
 
     if (animateOrbitalRotation) {
-      const x = semimajorAxis * Math.cos(t / (earthYear * userData.planet.sideralOrbit))
-      const y = semiminorAxis * Math.sin(t / (earthYear * userData.planet.sideralOrbit))
+
+      const x =  (
+        semimajorAxis *
+        Math.cos(
+          t / (earthYear * userData.planet.sideralOrbit)
+        )
+      )
+      const z =  (
+        semiminorAxis *
+        Math.sin(
+          t / (earthYear * userData.planet.sideralOrbit)
+        )
+      )
+      // console.log({
+      //   event: 'planet-orbital-step',
+      //   planet: userData.planet.englishName,
+      //   x,
+      //   y
+
+      // })
       /*
-      TODO: handle the orbital inclication
+      TODO: orbits are counter-clockwise, but the planets are rotating clockwise
 
-        The planets orbit the sun at different inclinations, this should be reflected in the orbital path of the planet.
-        - the inclination is the angle between the orbital plane and the ecliptic plane
 
-        - 🤔 we should take into account the inclination of the orbit?
-          - const x = 0 (currently, all orbital rotation is on 0 on the x axis)
       */
 
-      meshRef.current.position.x = x
-      meshRef.current.position.z = y
+      meshRef.current.position.x = -1 * x
+      meshRef.current.position.z = -1 * z
+      // meshRef.current.updateProjectionMatrix()
+      // console.log('position:', meshRef.current.getWorldPosition())
+      // console.log('position:', geomRef.current.getWorldPosition())
+      // const cameraPosition = new THREE.Vector3()
+      // meshRef.current.getWorldPosition(cameraPosition)
+      // const cameraDelta = cameraPosition.clone().sub()
+      cameraRef.current.position.x = (-1 * x)
+      cameraRef.current.position.z = (-1 * z)
+      // cameraRef.current.children[0].camera.position.y = 100
+      cameraRef.current.position.y = 100
+      // console.log(cameraRef)
+      cameraRef.current.lookAt(0,0,0)
+      cameraRef.current.children[0].camera.lookAt(0,0,0)
 
     }
 
@@ -171,11 +201,23 @@ export function Planet ({
       key={`planet-group-${userData.planet.englishName.toLowerCase()}`}
       name={`planet-group-${userData.planet.englishName.toLowerCase()}`}
     >
+
+      <mesh
+        key={`planet-camera-mesh-${userData.planet.englishName.toLowerCase()}`}
+        name={`planet-camera-mesh-${userData.planet.englishName.toLowerCase()}`}
+        ref={cameraRef}
+      >
+        <cameraHelper
+
+              args={[perspectiveCam]}
+        />
+      </mesh>
       <mesh
         key={`planet-mesh-${userData.planet.englishName.toLowerCase()}`}
         name={`planet-mesh-${userData.planet.englishName.toLowerCase()}`}
         ref={meshRef}
-        scale={active ? 1.5 : 1}
+        // scale={active ? 1.5 : 1}
+        scale={1}
         position={[
           meshPositionX || 0,
           meshPositionY || 0,
@@ -210,6 +252,8 @@ export function Planet ({
             ])
           }
         }}
+        castShadow={true}
+        receiveShadow={true}
 
       >
 
@@ -232,6 +276,8 @@ export function Planet ({
             - improve planet texture appearance
             - improve planet texture mapping (bump, ocean, cloud, etc.)
         */}
+
+
         <sphereBufferGeometry
           key={`planet-geometry-${userData.planet.englishName.toLowerCase()}`}
           name={`planet-geometry-${userData.planet.englishName.toLowerCase()}`}
@@ -245,6 +291,12 @@ export function Planet ({
         >
 
         </sphereBufferGeometry>
+        <primitive
+          visible={active}
+          object={
+            new THREE.AxesHelper(2 * radius)
+          }
+        />
         <ambientLight
                 key={`planet-ambient-light-${userData.planet.englishName}`}
                 name={`planet-ambient-light-${userData.planet.englishName}`}
@@ -256,33 +308,22 @@ export function Planet ({
             lighting={'physical'}
             depthTest={true}
             depthWrite={true}
-            transmission={0.5}
+            transmission={0.9}
             opacity={1}
             roughness={0.9}
-            metalness={0.7}
+            metalness={0.9}
             resolution={[size.width, size.height]}
             ref={layerMaterialRef}
             visible={true}
-            // adds properties to the actual layer material
             color={'#060606'}
-            // bumpScale={8}
-            // alpha={1}
-            // transparent={false}
-            // opacity={1}
-            // precision={'highp'}
-            // depthTest={true}
-            // depthWrite={true}
-            // mode={'normal'}
-            // side={THREE.DoubleSide}
-
           >
 
             <Texture
               visible={true}
               ref={textureRef}
               map={baseTexture}
-              // bumpMap={bumpTexture}
-              // bumpScale={10}
+              bumpMap={bumpTexture}
+              bumpScale={125}
               alpha={1}
               depthTest={true}
               depthWrite={true}
