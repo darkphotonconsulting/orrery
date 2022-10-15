@@ -134,12 +134,13 @@ import {
 function Internals() {
   const { scene, gl } = useThree()
   scene.name = 'orrery'
-  // console.log({
-  //   event: 'load-internals',
-  //   scene: scene,
-  //   renderer: gl
+  gl.gammaOutput = true
+  console.log({
+    event: 'load-internals',
+    scene: scene,
+    renderer: gl
 
-  // })
+  })
 
   // try using scene object to get nested objects
   // console.log(scene.getObjectByName('planet-mesh-mercury'))

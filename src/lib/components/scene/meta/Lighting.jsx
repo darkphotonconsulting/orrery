@@ -1,9 +1,9 @@
 import React from 'react'
-
+import * as THREE from 'three'
 export function Lighting({
-  intensity = 0.2,
-  color = '#eaeaea',
-  ground = '#FF8800',
+  intensity = 15,
+  color = THREE.Color('#ffffff'),
+  ground = THREE.Color('#ffffff'),
   // setSceneReferenceCatalog = () => {},
   // sceneReferenceCatalog = {},
   ...props
@@ -22,11 +22,11 @@ export function Lighting({
   // }, [lightingRef, setSceneReferenceCatalog, sceneReferenceCatalog])
   return (
     <group ref={groupRef} name='lighting-group'>
-      {/* <fog attach='fog' args={['#202030', 10, 25]} /> */}
+      {/* <fog attach='fog' args={['#404040', 10, 25]} /> */}
 
       <ambientLight
         name={'ambient-light'}
-        intensity={1}
+        intensity={intensity}
         color={color}
         position={[0, 0, 0]}
 

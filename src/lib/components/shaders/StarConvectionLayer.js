@@ -9,7 +9,7 @@ export class StarConvectionLayer extends Abstract {
   static u_colorD = '#FFFFFF'
   static u_offset = new THREE.Vector3(0,0,0)
   static u_scale = 1
-  static u_time = 1
+  static u_time = 0
   static u_color = '#666666'
 
   static fragmentShader = glsl`
@@ -23,8 +23,8 @@ export class StarConvectionLayer extends Abstract {
     uniform float u_scale;
     uniform float u_alpha;
     uniform float u_time;
-    varying vec3 v_Position;
-    varying vec2 v_Uv;
+    varying vec3 v_position;
+    varying vec2 v_uv;
 
     vec4 mod289(vec4 x) {
         return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -126,59 +126,40 @@ export class StarConvectionLayer extends Abstract {
     }
 
     vec4 main() {
-      float f_n = lamina_noise_white((v_Position + u_offset) * u_scale);
-      float f_step1 = 0.;
-      float f_step2 = 0.2;
-      float f_step3 = 0.6;
-      float f_step4 = 1.;
-
-
-
-      vec3 f_color = mix(
-        u_colorA,
-        u_colorB,
-        smoothstep(f_step1, f_step2, f_n)
+      float f_snoisy = snoise(
+        vec4(v_uv * 10., 1. , u_time)
       );
-      f_color = mix(
-        f_color,
-        u_colorC,
-        smoothstep(f_step2, f_step3, f_n)
-      );
-      f_color = mix(
-        f_color,
-        u_colorD,
-        smoothstep(f_step3, f_step4, f_n)
-      );
-
-      vec4 f_positionVector = vec4(v_Position, u_time);
-      vec4 f_uvVector = vec4(v_Uv, 0.0, u_time);
-      vec4 f_color_test = vec4(vec3(v_Uv, 0.), u_time);
-
-      float f_snoisy = snoise(vec4(v_Position , u_time));
       vec4 f_p = vec4(
-        v_Uv*10.,
-        0.0,
-        u_time * 0.5
+        v_position / 150.,
+        abs(u_time) * 0.05
       );
-
       float f_fbmnoise = fbm(f_p);
-      vec4 f_noise_result = vec4(f_color, 0.9);
-      vec4 f_p1 = vec4(v_Position * 3.,u_time* 0.5);
-      float f_spots = max(snoise(f_p1), 0.);
+      vec4 f_p1 = vec4(
+        v_position / 50.,
+        abs(u_time) * 0.05
+      );
+      float f_spots = max(
+        snoise(f_p1), 0.1
+      );
       vec4 f_shader = vec4(f_fbmnoise);
       f_shader *= mix(1., f_spots, 0.3);
-      return f_shader
+
+      return f_shader;
 
     }
   `
 
   static vertexShader = glsl`
-    varying vec3 v_Position;
-    varying vec2 v_Uv;
+    varying vec3 v_position;
+    varying vec2 v_uv;
+    varying vec3 v_normal;
+    varying vec3 v_world;
 
     void main() {
-      v_Uv = uv;
-      v_Position = position;
+      v_uv = uv;
+      v_position = position;
+      v_normal = normal;
+      v_world = (modelMatrix * vec4(position, 1.0)).xyz;
       return position;
     }
   `

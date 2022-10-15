@@ -1,4 +1,5 @@
 import React from 'react';
+import * as THREE from 'three'
 import {
   useFrame,
 }  from '@react-three/fiber';
@@ -51,7 +52,7 @@ export function StarGroup({
           widthSections={30}
           heightSections={30}
           wireFrame={false}
-          baseColor={'green'}
+          baseColor={new THREE.Color('#ffffff')}
           radius={star.equaRadius}
           index={0}
           userData={{

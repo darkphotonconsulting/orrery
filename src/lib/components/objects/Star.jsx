@@ -15,6 +15,7 @@ import {
   LayerMaterial,
   DebugLayerMaterial,
   Texture,
+  Gradient,
   Noise,
 } from 'lamina'
 
@@ -40,8 +41,8 @@ export function Star ({
   spotlightPositionZ = 0,
   spotlightAngle = 0.3,
   lightIntensity = 0.5,
-  widthSections = 50,
-  heightSections = 50,
+  widthSections = 120,
+  heightSections = 120,
   wireFrame = true,
   baseColor = 'green',
   radius = 10,
@@ -71,13 +72,22 @@ export function Star ({
 
   useFrame((state, delta) => {
     // const earthYear = 2 * Math.PI * (1 /60) * (1/60)
+    // textureRef.current.updateMatrix()
+    geomRef.current.computeVertexNormals()
+    geomRef.current.computeTangents()
     const t = state.clock.getElapsedTime()
+
     if (convectionRef.current) {
+
 
       convectionRef.current.time = t
       convectionRef.current.scale += t
     }
   })
+  console.log({
+    event: 'render-star'
+  })
+
 
 
   return (
@@ -100,7 +110,6 @@ export function Star ({
         meshRotationZ || 0
       ]}
       onClick={(event) => {
-        console.log('clicked star')
         setActive(!active)
         const activeNames = activeBodies.map((body) => body.englishName)
         if (activeNames.includes(userData.star.englishName) ) {
@@ -118,15 +127,24 @@ export function Star ({
 
       }}
     >
-      <pointLight
-        color={'#E61717'}
-        power={10}
+      {/* <pointLight
+        color={'#FFFFFF'}
+        power={2}
         intensity={5.5}
         decay={2}
-      />
+      >
+        <sphereBufferGeometry
+          args={[
+            radius,
+            widthSections,
+            heightSections
+          ]}
+        />
+      </pointLight> */}
 
 
       <sphereBufferGeometry
+        visible={true}
         ref={geomRef}
         args={[
           radius || 0.7,
@@ -138,40 +156,61 @@ export function Star ({
 
       </sphereBufferGeometry>
       <LayerMaterial
+          attach={'material'}
           ref={layerMaterialRef}
           lighting={'physical'}
-          color={'#000000'}
+          color={
+            new THREE.Color('#E75829').convertSRGBToLinear()
+              .add(new THREE.Color('#F6A708').convertSRGBToLinear())
+          }
           side={THREE.DoubleSide}
-          transmission={0.5}
-          roughness={0.1}
-          metalness={0.2}
-          emissive={new THREE.Color('#BC5641')}
-          emissiveIntensity={0}
+          transmission={0.91}
+          roughness={0.01}
+          metalness={0.05}
+
+          // emissive={new THREE.Color('#C3650D')}
+
+          emissiveIntensity={0.5}
+          resolution={[size.width, size.height]}
 
         >
-
+          <Gradient
+            visible={true}
+            attach={'material'}
+            colorA={new THREE.Color('#FFEA01').convertSRGBToLinear()}
+            colorB={new THREE.Color('#FF7E05').convertSRGBToLinear()}
+            alpha={0.5}
+            contrast={0.01}
+            mapping={'local'}
+            mode={'add'}
+            axis={'z'}
+          />
           <Texture
+            attach={'material'}
             visible={false}
             ref={textureRef}
             map={baseTexture}
             alpha={1}
-            mode={'normal'}
-            emissive={'#862828'}
-            color={'#862828'}
+            color={new THREE.Color('#FFFFFF').convertSRGBToLinear()}
+            mode={'overlay'}
+            // emissiveIntensity={1}
           />
           <starConvectionLayer
+            attach={'material'}
             visible={true}
             ref={convectionRef}
             mode={'multiply'}
-            color={new THREE.Color('#FF5E23')}
-            alpha={0.9}
+            color={new THREE.Color('#184AE0').convertSRGBToLinear()}
+            alpha={0.75}
           />
-          {/* <Noise
-            ref={noiseRef}
+          <Noise
+            // ref={noiseRef}
+            attach={'material'}
+            visible={false}
             mapping={'local'}
             type={'perlin'}
             mode={'multiply'}
-          /> */}
+          />
 
         </LayerMaterial>
 

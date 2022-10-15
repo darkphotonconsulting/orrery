@@ -77,7 +77,7 @@ export function Planet ({
   //   gl,
   //   scene
   // })
-  const emptyRef = React.useRef()
+  // const emptyRef = React.useRef()
   const meshRef = React.useRef();
   const geomRef = React.useRef();
   const layerMaterialRef = React.useRef();
@@ -91,17 +91,19 @@ export function Planet ({
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
   baseTexture.encoding = THREE.sRGBEncoding;
-  baseTexture.mapping = THREE.EquirectangularRefractionMapping
+  // baseTexture.mapping = THREE.EquirectangularRefractionMapping
   // baseTexture.
   const bumpTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   bumpTexture.wrapS = THREE.RepeatWrapping;
   bumpTexture.wrapT = THREE.RepeatWrapping;
   bumpTexture.repeat.set( 1, 1 );
+  bumpTexture.encoding = THREE.LinearEncoding
   // bumpTexture.encoding
 
   const normalTexture = useLoader(THREE.TextureLoader, `/textures/normal/${userData.planet.englishName.toLowerCase()}.jpg`)
   normalTexture.wrapS = THREE.RepeatWrapping;
   normalTexture.wrapT = THREE.RepeatWrapping;
+  normalTexture.encoding = THREE.LinearEncoding
   normalTexture.repeat.set( 1, 1 );
 
 
@@ -158,7 +160,7 @@ export function Planet ({
     refs: [
       meshRef,
       geomRef,
-      emptyRef,
+      // emptyRef,
       layerMaterialRef,
       textureRef
     ]
@@ -200,7 +202,7 @@ export function Planet ({
                 ...userData.planet,
                 meshRef,
                 geomRef,
-                emptyRef,
+                // emptyRef,
                 layerMaterialRef,
                 textureRef
               }

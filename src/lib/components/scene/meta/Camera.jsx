@@ -75,7 +75,8 @@ export function Camera({
         makeDefault
         position={position}
         fov={fov}
-        near={0.01}
+        near={0.001}
+
         far={5000}
 
       />
