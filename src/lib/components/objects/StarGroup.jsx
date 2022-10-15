@@ -15,6 +15,7 @@ export function StarGroup({
   enhancements = {},
   activeBodies=[],
   setActiveBodies = () => {},
+  animateAxialRotation = false,
   controls = {},
   ...props
 }) {
@@ -54,6 +55,7 @@ export function StarGroup({
           wireFrame={false}
           baseColor={new THREE.Color('#ffffff')}
           radius={star.equaRadius}
+          animateAxialRotation={animateAxialRotation}
           index={0}
           userData={{
             star,
