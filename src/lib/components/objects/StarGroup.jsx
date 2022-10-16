@@ -16,11 +16,13 @@ export function StarGroup({
   activeBodies=[],
   setActiveBodies = () => {},
   animateAxialRotation = false,
+  starGroupRef = null,
   controls = {},
   ...props
 }) {
   const groupRef = React.useRef()
   useFrame((state, delta) => {
+
   })
 
   const renderedStars = stars.map((star, index) => {
@@ -72,7 +74,7 @@ export function StarGroup({
   })
 
   return (
-    <group ref={groupRef} name={'star-group'}>
+    <group ref={starGroupRef} name={'star-group'}>
       {renderedStars}
     </group>
   )

@@ -20,13 +20,14 @@ export function PlanetGroup({
   animateOrbitalRotation = false,
   activeBodies=[],
   setActiveBodies = () => {},
+  planetGroupRef = null,
   controls = {},
   ...props
 }) {
 
   const groupRef = React.useRef()
   const { gl } = useThree()
-  // console.log('renderer', gl)
+
   useFrame((state, delta) => {
   })
 
@@ -100,7 +101,7 @@ export function PlanetGroup({
   })
 
   return (
-    <group ref={groupRef} userData={{foo: 'bar'}} name={'planet-group'}>
+    <group ref={planetGroupRef} userData={{foo: 'bar'}} name={'planet-group'}>
       {renderedPlanets}
     </group>
   )

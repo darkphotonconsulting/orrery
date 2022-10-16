@@ -14,20 +14,14 @@ export function Navigation({
   setSceneReferenceCatalog = () => {},
   sceneReferenceCatalog = {},
   activeBodies=[],
+  navigationRef=null,
   ...props
 }) {
-  const navigationRef = React.useRef()
   const { camera, gl: { domElement } } = useThree();
   useFrame((state) => {
-    // console.log('navigationBodies: ', activeBodies)
-  })
-  // React.useEffect(() => {
 
-  //   setSceneReferenceCatalog({
-  //     navigation: ref,
-  //     ...sceneReferenceCatalog
-  //   })
-  // }, [sceneReferenceCatalog, ref, setSceneReferenceCatalog])
+  })
+
   console.log(
     {
       event: 'debug-navigation',

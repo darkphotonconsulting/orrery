@@ -12,26 +12,19 @@ export function Camera({
   position = [150,150,250],
   controls = {},
   scaledGalaxy = {},
+  cameraRef = null,
   ...props
 }) {
   const groupRef = React.useRef();
-  const cameraRef = React.useRef()
-
   console.log({
     event: 'debug-camera',
     camera: cameraRef
   })
   const {
     camera,
-    // gl: { domElement }
   } = useThree();
   useFrame(({ clock }) => {
-
-    // camera.fov = fov
     camera.fov = controls.camera.fov
-    // camera.position.x = controls.camera.position[0]
-    // camera.position.y = controls.camera.position[2]
-    // camera.position.z = controls.camera.position[1]
     cameraRef.current.updateProjectionMatrix()
 
   })
@@ -66,19 +59,15 @@ export function Camera({
     return max
   }
 
-
   return (
     <group ref={groupRef} name={'camera-group'}>
-      {/* <cameraHelper ref={ref} args={[camera, domElement]}/> */}
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault
         position={position}
         fov={fov}
         near={0.001}
-
         far={5000}
-
       />
     </group>
 

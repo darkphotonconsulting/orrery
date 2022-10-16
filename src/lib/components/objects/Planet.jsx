@@ -9,18 +9,19 @@ import {
   useLoader,
   useThree,
 }  from '@react-three/fiber';
-import { PerspectiveCamera } from '@react-three/drei';
+import {
+  PerspectiveCamera
+} from '@react-three/drei';
 
 import {
   LayerMaterial,
-  DebugLayerMaterial,
+  // DebugLayerMaterial,
   Texture,
-  Noise,
-  Depth
+  // Noise,
+  // Depth
 } from 'lamina'
 
-// import vertexShader from '../../../assets/shaders/planetVertex.glsl'
-// import meta from '../../../assets/bodies.json'
+
 /*
   TODO: import and use Html to conditionally render information about the planet above the planet
     - the transformation should follow the planets orbital path
@@ -82,32 +83,29 @@ export function Planet ({
   const layerMaterialRef = React.useRef();
   const textureRef = React.useRef();
   const cameraRef = React.useRef();
-  // const orbital = React.useRef();
   const [active, setActive] = React.useState(false)
 
-  // TODO: improve planet texturing
+  /*
+  TODO: research how to properly implment bump, normal, & displacement maps
+  */
   const baseTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   baseTexture.wrapS = THREE.RepeatWrapping;
   baseTexture.wrapT = THREE.RepeatWrapping;
   baseTexture.repeat.set( 1, 1 );
   baseTexture.encoding = THREE.sRGBEncoding;
-  // baseTexture.mapping = THREE.EquirectangularRefractionMapping
-  // baseTexture.
   const bumpTexture = useLoader(THREE.TextureLoader, `/textures/diffuse/${userData.planet.englishName.toLowerCase()}-${controls.scene.resolution}.jpg`)
   bumpTexture.wrapS = THREE.RepeatWrapping;
   bumpTexture.wrapT = THREE.RepeatWrapping;
   bumpTexture.repeat.set( 1, 1 );
   bumpTexture.encoding = THREE.LinearEncoding
-  // bumpTexture.encoding
-
   const normalTexture = useLoader(THREE.TextureLoader, `/textures/normal/${userData.planet.englishName.toLowerCase()}.jpg`)
   normalTexture.wrapS = THREE.RepeatWrapping;
   normalTexture.wrapT = THREE.RepeatWrapping;
   normalTexture.encoding = THREE.LinearEncoding
   normalTexture.repeat.set( 1, 1 );
 
-
   const perspectiveCam = new THREE.PerspectiveCamera( 75, size.width / size.height, 0.1, 25 );
+
   const points = []
   for (let i = 0; i < 64; i++) {
     const angle = (i / 64) * 2 * Math.PI
@@ -131,44 +129,39 @@ export function Planet ({
 
       const x =  (
         semimajorAxis *
-        Math.cos(
+        Math.sin(
           t / (earthYear * userData.planet.sideralOrbit)
         )
       )
       const z =  (
         semiminorAxis *
-        Math.sin(
+        Math.cos(
           t / (earthYear * userData.planet.sideralOrbit)
         )
       )
-      // console.log({
-      //   event: 'planet-orbital-step',
-      //   planet: userData.planet.englishName,
-      //   x,
-      //   y
 
-      // })
       /*
       TODO: orbits are counter-clockwise, but the planets are rotating clockwise
-
-
+        - switching the sin/cos for x & z respectively resolved this issue
       */
 
-      meshRef.current.position.x = -1 * x
-      meshRef.current.position.z = -1 * z
-      // meshRef.current.updateProjectionMatrix()
-      // console.log('position:', meshRef.current.getWorldPosition())
-      // console.log('position:', geomRef.current.getWorldPosition())
-      // const cameraPosition = new THREE.Vector3()
-      // meshRef.current.getWorldPosition(cameraPosition)
-      // const cameraDelta = cameraPosition.clone().sub()
-      cameraRef.current.position.x = (-1 * x)
-      cameraRef.current.position.z = (-1 * z)
-      // cameraRef.current.children[0].camera.position.y = 100
-      cameraRef.current.position.y = 100
-      // console.log(cameraRef)
-      cameraRef.current.lookAt(0,0,0)
-      cameraRef.current.children[0].camera.lookAt(0,0,0)
+      meshRef.current.position.x =  x
+      meshRef.current.position.z =  z
+
+      /* scale the camera relative to the x & z positions */
+      cameraRef.current.position.x = ( x) - (x*0.09)
+      cameraRef.current.position.z = ( z) - (z*0.09)
+
+
+      cameraRef.current.children[0].camera.updateProjectionMatrix()
+      const trackingPosition = new THREE.Vector3()
+      meshRef.current.getWorldPosition(trackingPosition)
+      cameraRef.current.children[0].camera.up = new THREE.Vector3(0,1,0)
+      cameraRef.current.children[0].camera.lookAt(
+        trackingPosition
+      )
+      cameraRef.current.children[0].camera.updateProjectionMatrix()
+      cameraRef.current.children[0].update()
 
     }
 
@@ -177,6 +170,29 @@ export function Planet ({
       // mesh.current.rotation.y = t * (userData.planet.sideralRotation + 5)
       meshRef.current.rotation.y += t / (earthYear * userData.planet.sideralRotation)
     }
+
+    // update active bodies if this body is selected
+    // const activeNames = activeBodies.map((body) => body.englishName)
+    // if (activeNames.includes(userData.planet.englishName)) {
+    //   // only update if the animation is active
+    //   if (animateAxialRotation && animateOrbitalRotation) {
+    //     const index = activeNames.indexOf(userData.planet.englishName)
+    //     setActiveBodies((activeBodies) => {
+    //       const updatedActiveBodies = [...activeBodies]
+    //       updatedActiveBodies[index] = {
+    //         ...userData.planet,
+    //         meshRef,
+    //         geomRef,
+    //         // emptyRef,
+    //         layerMaterialRef,
+    //         textureRef
+    //       }
+    //       return updatedActiveBodies
+    //     })
+
+    //   }
+    // }
+
   })
   console.log({
     event: 'planet-render',

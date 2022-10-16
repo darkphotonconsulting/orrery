@@ -58,7 +58,8 @@ import {
 
 //
 import {
-  useThree
+  useThree,
+  useFrame
 } from '@react-three/fiber'
 // three-Fiber
 import {
@@ -128,22 +129,32 @@ import {
 import {
   StarGroup
 } from './lib/components/objects/StarGroup.jsx'
+// import { FramebufferTexture } from 'three';
 
 
 
-function Internals() {
+function Internals({
+  references=[],
+  setCanvasScene={},
+  canvasScene={},
+}) {
   const { scene, gl } = useThree()
   scene.name = 'orrery'
-  gl.gammaOutput = true
+  // gl.gammaOutput = true
+  useFrame((state, delta) => {
+    if (scene) {
+      setCanvasScene(scene)
+    }
+  })
   console.log({
     event: 'load-internals',
     scene: scene,
-    renderer: gl
-
+    renderer: gl,
+    references
   })
 
   // try using scene object to get nested objects
-  // console.log(scene.getObjectByName('planet-mesh-mercury'))
+  //
 
   // for (const child of scene.children) {
   //   if (child.type === 'Group') {
@@ -196,13 +207,13 @@ export function App({ ...props}) {
   const canvasRef = React.useRef(null)
   const sceneContainerRef = React.useRef(null)
   const detailsPanelRef = React.useRef(null)
-  // const cameraRef = React.useRef(null)
-  // const navigationRef = React.useRef(null)
+  const cameraRef = React.useRef(null)
+  const navigationRef = React.useRef(null)
   // const controlPadRef = React.useRef(null)
-  // const lightingRef = React.useRef(null)
-  // const backgroundRef = React.useRef(null)
-  // const planetGroupRef = React.useRef(null)
-  // const starGroupRef = React.useRef(null)
+  const lightingRef = React.useRef(null)
+  const backgroundRef = React.useRef(null)
+  const planetGroupRef = React.useRef(null)
+  const starGroupRef = React.useRef(null)
 
 
   /*
@@ -275,6 +286,10 @@ export function App({ ...props}) {
     },
   })
 
+  const [ canvasScene, setCanvasScene ] = React.useState({
+
+  })
+
   const [ detailsPanelExpanded, setDetailsPanelExpanded ] = React.useState(false)
   const [ detailsPanelSize, setDetailsPanelSize ] = React.useState(null)
   const [ canvasPanelSize, setCanvasPanelSize ] = React.useState(null)
@@ -340,6 +355,11 @@ export function App({ ...props}) {
     detailsContainer.style.height = `${parseInt(detailsPanelSize) - parseInt( event.clientY - draggablePosition)}px`
   }
 
+  /* can we useFrame here? */
+  // useFrame()
+  // useFrame((state, delta) => {
+  //   console.log(`winning?`)
+  // })
   /* 💡 effects run when state changes */
   React.useEffect(() => {
 
@@ -576,7 +596,7 @@ export function App({ ...props}) {
                         />
                         {/* Scene Lights (global) */}
                         <Lighting
-                          // ref={lightingRef}
+                          lightingRef={lightingRef}
                           intensity={controls.lighting.intensity}
                           color={controls.lighting.color}
                           ground={controls.lighting.ground}
@@ -599,9 +619,17 @@ export function App({ ...props}) {
                         }
 
                         {/* Three.JS internals */}
-                        <Internals/>
+                        <Internals
+                          canvasScene={canvasScene}
+                          setCanvasScene={setCanvasScene}
+                          references={[
+                            starGroupRef,
+                            planetGroupRef
+                          ]}
+                        />
                         {/* Scene Navigation */}
                         <Navigation
+                          navigationRef={navigationRef}
                           // ref={navigationRef}
                           // setSceneReferenceCatalog={setSceneReferenceCatalog}
                           // sceneReferenceCatalog={sceneReferenceCatalog}
@@ -610,6 +638,7 @@ export function App({ ...props}) {
                         {/* Scene Camera */}
                         <Camera
                           // ref={cameraRef}
+                          cameraRef={cameraRef}
                           controls={controls}
                           scaledGalaxy={scaledGalaxy}
                           fov={controls.camera.fov}
@@ -623,6 +652,7 @@ export function App({ ...props}) {
                         {/* Scene Background */}
                         <Background
                           // ref={backgroundRef}
+                          backgroundRef={backgroundRef}
                           radius={500}
                           depth={50}
                           controls={controls}
@@ -632,6 +662,7 @@ export function App({ ...props}) {
                         {/* Scene Stars */}
                         <StarGroup
                           // ref={starGroupRef}
+                          starGroupRef={starGroupRef}
                           animateAxialRotation={controls.scene.rotations}
                           stars={scaledGalaxy.stars}
                           planets={scaledGalaxy.planets}
@@ -644,6 +675,7 @@ export function App({ ...props}) {
                         {/* Scene Planets  */}
                         <PlanetGroup
                           // ref={planetGroupRef}
+                          planetGroupRef={planetGroupRef}
                           planets={scaledGalaxy.planets}
                           stars={scaledGalaxy.stars}
                           enhancements={enhancedData}
@@ -702,8 +734,10 @@ export function App({ ...props}) {
 
                           <Details
                             theme={theme}
+
                             id={'details'}
                             activeBodies={activeBodies}
+                            scene={canvasScene}
                             {...props}
                           />
 

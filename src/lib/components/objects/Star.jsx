@@ -13,7 +13,7 @@ import {
 
 import {
   LayerMaterial,
-  DebugLayerMaterial,
+  // DebugLayerMaterial,
   Texture,
   Gradient,
   Noise,
@@ -73,9 +73,6 @@ export function Star ({
 
   useFrame((state, delta) => {
     // const earthYear = 2 * Math.PI * (1 /60) * (1/60)
-    // textureRef.current.updateMatrix()
-
-
     geomRef.current.computeVertexNormals()
     geomRef.current.computeTangents()
     const t = state.clock.getElapsedTime()
@@ -87,8 +84,6 @@ export function Star ({
 
 
     if (convectionRef.current) {
-
-
       convectionRef.current.time = t
       convectionRef.current.scale += t
     }
@@ -103,47 +98,47 @@ export function Star ({
     <group
       ref={groupRef}
       name={`star-base-group-${userData.star.englishName.toLowerCase()}`}
-      // id={`star-base-group-${userData.star.englishName.toLowerCase()}`}
+
     >
       <mesh
-      ref={meshRef}
-      // scale={active ? 1.5 : 1}
-      scale={1}
-      position={[
-        meshPositionX || 0,
-        meshPositionY || 0,
-        meshPositionZ || 0
-      ]}
-      rotation={[
-        meshRotationX || 0,
-        meshRotationY || 0,
-        meshRotationZ || 0
-      ]}
-      onClick={(event) => {
-        setActive(!active)
-        const activeNames = activeBodies.map((body) => body.englishName)
-        if (activeNames.includes(userData.star.englishName) ) {
-          const index = activeNames.indexOf(userData.star.englishName)
-          setActiveBodies([
-            ...activeBodies.slice(0, index),
-            ...activeBodies.slice(index + 1, activeBodies.length)
-          ])
-        } else {
-          setActiveBodies([
-            ...activeBodies,
-            {
-              ...userData.star,
-              groupRef,
-              meshRef,
-              geomRef,
-              layerMaterialRef,
-              textureRef,
-            }
-          ])
-        }
+        name={`star-mesh-${userData.star.englishName.toLowerCase()}`}
+        ref={meshRef}
+        scale={1}
+        position={[
+          meshPositionX || 0,
+          meshPositionY || 0,
+          meshPositionZ || 0
+        ]}
+        rotation={[
+          meshRotationX || 0,
+          meshRotationY || 0,
+          meshRotationZ || 0
+        ]}
+        onClick={(event) => {
+          setActive(!active)
+          const activeNames = activeBodies.map((body) => body.englishName)
+          if (activeNames.includes(userData.star.englishName) ) {
+            const index = activeNames.indexOf(userData.star.englishName)
+            setActiveBodies([
+              ...activeBodies.slice(0, index),
+              ...activeBodies.slice(index + 1, activeBodies.length)
+            ])
+          } else {
+            setActiveBodies([
+              ...activeBodies,
+              {
+                ...userData.star,
+                groupRef,
+                meshRef,
+                geomRef,
+                layerMaterialRef,
+                textureRef,
+              }
+            ])
+          }
 
-      }}
-      receiveShadow={true}
+        }}
+        receiveShadow={true}
     >
       <pointLight
         color={'#FFFFFF'}
@@ -190,12 +185,8 @@ export function Star ({
           roughness={0.01}
           metalness={0.05}
           thickness={1.0}
-
-          // emissive={new THREE.Color('#C3650D')}
-
           emissiveIntensity={0.5}
           resolution={[size.width, size.height]}
-
         >
           <Gradient
             visible={true}
@@ -234,23 +225,7 @@ export function Star ({
             type={'perlin'}
             mode={'multiply'}
           />
-
         </LayerMaterial>
-
-      {/* {(() => {
-        if (wireFrame) {
-          return (
-            <meshStandardMaterial wireframe attach='material' color={active ? 'red' : baseColor || 'black'} resolution={[size.width, size.height]} />
-          )
-        } else {
-          return (
-            <meshPhysicalMaterial
-              map={baseTexture}
-            />
-          )
-        }
-      })()} */}
-
     </mesh>
   </group>
  )
