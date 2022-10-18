@@ -2,7 +2,12 @@ import React from 'react';
 import * as Colors from '@mui/material/colors'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faPlanetMoon
+  faPlanetMoon,
+  faPi,
+  faLocationCrosshairs,
+  faWeightHanging,
+  faRocketLaunch,
+  faPersonFalling,
 } from '@fortawesome/pro-duotone-svg-icons'
 
 import '@fortawesome/fontawesome-pro/css/all.css'
@@ -42,17 +47,18 @@ import {
   CardContent,
   CardHeader,
   Avatar,
+  Chip,
 } from '@mui/material';
+
+
 function Selections({
   theme = {},
   activeBodies = [],
+  galaxy = {},
   scene = {},
 }) {
 
-
-
   const [ sceneDetails, setSceneDetails ] = React.useState({
-
   })
 
   React.useEffect(() => {
@@ -139,17 +145,34 @@ function Selections({
                 y: 0,
                 z: 0,
               }
+              let pristene = {}
 
               if (sceneDetails[name]) {
                 pos = sceneDetails[name].pos
               }
+
+              /* display real-world values */
+              if (type === 'star') {
+                pristene = galaxy.stars.find((star) => star.englishName.toLowerCase() === name)
+              }
+
+              if (type === 'planet') {
+                pristene = galaxy.planets.find((planet) => planet.englishName.toLowerCase() === name)
+              }
+
+              // console.log(pristene)
 
               return (
 
                 <Slide in={true} key={`transition-slide-${body.englishName.toLowerCase()}`}>
                   <ListItem key={`details-selected-${body.englishName.toLowerCase()}`}>
                     <ListItemText>
-                      <Card>
+                      <Card
+                        sx={{
+                          backgroundColor: Colors.grey[800],
+                          padding: '5px',
+                        }}
+                      >
                         <CardHeader
                           avatar={
                             <Avatar>
@@ -160,9 +183,43 @@ function Selections({
                           subheader={type}
                         />
                         <CardContent>
-                          <Typography>x: {pos.x} </Typography>
-                          <Typography>z: {pos.z} </Typography>
-                          <FontAwesomeIcon icon={faPlanetMoon} />
+                          <Stack direction={'row'} spacing={2}>
+                            <Box>
+                              <Chip
+                                icon={<FontAwesomeIcon icon={faPi} />}
+                                label={`radius: ${pristene.equaRadius}`}
+                              />
+
+                            </Box>
+                            <Box>
+                              <Chip
+                                icon={<FontAwesomeIcon icon={faWeightHanging}/>}
+                                label={`mass: ${pristene.massValue * Math.pow(10, pristene.massExponent)} Kg`}
+                              />
+                            </Box>
+                            <Box>
+                              <Chip
+                                icon={<FontAwesomeIcon icon={faLocationCrosshairs} />}
+                                label={`x: ${pos.x.toFixed(2)}, y: ${pos.y.toFixed(2)}, z: ${pos.z.toFixed(2)}`}
+                              />
+                            </Box>
+                            <Box>
+                              <Chip
+                                icon={<FontAwesomeIcon icon={faPersonFalling} />}
+                                label={`gravity: ${pristene.gravity}`}
+                              />
+                            </Box>
+                            <Box>
+                              <Chip
+                                icon={<FontAwesomeIcon icon={faRocketLaunch} />}
+                                label={`escape: ${pristene.escape}`}
+                              />
+                            </Box>
+
+                          </Stack>
+
+
+
                         </CardContent>
 
                       </Card>
@@ -186,6 +243,7 @@ function Selections({
 export function Details({
   theme={},
   activeBodies=[],
+  galaxy = {},
   scene={},
 }) {
 
@@ -194,7 +252,7 @@ export function Details({
       id={'details'}
       direction={'column'}
     >
-      <Selections activeBodies={activeBodies} scene={scene}/>
+      <Selections activeBodies={activeBodies} scene={scene} galaxy={galaxy}/>
     </Stack>
   )
 }

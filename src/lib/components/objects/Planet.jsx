@@ -331,15 +331,15 @@ export function Planet ({
             resolution={[size.width, size.height]}
             ref={layerMaterialRef}
             visible={true}
-            color={'#060606'}
+            // color={'#060606'}
           >
 
             <Texture
               visible={true}
               ref={textureRef}
               map={baseTexture}
-              bumpMap={bumpTexture}
-              bumpScale={125}
+              displacementMap={bumpTexture}
+              displacementScale={12}
               alpha={1}
               depthTest={true}
               depthWrite={true}

@@ -56,6 +56,7 @@ program
       console.log('eccentricy', scaledBody.eccentricity)
       console.log('majorAxis', scaledBody.semimajorAxis)
       console.log('minorAxis', scaledBody.semiminorAxis)
+      console.log('equaRadius', scaledBody.equaRadius)
     }
 
     // console.log(JSON.stringify(scaled))

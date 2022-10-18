@@ -737,6 +737,7 @@ export function App({ ...props}) {
 
                             id={'details'}
                             activeBodies={activeBodies}
+                            galaxy={galaxy}
                             scene={canvasScene}
                             {...props}
                           />
