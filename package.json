@@ -25,7 +25,7 @@
   "keywords": [
     "orrery"
   ],
-  "author": "",
+  "author": "Aaron P. Samuel",
   "license": "ISC",
   "browserify": {
     "transform": [
